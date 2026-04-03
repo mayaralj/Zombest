@@ -211,8 +211,8 @@ end
 -- RUN VFX
 local function RunVFX(DefaultData, RootPart)
 	local GunVFXFolder = ReplicatedStorage.GunVFX
-	local RunVFX = DefaultData.VFX.RunVFX
-	local LightningAuraVFX = GunVFXFolder:WaitForChild("Lightning"):FindFirstChild(RunVFX):Clone()
+	local ActualRunVFX = DefaultData.VFX.RunVFX
+	local LightningAuraVFX = GunVFXFolder:WaitForChild("Lightning"):FindFirstChild(ActualRunVFX):Clone()
 	LightningAuraVFX.Parent = RootPart
 
 	for _, Particle in ipairs(LightningAuraVFX:GetDescendants()) do
@@ -236,9 +236,9 @@ local function RunLandVFX(PlayerViewing, PlayerShaking, Character, RootPart, Def
 	end
 
 	-- VFX CLONE
-	local RunLandVFX = DefaultData.VFX.RunLandVFX
+	local LandVFX = DefaultData.VFX.RunLandVFX
 	local LightningRunVFX =
-		ReplicatedStorage.GunVFX:WaitForChild("Lightning"):FindFirstChild(RunLandVFX):FindFirstChild(RunLandVFX):Clone()
+		ReplicatedStorage.GunVFX:WaitForChild("Lightning"):FindFirstChild(LandVFX):FindFirstChild(LandVFX):Clone()
 
 	-- RAY PARAMS
 	local RayParams = RaycastParams.new()
@@ -1448,14 +1448,14 @@ function LightningAssets.UI(LocalPlayer, GunEquipped)
 
 				-- TWEEN BACK
 				local TweenBackInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-				local TargetColor = { TextColor3 = OriginalCurrentColor }
-				local Tween
+				local NewTargetColor = { TextColor3 = OriginalCurrentColor }
+				local NewTween
 				for _, AmmoType in ipairs({ GunGui.Frame.CurrentAmmo, GunGui.Frame.TotalAmmo }) do
-					Tween = TweenService:Create(AmmoType, TweenToInfo, TargetColor)
-					Tween:Play()
+					NewTween = TweenService:Create(AmmoType, TweenBackInfo, NewTargetColor)
+					NewTween:Play()
 				end
-				Tween.Completed:Wait()
-				Tween:Destroy()
+				NewTween.Completed:Wait()
+				NewTween:Destroy()
 				CurrentlyLerping = false
 			end
 		end)
