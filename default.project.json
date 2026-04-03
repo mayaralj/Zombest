@@ -1,0 +1,39 @@
+{
+  "name": "Zombest",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "ModuleScripts": {
+        "$path": "src/ReplicatedStorage/ModuleScripts"
+      }
+    },
+    "ServerScriptService": {
+      "$path": "src/ServerScriptService"
+    },
+    "StarterGui": {
+      "$properties": {
+        "ScreenOrientation": "Sensor"
+      },
+      "$path": "src/StarterGui"
+    },
+    "StarterPlayer": {
+      "StarterCharacterScripts": {
+        "$path": "src/StarterPlayer/StarterCharacterScripts"
+      },
+      "StarterPlayerScripts": {
+        "$path": "src/StarterPlayer/StarterPlayerScripts"
+      },
+      "$properties": {
+        "AutoJumpEnabled": false,
+        "CameraMaxZoomDistance": 128.0,
+        "CameraMinZoomDistance": 5.0,
+        "CharacterUseJumpPower": false,
+        "EnableMouseLockOption": false,
+        "GameSettingsAvatar": "R6",
+        "HealthDisplayDistance": 0.0,
+        "LuaCharacterController": "NoCharacterController",
+        "UserEmotesEnabled": false
+      }
+    }
+  }
+}
