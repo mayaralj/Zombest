@@ -28,7 +28,8 @@ local function SetupCharacterAnimations(CharacterToAnimate)
 	-- HUMANOID
 	local Humanoid = CharacterToAnimate:WaitForChild("Humanoid")
 	-- ANIMATION
-	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
+	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
+	Animator.Parent = Humanoid
 
 	-- INITIALIZE PLAYER TRACKS
 	if not Tracks[PlayerToAnimate] then
