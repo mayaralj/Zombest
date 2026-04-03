@@ -7,12 +7,10 @@ local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 
-
 -- MODULES
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local ClientGunData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientGunData"))
 local ClientPlayerData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientPlayerData"))
-
 
 -- UI
 local PlayerGui = LocalPlayer.PlayerGui
@@ -20,7 +18,6 @@ local PointsGui = PlayerGui:WaitForChild("Points"):WaitForChild("PointsGui")
 local Frame = PointsGui:WaitForChild("Frame")
 local PointsText = Frame:WaitForChild("PointsText")
 local PointChangeText = Frame:WaitForChild("PointChangeText")
-
 
 -- CONNECTIONS
 local CurrentPointsConn = nil
@@ -30,7 +27,6 @@ Humanoid.Died:Connect(function()
 		CurrentPointsConn = nil
 	end
 end)
-
 
 -- TRACK LAST POINTS TO DETERMINE CHANGE IN POINTS
 -- UPDATE CURRENT POINTS TEXT
@@ -44,12 +40,15 @@ end
 PointsGui.Enabled = true
 CurrentPointsConn = LocalPlayer:GetAttributeChangedSignal("CurrentPoints"):Connect(function()
 	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
-	if not CurrentPlayerData then return end
-	
-	
+	if not CurrentPlayerData then
+		return
+	end
+
 	-- IF NO POINTS THEN RETURN END
-	if not LocalPlayer:GetAttribute("CurrentPoints") then return end
-	
+	if not LocalPlayer:GetAttribute("CurrentPoints") then
+		return
+	end
+
 	-- UPDATE LAST POINTS
 	local PointsDifference = LocalPlayer:GetAttribute("CurrentPoints") - CurrentPlayerData.Points.LastPoints
 	local PointChangeClone = PointChangeText:Clone()
@@ -60,18 +59,20 @@ CurrentPointsConn = LocalPlayer:GetAttributeChangedSignal("CurrentPoints"):Conne
 
 	-- TWEEN UPWARDS
 	local TweenInfoUp = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-	local TweenUp = TweenService:Create(PointChangeClone, TweenInfoUp, {Position = PointChangeText.Position - UDim2.new(math.random(-25,25)/100, 0, 0.6, 0)})
+	local TweenUp = TweenService:Create(
+		PointChangeClone,
+		TweenInfoUp,
+		{ Position = PointChangeText.Position - UDim2.new(math.random(-25, 25) / 100, 0, 0.6, 0) }
+	)
 	TweenUp:Play()
 	Debris:AddItem(TweenUp, 2)
 
 	-- TWEEN TEXT TRANSPARENCY
 	local TweenInfoTransparency = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-	local TweenTransparency = TweenService:Create(PointChangeClone, TweenInfoTransparency, {TextTransparency = 1})
+	local TweenTransparency = TweenService:Create(PointChangeClone, TweenInfoTransparency, { TextTransparency = 1 })
 	TweenTransparency:Play()
 	Debris:AddItem(TweenTransparency, 2)
 
-
-	
 	-- UPDATE POINTS TEXT
 	PointsText.Text = LocalPlayer:GetAttribute("CurrentPoints")
 	-- UPDATE LAST POINTS
