@@ -1,18 +1,13 @@
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 -- FOLDERS
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
-
 
 -- MODULES
 local TableClone = require(ModuleScripts:WaitForChild("Clone"):WaitForChild("TableClone"))
 
-
 local PlayerData = {}
-
-
 
 PlayerData.DefaultData = {
 	Health = {
@@ -28,9 +23,9 @@ PlayerData.DefaultData = {
 		KnockedHealthConnections = nil,
 		IsKnocked = nil,
 		IdleAnimation = "rbxassetid://92008953438996",
-		MovingAnimation = "rbxassetid://96282135379399"
+		MovingAnimation = "rbxassetid://96282135379399",
 	},
-	
+
 	Points = {
 		CurrentPoints = 5000,
 	},
@@ -48,26 +43,26 @@ PlayerData.DefaultData = {
 		SprintLoop = nil,
 		WaitToSprint = 0,
 	},
-	
+
 	Dash = {
 		DashForce = 65,
 		DashDuration = 0.25,
 		DashTimer = 0,
 		DashCooldown = 2,
 	},
-	
+
 	Shooting = {
 		TimeSincePlayerShot = nil,
 	},
 
 	Cooldowns = {
-		PlayerHitCooldown = nil
+		PlayerHitCooldown = nil,
 	},
-	
+
 	Agro = {
 		TotalZombiesAgroed = 0,
 	},
-	
+
 	WeaponSlots = {
 		"Empty",
 		"Empty",
@@ -75,11 +70,7 @@ PlayerData.DefaultData = {
 	},
 }
 
-
-
 PlayerData.PlayerDataTable = {}
-
-
 
 function PlayerData:CreateData(Player)
 	local DataCopy = TableClone.DeepClone(self.DefaultData)
@@ -87,18 +78,12 @@ function PlayerData:CreateData(Player)
 	return DataCopy
 end
 
-
-
 function PlayerData:Get(Player)
 	return self.PlayerDataTable[Player]
 end
 
-
-
 function PlayerData:Remove(Player)
 	self.PlayerDataTable[Player] = nil
 end
-
-
 
 return PlayerData

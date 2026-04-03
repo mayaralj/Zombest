@@ -52,17 +52,14 @@ local function RevivePlayer(Player)
 	Player:SetAttribute("IsReviving", false)
 
 	-- INCASE CHECKS
-	if not Player:GetAttribute("IsKnocked") then
+	--[[ 	if not Player:GetAttribute("IsKnocked") then
 		Player:SetAttribute("IsKnocked", true)
 		task.delay(0.1, function()
 			Player:SetAttribute("IsKnocked", false)
 		end)
-	else
-		Player:SetAttribute("IsKnocked", false)
-		task.delay(0.1, function()
-			Player:SetAttribute("IsKnocked", false)
-		end)
-	end
+	else ]]
+	Player:SetAttribute("IsKnocked", false)
+	--end
 end
 
 -- CREATE REVIVE INTERACT PROMPT

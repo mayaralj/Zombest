@@ -6,35 +6,32 @@ local StarterPlayerScripts = game.StarterPlayer.StarterPlayerScripts
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
-
 -- FOLDERS
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local ClientData = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
-
 
 -- MODULES
 local CharacterUtilities = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("ClientUtilities"))
 local ClientPlayerData = require(ClientData:WaitForChild("ClientPlayerData"))
 local ClientGunData = require(ClientData:WaitForChild("ClientGunData"))
 
-
 -- PLAYER AND CAMERA
 local Player = game.Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-
-
 -- CAMERA DATA FROM CLIENT DATA TABLE
 local function GetCameraData()
 	local PlayerDataTable = ClientPlayerData:Get(Player)
-	if not PlayerDataTable then return end
+	if not PlayerDataTable then
+		return
+	end
 	local CameraSettings = PlayerDataTable.CameraSettings
-	if not CameraSettings then return end
-	
+	if not CameraSettings then
+		return
+	end
+
 	return CameraSettings
 end
-
-
 
 local function DetermineOffset(Count, Offset)
 	if Count == 0 or Count == 1 then
@@ -50,19 +47,23 @@ local function DetermineOffset(Count, Offset)
 	end
 end
 
-
-
 -- APPLY CAMERA MOVEMENT
 local function SetupCamera()
 	local CameraSettings = GetCameraData()
-	if not CameraSettings then return end
-	
+	if not CameraSettings then
+		return
+	end
+
 	local CurrentPlayerData = ClientPlayerData:Get(Player)
-	if not CurrentPlayerData then return end
-		
+	if not CurrentPlayerData then
+		return
+	end
+
 	local RootPart = Player.Character and Player.Character:WaitForChild("HumanoidRootPart")
-	if not RootPart then return end
-	
+	if not RootPart then
+		return
+	end
+
 	-- EXCLUDE PLAYER ACCESSORIES IN THE RAYCAST CHECK
 	local CharacterParts = {}
 	for _, Descendant in ipairs(Player.Character:GetDescendants()) do
@@ -74,18 +75,17 @@ local function SetupCamera()
 	if CameraSettings.RenderConnection then
 		CameraSettings.RenderConnection:Disconnect()
 	end
-	
+
 	-- COLLISION RAY SETUP
 	local RayParams = RaycastParams.new()
 	RayParams.FilterType = Enum.RaycastFilterType.Exclude
-	
 
 	local TransparencyTask = {}
 	local OriginalTransparency = {}
 	local ExcludedParts = {}
 	local LastRayTime = 0
 	CameraSettings.RenderConnection = RunService.RenderStepped:Connect(function(DT)
-		-- KEEP ATTEMPTING TO GET DATA		
+		-- KEEP ATTEMPTING TO GET DATA
 		local SprintingFlag = Player:GetAttribute("IsSprinting")
 		if SprintingFlag then
 			CameraSettings.TargetSprintZoom = 5
@@ -93,23 +93,20 @@ local function SetupCamera()
 			CameraSettings.TargetSprintZoom = 0
 		end
 
-
 		-- LERP ZOOM
 		CameraSettings.SprintZoomOffset = math.lerp(
 			CameraSettings.SprintZoomOffset,
 			CameraSettings.TargetSprintZoom,
 			math.clamp(CameraSettings.ZoomLerpSpeed * DT, 0, 1)
 		)
-		
-		
+
 		-- SCREENSHAKE
 		if CurrentPlayerData then
 			CurrentPlayerData.CameraSettings.ShakeOffset = CurrentPlayerData.CameraSettings.ShakeOffset:lerp(
-				Vector3.new(0, 0, 0), 
+				Vector3.new(0, 0, 0),
 				math.clamp(CurrentPlayerData.CameraSettings.DecayToOriginSpeed * DT, 0, 1)
 			)
 		end
-
 
 		-- MATH
 		local EffectiveRadius = CameraSettings.Radius + CameraSettings.SprintZoomOffset
@@ -123,31 +120,37 @@ local function SetupCamera()
 
 		-- TARGET CAMERA CFRAME
 		local TargetCFrame = CFrame.lookAt(RootPart.Position + Offset, RootPart.Position)
-		
-		
+
 		local RayResult
 		if tick() - LastRayTime >= 0.1 then
 			-- CLEAR TABLE
 			table.clear(ExcludedParts)
 			-- UPDATE TIME
 			LastRayTime = tick()
-			
+
 			-- REPEAT RAYCAST
 			for Count = 0, 5 do
-				RayParams.FilterDescendantsInstances = {Player.Character, unpack(CharacterParts) , unpack(ExcludedParts)}
+				RayParams.FilterDescendantsInstances =
+					{ Player.Character, unpack(CharacterParts), unpack(ExcludedParts) }
 				local NewOffset = DetermineOffset(Count, Offset)
 				RayResult = workspace:Raycast(RootPart.Position, NewOffset, RayParams)
 				if RayResult then
 					-- INSTANCE
 					local RayInstance = RayResult.Instance
 					-- ENSURE PART HAS PHASE TAG
-					if not RayInstance:HasTag("PhaseTag") then continue end
+					if not RayInstance:HasTag("PhaseTag") then
+						continue
+					end
 
-					table.insert(ExcludedParts,RayInstance)
+					table.insert(ExcludedParts, RayInstance)
 
 					-- ENSURE PART TRANSPARENCY IS NOT ALREADY HIGH
-					if OriginalTransparency[RayInstance] and OriginalTransparency[RayInstance] >= 0.5 then continue end
-					if not OriginalTransparency[RayInstance] and RayInstance.Transparency >= 0.5 then continue end
+					if OriginalTransparency[RayInstance] and OriginalTransparency[RayInstance] >= 0.5 then
+						continue
+					end
+					if not OriginalTransparency[RayInstance] and RayInstance.Transparency >= 0.5 then
+						continue
+					end
 
 					-- TRANSPARENCY
 					if not OriginalTransparency[RayInstance] then
@@ -167,51 +170,48 @@ local function SetupCamera()
 			end
 		end
 
-
-
-		
 		-- SCREENSHAKE IF MODIFIED
 		local ShakeOffset = CurrentPlayerData and CurrentPlayerData.CameraSettings.ShakeOffset or Vector3.new(0, 0, 0)
-		TargetCFrame +=  ShakeOffset
+		TargetCFrame += ShakeOffset
 
 		-- TWEEN CFRAME TO TARGET
 		Camera.CFrame = TargetCFrame
 	end)
 end
 
-
-
 -- RIGHT CLICK START
 UIS.InputBegan:Connect(function(input, gameProcessed)
 	local CameraSettings = GetCameraData()
-	if not CameraSettings then return end
-	
+	if not CameraSettings then
+		return
+	end
+
 	if input.UserInputType == Enum.UserInputType.MouseButton2 then
 		CameraSettings.Rotating = true
 		UIS.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
 	end
 end)
 
-
-
 -- RIGHT CLICK END
 UIS.InputEnded:Connect(function(input)
 	local CameraSettings = GetCameraData()
-	if not CameraSettings then return end
-	
+	if not CameraSettings then
+		return
+	end
+
 	if input.UserInputType == Enum.UserInputType.MouseButton2 then
 		CameraSettings.Rotating = false
 		UIS.MouseBehavior = Enum.MouseBehavior.Default
 	end
 end)
 
-
-
 -- MOUSE MOVEMENT
 UIS.InputChanged:Connect(function(input)
 	local CameraSettings = GetCameraData()
-	if not CameraSettings then return end
-	
+	if not CameraSettings then
+		return
+	end
+
 	if CameraSettings.Rotating and input.UserInputType == Enum.UserInputType.MouseMovement then
 		local Delta = input.Delta
 		-- Rotate horizontally
@@ -227,13 +227,13 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
-
-
 -- SCROLLING ZOOM
 UIS.InputChanged:Connect(function(input)
 	local CameraSettings = GetCameraData()
-	if not CameraSettings then return end
-	
+	if not CameraSettings then
+		return
+	end
+
 	if input.UserInputType == Enum.UserInputType.MouseWheel then
 		CameraSettings.Radius = math.clamp(
 			CameraSettings.Radius - input.Position.Z * CameraSettings.ZoomSensitivity,
@@ -242,8 +242,6 @@ UIS.InputChanged:Connect(function(input)
 		)
 	end
 end)
-
-
 
 -- CHARACTER ADDED
 CharacterUtilities.BindToCharacter(Player, SetupCamera)

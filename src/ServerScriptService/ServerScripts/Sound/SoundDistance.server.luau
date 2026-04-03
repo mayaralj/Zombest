@@ -6,8 +6,6 @@ for _, Sound in pairs(game:GetDescendants()) do
 	end
 end
 
-
-
 -- HANDLE NEWER SOUNDS
 game.DescendantAdded:Connect(function(Descendant)
 	if Descendant:IsA("Sound") then

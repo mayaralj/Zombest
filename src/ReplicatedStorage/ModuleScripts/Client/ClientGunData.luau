@@ -1,22 +1,17 @@
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 -- FOLDERS
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
-
 
 -- MODULES
 local TableClone = require(ModuleScripts:WaitForChild("Clone"):WaitForChild("TableClone"))
 
-
 -- MODULE TABLE
 local ClientGunData = {}
 
-
-
 -- DEFAULT WEAPON DATA TEMPLATE
-ClientGunData.DefaultData = {	
+ClientGunData.DefaultData = {
 	Pistol = {
 		About = {
 			Name = "Glock 19",
@@ -34,7 +29,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 100,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 30,
 			ShotRotateWeight = 25,
@@ -58,7 +53,6 @@ ClientGunData.DefaultData = {
 			LeftDash = "rbxassetid://111816466240684",
 			RightDash = "rbxassetid://101561474740869",
 		},
-
 
 		GunStats = {
 			TimeToShoot = 2,
@@ -84,7 +78,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -92,10 +86,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(15,20,15),
+			ImpuseVector = Vector3.new(15, 20, 15),
 		},
 	},
-	
+
 	SemiPistol = {
 		About = {
 			Name = "RK5",
@@ -113,7 +107,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 100,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 30,
 			ShotRotateWeight = 25,
@@ -189,7 +183,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -197,10 +191,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(15,20,15),
+			ImpuseVector = Vector3.new(15, 20, 15),
 		},
 	},
-	
+
 	Silencer = {
 		About = {
 			Name = "Silenced Glock",
@@ -218,7 +212,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 100,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 30,
 			ShotRotateWeight = 25,
@@ -290,7 +284,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -298,10 +292,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(15,20,15),
+			ImpuseVector = Vector3.new(15, 20, 15),
 		},
 	},
-	
+
 	Rifle = {
 		About = {
 			Name = "Musket",
@@ -320,7 +314,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 225,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 28,
 			ShotRotateWeight = 20,
@@ -393,7 +387,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -401,10 +395,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(15,20,15),
+			ImpuseVector = Vector3.new(15, 20, 15),
 		},
 	},
-	
+
 	Deagle = {
 		About = {
 			Name = "Desert Eagle",
@@ -422,7 +416,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 100,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 28,
 			ShotRotateWeight = 20,
@@ -494,7 +488,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -502,10 +496,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(30,20,30),
+			ImpuseVector = Vector3.new(30, 20, 30),
 		},
 	},
-	
+
 	Uzi = {
 		About = {
 			Name = "Uzi",
@@ -523,7 +517,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 20,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 18,
@@ -594,7 +588,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -602,10 +596,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(10,20,10),
+			ImpuseVector = Vector3.new(10, 20, 10),
 		},
 	},
-	
+
 	TommyGun = {
 		About = {
 			Name = "Tommy Gun",
@@ -623,7 +617,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 20,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 17,
@@ -694,7 +688,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -702,10 +696,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(15,20,15),
+			ImpuseVector = Vector3.new(15, 20, 15),
 		},
 	},
-	
+
 	AK47 = {
 		About = {
 			Name = "AK-47",
@@ -723,7 +717,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 20,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 17,
@@ -794,7 +788,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -802,10 +796,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(17,22,17),
+			ImpuseVector = Vector3.new(17, 22, 17),
 		},
 	},
-	
+
 	AR = {
 		About = {
 			Name = "AR-15",
@@ -823,7 +817,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 15,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 17,
@@ -894,7 +888,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -902,10 +896,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(17,22,17),
+			ImpuseVector = Vector3.new(17, 22, 17),
 		},
 	},
-	
+
 	SuppressedAR = {
 		About = {
 			Name = "Suppressed AR",
@@ -923,7 +917,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 15,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 17,
@@ -994,7 +988,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -1002,10 +996,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(17,22,17),
+			ImpuseVector = Vector3.new(17, 22, 17),
 		},
 	},
-	
+
 	BurstAR = {
 		About = {
 			Name = "Burst AR",
@@ -1015,7 +1009,7 @@ ClientGunData.DefaultData = {
 			Model = "BurstAR",
 			OutlineColor = Color3.fromRGB(0, 0, 0),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 17,
@@ -1042,7 +1036,6 @@ ClientGunData.DefaultData = {
 			StartShooting = "rbxassetid://130212399996081",
 			ContinueShooting = "rbxassetid://73225064818519",
 
-
 			FrontDash = "rbxassetid://98269558335680",
 			BackDash = "rbxassetid://107524232915909",
 			LeftDash = "rbxassetid://98940453847961",
@@ -1056,7 +1049,7 @@ ClientGunData.DefaultData = {
 
 		SoundFX = {
 			EquipSFX = "rbxassetid://3742927091",
-			
+
 			ShootSFX = "rbxassetid://5735281491",
 
 			WallHitSFX = "rbxassetid://78578946566141",
@@ -1096,7 +1089,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -1104,10 +1097,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(17,22,17),
+			ImpuseVector = Vector3.new(17, 22, 17),
 		},
 	},
-	
+
 	Minigun = {
 		About = {
 			Name = "Minigun",
@@ -1117,7 +1110,7 @@ ClientGunData.DefaultData = {
 			Model = "Minigun",
 			OutlineColor = Color3.fromRGB(0, 0, 0),
 		},
-		
+
 		Weight = {
 			RotateWeight = 15,
 			ShotRotateWeight = 8,
@@ -1165,7 +1158,7 @@ ClientGunData.DefaultData = {
 
 			ReloadSFX = "rbxassetid://140341132746608",
 			OutOfAmmoSFX = "rbxassetid://146830902",
-			
+
 			RotateToSFX = "rbxassetid://9110461166",
 			RotateToLoopSFX = "rbxassetid://8509658502",
 			RotateBackSFX = "rbxassetid://8509662150",
@@ -1191,7 +1184,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(5)
+			MaxRotationAngle = math.rad(5),
 		},
 
 		BulletStats = {
@@ -1199,7 +1192,7 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(25,20,25),
+			ImpuseVector = Vector3.new(25, 20, 25),
 		},
 	},
 
@@ -1212,7 +1205,7 @@ ClientGunData.DefaultData = {
 			Model = "PumpShotgun",
 			OutlineColor = Color3.fromRGB(70, 0, 1),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 15,
@@ -1291,7 +1284,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(25)
+			MaxRotationAngle = math.rad(25),
 		},
 
 		BulletStats = {
@@ -1299,7 +1292,7 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(35,22,35),
+			ImpuseVector = Vector3.new(35, 22, 35),
 		},
 	},
 
@@ -1320,7 +1313,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 300,
 			CursorHitColor = Color3.fromRGB(162, 0, 5),
 		},
-		
+
 		Weight = {
 			RotateWeight = 27,
 			ShotRotateWeight = 15,
@@ -1391,7 +1384,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(25)
+			MaxRotationAngle = math.rad(25),
 		},
 
 		BulletStats = {
@@ -1399,10 +1392,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(35,22,35),
+			ImpuseVector = Vector3.new(35, 22, 35),
 		},
 	},
-	
+
 	AA12 = {
 		About = {
 			Name = "AA-12",
@@ -1493,7 +1486,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(10)
+			MaxRotationAngle = math.rad(10),
 		},
 
 		BulletStats = {
@@ -1501,7 +1494,7 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(35,22,35),
+			ImpuseVector = Vector3.new(35, 22, 35),
 		},
 	},
 
@@ -1522,7 +1515,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 600,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 24,
 			ShotRotateWeight = 9,
@@ -1590,7 +1583,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(10)
+			MaxRotationAngle = math.rad(10),
 		},
 
 		BulletStats = {
@@ -1598,10 +1591,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(30,25,30),
+			ImpuseVector = Vector3.new(30, 25, 30),
 		},
 	},
-	
+
 	RicochetSniper = {
 		About = {
 			Name = "Rico-150",
@@ -1619,7 +1612,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 350,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 26,
 			ShotRotateWeight = 15,
@@ -1690,7 +1683,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(15)
+			MaxRotationAngle = math.rad(15),
 		},
 
 		BulletStats = {
@@ -1698,7 +1691,7 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(20,22,20),
+			ImpuseVector = Vector3.new(20, 22, 20),
 		},
 	},
 
@@ -1719,7 +1712,7 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 140,
 			CursorHitColor = Color3.fromRGB(211, 0, 7),
 		},
-		
+
 		Weight = {
 			RotateWeight = 30,
 			ShotRotateWeight = 30,
@@ -1762,7 +1755,7 @@ ClientGunData.DefaultData = {
 			RunSFX = "rbxassetid://6563561749",
 
 			DashSFX = "rbxassetid://6128977275",
-			
+
 			-- RELOAD BAG
 			OpenSFX = "rbxassetid://107564483288851",
 			CloseSFX = "rbxassetid://124574697748952",
@@ -1794,7 +1787,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(20)
+			MaxRotationAngle = math.rad(20),
 		},
 
 		BulletStats = {
@@ -1802,10 +1795,10 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector =  Vector3.new(10,20,10),
+			ImpuseVector = Vector3.new(10, 20, 10),
 		},
 	},
-	
+
 	Scorchrift = {
 		About = {
 			Name = "Scorchrift",
@@ -1821,28 +1814,21 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 0,
 			CursorHitColor = Color3.fromRGB(255, 11, 15),
 		},
-		
 
 		Animations = {
 			EquipAnimation = "rbxassetid://126536775442276",
 
-
 			IdleAnimation = "rbxassetid://135602211817707",
-
 
 			WalkAnimation = "rbxassetid://135602211817707",
 
-
 			RunAnimation = "rbxassetid://135602211817707",
-
 
 			StartShooting = "rbxassetid://103212435892728",
 			ContinueShooting = "rbxassetid://77085933367575",
 
-
 			ChargeStart = "rbxassetid://110251786545098",
 			ChargeContinue = "rbxassetid://90476714455217",
-
 
 			ChainStun = "rbxassetid://108552999692896",
 
@@ -1875,7 +1861,6 @@ ClientGunData.DefaultData = {
 
 			ShootSFX = "rbxassetid://83956246581661",
 
-
 			WallHitSFX = "rbxassetid://158853971",
 			ZombieHitSFX = "rbxassetid://158853971",
 			BloodSFX = "rbxassetid://7837536770",
@@ -1894,12 +1879,12 @@ ClientGunData.DefaultData = {
 
 			DashSFX = "rbxassetid://6128977275",
 		},
-		
+
 		Weight = {
 			TiltMultiplier = 1.5,
 			WalkTilt = 1.5,
-			RunTilt  = 6,
-			
+			RunTilt = 6,
+
 			RotateWeight = 25,
 			ShotRotateWeight = 18,
 		},
@@ -1924,7 +1909,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(0)
+			MaxRotationAngle = math.rad(0),
 		},
 
 		BulletStats = {
@@ -1934,7 +1919,7 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector = Vector3.new(10,15,10),
+			ImpuseVector = Vector3.new(10, 15, 10),
 		},
 	},
 
@@ -1953,11 +1938,11 @@ ClientGunData.DefaultData = {
 			CursorSizeIncrease = 0,
 			CursorHitColor = Color3.fromRGB(255, 11, 15),
 		},
-		
+
 		Weight = {
 			TiltMultiplier = 1.5,
 			WalkTilt = 1.5,
-			RunTilt  = 6,
+			RunTilt = 6,
 
 			RotateWeight = 30,
 			ShotRotateWeight = 20,
@@ -1966,28 +1951,22 @@ ClientGunData.DefaultData = {
 		Animations = {
 			EquipAnimation = "rbxassetid://75207080617783",
 
-
 			IdleAnimation = "rbxassetid://127882313290249",
-
 
 			WalkAnimation = "rbxassetid://82050369114526",
 			WalkReachedSignalLeft = "LeftStep",
 			WalkReachedSignalRight = "RightStep",
 
-
 			RunAnimation = "rbxassetid://99529066674273",
 			RunReachedSignalLeft = "LeftLightning", -- leave empty if no aniamtion event
 			RunReachedSignalRight = "RightLightning",
-
 
 			StartShooting = "rbxassetid://131429976613412",
 			ContinueShooting = "rbxassetid://115001279433732",
 			EndShooting = "rbxassetid://85176308630255",
 
-
 			ChargeStart = "rbxassetid://110262414869625",
 			ChargeContinue = "rbxassetid://105137301303649",
-
 
 			ChainStun = "rbxassetid://108552999692896",
 
@@ -2040,8 +2019,7 @@ ClientGunData.DefaultData = {
 			DashSFX = "rbxassetid://9126067628",
 		},
 
-		GunStats = {
-		},
+		GunStats = {},
 
 		Ammo = {
 			ReloadTime = 1,
@@ -2063,7 +2041,7 @@ ClientGunData.DefaultData = {
 
 		Rotation = {
 			MinRotationAngle = math.rad(0),
-			MaxRotationAngle = math.rad(0)
+			MaxRotationAngle = math.rad(0),
 		},
 
 		BulletStats = {
@@ -2073,7 +2051,7 @@ ClientGunData.DefaultData = {
 		},
 
 		Ragdoll = {
-			ImpuseVector = Vector3.new(10,15,10),
+			ImpuseVector = Vector3.new(10, 15, 10),
 		},
 	},
 }
@@ -2097,11 +2075,11 @@ ClientGunData.Connections = {}
 -- TABLE TO WAIT TILL DATA IS CREATED
 local ReadyToGet = {}
 
-
-
 -- CREATE CLIENT GUN DATA
 function ClientGunData:CreateData(Player, EquippedGun)
-	if ClientGunData.ClientGunDataTable[Player] and ClientGunData.ClientGunDataTable[Player][EquippedGun] then return ClientGunData.ClientGunDataTable[Player][EquippedGun] end
+	if ClientGunData.ClientGunDataTable[Player] and ClientGunData.ClientGunDataTable[Player][EquippedGun] then
+		return ClientGunData.ClientGunDataTable[Player][EquippedGun]
+	end
 	local DataCopy = TableClone.DeepClone(ClientGunData.DefaultData[EquippedGun])
 
 	-- INITIALIZE PLAYER TABLES
@@ -2109,21 +2087,17 @@ function ClientGunData:CreateData(Player, EquippedGun)
 		ClientGunData.ClientGunDataTable[Player] = {}
 		ReadyToGet[Player] = {}
 	end
-	
-	
+
 	-- CREATE AND STORE DATA
 	ClientGunData.ClientGunDataTable[Player][EquippedGun] = DataCopy
 	ReadyToGet[Player][EquippedGun] = true
-	
 
 	return DataCopy
 end
 
-
-
 -- KNOCKED DATA
 function ClientGunData:CreateKnockedData(Player)
-	local KnockedGuns = {"Pistol", "RayGun"}
+	local KnockedGuns = { "Pistol", "RayGun" }
 	local CurrentGun = Player:GetAttribute("EquippedGun")
 
 	local DataCopy
@@ -2138,8 +2112,6 @@ function ClientGunData:CreateKnockedData(Player)
 	return DataCopy
 end
 
-
-
 -- GET PLAYER'S WEAPON DATA
 function ClientGunData:Get(Player)
 	if Player:GetAttribute("IsKnocked") then
@@ -2147,8 +2119,10 @@ function ClientGunData:Get(Player)
 			return ClientGunData.KnockedGunData[Player]
 		end
 		local KnockedData = ClientGunData:CreateKnockedData(Player)
-		if not KnockedData then return end
-		
+		if not KnockedData then
+			return
+		end
+
 		return KnockedData
 	end
 
@@ -2158,9 +2132,10 @@ function ClientGunData:Get(Player)
 		EquippedGun = Player:GetAttribute("EquippedGun")
 	end
 	-- END IF NO GUN
-	if not EquippedGun then return end
-	
-	
+	if not EquippedGun then
+		return
+	end
+
 	-- REPEAT TILL READY
 	local Count = 0
 	repeat
@@ -2169,14 +2144,13 @@ function ClientGunData:Get(Player)
 			task.wait()
 		end
 	until (ReadyToGet[Player] and ReadyToGet[Player][EquippedGun]) or Count == 10
-	if not ClientGunData.ClientGunDataTable[Player] then return end
-	
-	
+	if not ClientGunData.ClientGunDataTable[Player] then
+		return
+	end
+
 	-- RETURN DATA TABLE
 	return ClientGunData.ClientGunDataTable[Player][EquippedGun]
 end
-
-
 
 -- REMOVE PER GUN DATA
 function ClientGunData:Remove(Player)
@@ -2185,15 +2159,17 @@ function ClientGunData:Remove(Player)
 		EquippedGun = Player:GetAttribute("EquippedGun")
 	end
 
-	if not ClientGunData.ClientGunDataTable[Player] then return end
-	if not EquippedGun then return end
+	if not ClientGunData.ClientGunDataTable[Player] then
+		return
+	end
+	if not EquippedGun then
+		return
+	end
 	ClientGunData.ClientGunDataTable[Player][EquippedGun] = nil
 	if ReadyToGet[Player][EquippedGun] then
 		ReadyToGet[Player][EquippedGun] = nil
 	end
 end
-
-
 
 -- FULLY REMOVE DATA
 function ClientGunData:Clean(Player)
@@ -2201,7 +2177,5 @@ function ClientGunData:Clean(Player)
 	ClientGunData.KnockedGunData[Player] = nil
 	ReadyToGet[Player] = nil
 end
-
-
 
 return ClientGunData

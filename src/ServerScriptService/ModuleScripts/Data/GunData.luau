@@ -2,25 +2,20 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-
 -- FOLDERS
 local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
-
 
 -- MODULES
 local BulletEffects = require(Frameworks:WaitForChild("Gun"):WaitForChild("BulletFW"))
 local ChargeEffectsFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("ChargeEffectsFW"))
 local TableClone = require(ModuleScripts:WaitForChild("Clone"):WaitForChild("TableClone"))
 
-
 -- MODULE TABLE
 local GunData = {}
 
-
-
 -- DEFAULT WEAPON TEMPLATES
-GunData.DefaultData = {	
+GunData.DefaultData = {
 	Pistol = {
 		About = {
 			Name = "Pistol",
@@ -28,24 +23,23 @@ GunData.DefaultData = {
 			Model = "Pistol",
 			EquipTime = 0.7,
 		},
-		
-		
+
 		Weight = {
 			MoveWeight = 0,
 			WalkMoveWeight = 0.05,
 			RunMoveWeight = 0.05,
 			ReloadMoveWeight = 0.4,
 			ShootMoveWeight = 0.3,
-			
+
 			WalkDashWeight = 0,
 			RunDashWeight = 0,
 			DashDurationWeight = 0,
 		},
-		
+
 		BodyForce = {
 			BodyForce = 2,
 		},
-		
+
 		RecoilSpread = {
 			ConsecutiveShots = 0,
 			LastShotTime = 0,
@@ -56,14 +50,14 @@ GunData.DefaultData = {
 			RecoveryTime = 0.25,
 			RecoveryRate = 0.05,
 		},
-		
+
 		GunStats = {
 			Range = 150,
 			Damage = 60,
 			FireRate = 2.5,
 			Windup = 0,
 		},
-		
+
 		Ammo = {
 			MaxAmmo = 12,
 			CurrentAmmo = 12,
@@ -71,7 +65,7 @@ GunData.DefaultData = {
 			MaxTotalAmmo = 200,
 			ReloadTime = 2,
 		},
-		
+
 		BulletStats = {
 			BulletPhase = 1,
 			BulletSpeed = 250,
@@ -79,12 +73,12 @@ GunData.DefaultData = {
 			BulletMaxAge = 10,
 			BulletSize = 1,
 		},
-		
+
 		Timer = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	SemiPistol = {
 		About = {
 			Name = "SemiPistol",
@@ -92,7 +86,6 @@ GunData.DefaultData = {
 			Model = "SemiPistol",
 			EquipTime = 0.7,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -109,7 +102,7 @@ GunData.DefaultData = {
 		BodyForce = {
 			BodyForce = 1,
 		},
-		
+
 		Burst = {
 			BulletsPerShot = 3,
 			BurstDuration = 0.03,
@@ -153,7 +146,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	Silencer = {
 		About = {
 			Name = "Silencer",
@@ -161,7 +154,6 @@ GunData.DefaultData = {
 			Model = "Silencer",
 			EquipTime = 0.7,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -174,7 +166,7 @@ GunData.DefaultData = {
 			RunDashWeight = 0,
 			DashDurationWeight = 0,
 		},
-		
+
 		BodyForce = {
 			BodyForce = 1.75,
 		},
@@ -225,7 +217,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	Rifle = {
 		About = {
 			Name = "Rifle",
@@ -234,7 +226,7 @@ GunData.DefaultData = {
 			EquipTime = 1,
 		},
 
-		Weight = {			
+		Weight = {
 			MoveWeight = 0,
 			WalkMoveWeight = 0.08,
 			RunMoveWeight = 0.08,
@@ -289,7 +281,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	Deagle = {
 		About = {
 			Name = "Deagle",
@@ -297,7 +289,6 @@ GunData.DefaultData = {
 			Model = "Deagle",
 			EquipTime = 0.7,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -354,7 +345,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	Uzi = {
 		About = {
 			Name = "Uzi",
@@ -417,7 +408,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	TommyGun = {
 		About = {
 			Name = "TommyGun",
@@ -425,7 +416,6 @@ GunData.DefaultData = {
 			Model = "Tommy Gun",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -481,7 +471,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	AK47 = {
 		About = {
 			Name = "AK-47",
@@ -489,7 +479,6 @@ GunData.DefaultData = {
 			Model = "AK-47",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -545,7 +534,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	AR = {
 		About = {
 			Name = "AR",
@@ -553,7 +542,6 @@ GunData.DefaultData = {
 			Model = "AR",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -609,7 +597,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	SuppressedAR = {
 		About = {
 			Name = "SuppressedAR",
@@ -617,7 +605,6 @@ GunData.DefaultData = {
 			Model = "SuppressedAR",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -681,7 +668,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	BurstAR = {
 		About = {
 			Name = "BurstAR",
@@ -689,7 +676,6 @@ GunData.DefaultData = {
 			Model = "BurstAR",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -706,7 +692,7 @@ GunData.DefaultData = {
 		BodyForce = {
 			BodyForce = 0.8,
 		},
-		
+
 		Burst = {
 			BulletsPerShot = 5,
 			BurstDuration = 0.04,
@@ -750,7 +736,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	Minigun = {
 		About = {
 			Name = "Minigun",
@@ -758,7 +744,6 @@ GunData.DefaultData = {
 			Model = "Minigun",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -771,7 +756,7 @@ GunData.DefaultData = {
 			RunDashWeight = 20,
 			DashDurationWeight = 10,
 		},
-		
+
 		Burst = {
 			BulletsPerShot = 1,
 			BurstDuration = 0,
@@ -819,7 +804,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	PumpShotgun = {
 		About = {
 			Name = "PumpShotgun",
@@ -843,7 +828,7 @@ GunData.DefaultData = {
 		BodyForce = {
 			BodyForce = 1,
 		},
-		
+
 		Burst = {
 			BulletsPerShot = 6,
 			BurstDuration = 0,
@@ -890,7 +875,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	TacticalShotgun = {
 		About = {
 			Name = "TacticalShotgun",
@@ -957,12 +942,11 @@ GunData.DefaultData = {
 			BulletSize = 1,
 		},
 
-
 		Timer = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	AA12 = {
 		About = {
 			Name = "AA-12",
@@ -1028,12 +1012,11 @@ GunData.DefaultData = {
 			BulletSize = 1,
 		},
 
-
 		Timer = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	PhaseSniper = {
 		About = {
 			Name = "PhaseSniper",
@@ -1041,7 +1024,6 @@ GunData.DefaultData = {
 			Model = "PhaseSniper",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -1172,7 +1154,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	RayGun = {
 		About = {
 			Name = "RayGun",
@@ -1180,7 +1162,6 @@ GunData.DefaultData = {
 			Model = "RayGun",
 			EquipTime = 1,
 		},
-
 
 		Weight = {
 			MoveWeight = 0,
@@ -1231,17 +1212,17 @@ GunData.DefaultData = {
 			BulletMaxAge = 10,
 			BulletSize = 2,
 		},
-		
+
 		Effect = {
 			AoeEffect = {
 				Type = BulletEffects.AoeEffect,
 				CurrentCooldown = 0,
 				MaxCooldown = 0.1,
-				
+
 				DamageOrigZombie = true,
 				DamagePlayer = false,
 				DamageOtherPlayers = false,
-				
+
 				Damage = 150,
 				MaxHits = 7,
 				FallOffMultiplier = 3, -- 1 regular, above is weaker falloff
@@ -1253,7 +1234,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	Scorchrift = {
 		About = {
 			Name = "Scorchrift",
@@ -1275,11 +1256,9 @@ GunData.DefaultData = {
 			DashDurationWeight = 10,
 		},
 
-
 		BodyForce = {
 			BodyForce = 0.2,
 		},
-
 
 		GunStats = {
 			Range = 100,
@@ -1288,17 +1267,16 @@ GunData.DefaultData = {
 			Windup = 0.2,
 		},
 
-
 		-- CHARGE
 		Charge = {
 			TimeBeforeChargeTimer = 0,
 			TimeBeforeCharge = 1,
-			
+
 			MaxCharge = 100, -- in percent
 			CurrentCharge = 100,
 			TimeToWait = 1.5,
 
-			ChargeRegenRate = 15, 
+			ChargeRegenRate = 15,
 			ChargeDecreaseRate = 0.3,
 
 			ManualChargeTimer = 100,
@@ -1336,7 +1314,7 @@ GunData.DefaultData = {
 			UpdateStreamTimer = 0,
 		},
 	},
-	
+
 	LightningFist = {
 		About = {
 			Name = "LightningFist",
@@ -1346,18 +1324,18 @@ GunData.DefaultData = {
 			EquipTime = 1,
 		},
 
-		Weight = {			
+		Weight = {
 			MoveWeight = 0,
 			WalkMoveWeight = 0,
 			RunMoveWeight = -0.1,
 			ReloadMoveWeight = 1,
 			ShootMoveWeight = 0.25,
-			
+
 			WalkDashWeight = -40,
 			RunDashWeight = -30,
 			DashDurationWeight = 0.1,
 		},
-		
+
 		BodyForce = {
 			BodyForce = 0.1,
 		},
@@ -1368,20 +1346,19 @@ GunData.DefaultData = {
 			FireRate = 25,
 			Windup = 0.15,
 		},
-		
-		
+
 		-- CHARGE
 		Charge = {
 			TimeBeforeChargeTimer = 0,
 			TimeBeforeCharge = 1.75,
-			
+
 			MaxCharge = 100, -- in percent
 			CurrentCharge = 100,
 			TimeToWait = 2,
-			
-			ChargeRegenRate = 16, 
+
+			ChargeRegenRate = 16,
 			ChargeDecreaseRate = 0.3,
-			
+
 			ManualChargeTimer = 100,
 			ManualChargeCD = 2,
 		},
@@ -1406,7 +1383,7 @@ GunData.DefaultData = {
 				CurrentCooldown = 0,
 			},
 		},
-		
+
 		ChargeEffect = {
 			OverCharge = {
 				Type = ChargeEffectsFW.OverCharge,
@@ -1414,13 +1391,12 @@ GunData.DefaultData = {
 				Duration = 10,
 			},
 		},
-		
+
 		Timer = {
 			UpdateStreamTimer = 0,
 		},
 	},
 }
-
 
 -- SETUP
 GunData.GunDataTable = {}
@@ -1430,49 +1406,44 @@ GunData.BulletConnection = nil
 
 GunData.KnockedGunData = {}
 
-
 -- TABLE TO WAIT TILL DATA IS CREATED
 local ReadyToGet = {}
 
-
-
 -- CREATE GUN DATA
 function GunData:CreateData(Player, EquippedGun)
-	if GunData.GunDataTable[Player] and GunData.GunDataTable[Player][EquippedGun] then return GunData.GunDataTable[Player][EquippedGun] end
+	if GunData.GunDataTable[Player] and GunData.GunDataTable[Player][EquippedGun] then
+		return GunData.GunDataTable[Player][EquippedGun]
+	end
 	local DataCopy = TableClone.DeepClone(GunData.DefaultData[EquippedGun])
-	
+
 	-- INITIALIZE PLAYER TABLES
 	if not GunData.GunDataTable[Player] then
 		GunData.GunDataTable[Player] = {}
 		ReadyToGet[Player] = {}
 	end
-	
+
 	-- CREATE AND STORE DATA
 	GunData.GunDataTable[Player][EquippedGun] = DataCopy
 	ReadyToGet[Player][EquippedGun] = true
 	return DataCopy
 end
 
-
-
 -- KNOCKED DATA
 function GunData:CreateKnockedData(Player)
-	local KnockedGuns = {"Pistol", "RayGun"}
+	local KnockedGuns = { "Pistol", "RayGun" }
 	local CurrentGun = Player:GetAttribute("EquippedGun")
-	
+
 	local DataCopy
 	if table.find(KnockedGuns, CurrentGun) then
 		DataCopy = TableClone.DeepClone(GunData.DefaultData[CurrentGun])
 	else
 		DataCopy = TableClone.DeepClone(GunData.DefaultData["Pistol"])
 	end
-	
+
 	-- CREATE AND STORE DATA
 	GunData.KnockedGunData[Player] = DataCopy
 	return DataCopy
 end
-
-
 
 -- GET DATA
 function GunData:Get(Player, EquippedGun)
@@ -1481,12 +1452,13 @@ function GunData:Get(Player, EquippedGun)
 			return GunData.KnockedGunData[Player]
 		end
 		local KnockedData = GunData:CreateKnockedData(Player)
-		if not KnockedData then return end
-		
+		if not KnockedData then
+			return
+		end
+
 		return KnockedData
 	end
 
-	
 	-- GRAB EQUIPPED GUN
 	if not EquippedGun then
 		EquippedGun = Player:GetAttribute("IsEquippingGun")
@@ -1494,9 +1466,10 @@ function GunData:Get(Player, EquippedGun)
 			EquippedGun = Player:GetAttribute("EquippedGun")
 		end
 		-- END IF NO GUN
-		if not EquippedGun then return end
+		if not EquippedGun then
+			return
+		end
 	end
-
 
 	-- REPEAT TILL READY
 	local Count = 0
@@ -1504,30 +1477,32 @@ function GunData:Get(Player, EquippedGun)
 		Count += 1
 		task.wait()
 	until ReadyToGet[Player] and ReadyToGet[Player][EquippedGun] or Count == 10
-	if not GunData.GunDataTable[Player] then return end
-	
+	if not GunData.GunDataTable[Player] then
+		return
+	end
+
 	-- RETURN DATA TABLE
 	return GunData.GunDataTable[Player][EquippedGun]
 end
 
-
-
 -- REMOVE PER GUN DATA
 function GunData:Remove(Player)
 	local EquippedGun = Player:GetAttribute("IsEquippingGun")
-	if not EquippedGun  then
+	if not EquippedGun then
 		EquippedGun = Player:GetAttribute("EquippedGun")
-	end	
-	
-	if not GunData.GunDataTable[Player] then return end
-	if not EquippedGun then return end
+	end
+
+	if not GunData.GunDataTable[Player] then
+		return
+	end
+	if not EquippedGun then
+		return
+	end
 	GunData.GunDataTable[Player][EquippedGun] = nil
 	if ReadyToGet[Player][EquippedGun] then
 		ReadyToGet[Player][EquippedGun] = nil
 	end
 end
-
-
 
 -- FULLY REMOVE DATA
 function GunData:Clean(Player)
@@ -1535,8 +1510,6 @@ function GunData:Clean(Player)
 	GunData.KnockedGunData[Player] = nil
 	ReadyToGet[Player] = nil
 end
-
-
 
 -- RETURN
 return GunData

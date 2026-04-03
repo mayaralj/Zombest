@@ -3,16 +3,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Players = game:GetService("Players")
 
-
 -- FOLDERS
 local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 local Events = ReplicatedStorage:WaitForChild("Events")
 
-
 -- MODULES
 local Utilities = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("Utilities"))
-
-
 
 -- SET COLLISION GROUP
 local function AddCollisionGroup(Character)

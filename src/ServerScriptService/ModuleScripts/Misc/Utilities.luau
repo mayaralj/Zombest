@@ -1,14 +1,10 @@
 local Utilities = {}
 
-
 -- SERVICES
 local Players = game:GetService("Players")
 
-
 -- FOLDERS
 local ModuleScripts = script.Parent.Parent
-
-
 
 -- CHARACTER ADDED
 function Utilities.BindToCharacter(OnCharacterAdded)
@@ -20,12 +16,12 @@ function Utilities.BindToCharacter(OnCharacterAdded)
 			Character:WaitForChild("HumanoidRootPart")
 			task.defer(OnCharacterAdded, Character)
 		end
-		
+
 		-- RESPAWN
-		Player.CharacterAdded:Connect(function(Character)
-			Character:WaitForChild("Humanoid")
-			Character:WaitForChild("HumanoidRootPart")
-			task.defer(OnCharacterAdded, Character)
+		Player.CharacterAdded:Connect(function(CharacterAdded)
+			CharacterAdded:WaitForChild("Humanoid")
+			CharacterAdded:WaitForChild("HumanoidRootPart")
+			task.defer(OnCharacterAdded, CharacterAdded)
 		end)
 	end
 
@@ -34,8 +30,6 @@ function Utilities.BindToCharacter(OnCharacterAdded)
 	end
 	Players.PlayerAdded:Connect(OnPlayerAdded)
 end
-
-
 
 -- PLAYER ADDED
 function Utilities.BindToPlayer(OnPlayerAdded)
@@ -50,6 +44,4 @@ function Utilities.BindToPlayer(OnPlayerAdded)
 	Players.PlayerAdded:Connect(HandlePlayerAdded)
 end
 
-
- 
 return Utilities

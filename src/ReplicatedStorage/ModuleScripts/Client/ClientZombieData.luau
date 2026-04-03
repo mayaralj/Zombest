@@ -7,10 +7,8 @@ local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 -- MODULES
 local TableClone = require(ModuleScripts:WaitForChild("Clone"):WaitForChild("TableClone"))
 
-
 -- MODULE CLIENT ZOMBIE TABLE
 local ClientZombieData = {}
-
 
 -- DEFAULT CLIENTZOMBIE DATA TEMPLATE
 ClientZombieData.DefaultData = {
@@ -22,11 +20,11 @@ ClientZombieData.DefaultData = {
 				ID = nil,
 				ServerZombie = nil,
 			},
-			
-			Position ={
+
+			Position = {
 				TargetCF = nil,
 			},
-			
+
 			Ragdoll = {
 				DeadByWeapon = nil,
 				DirectionDead = nil,
@@ -36,12 +34,11 @@ ClientZombieData.DefaultData = {
 				TimeSinceMoved = 0,
 				EffectTimer = 0,
 			},
-			
+
 			Flags = {
 				PreviouslyMoved = nil,
 			},
-			
-			
+
 			Status = {
 				Burn = {
 					BurnTime = 0,
@@ -51,7 +48,7 @@ ClientZombieData.DefaultData = {
 					Outline = nil,
 					SFX = nil,
 				},
-				
+
 				Stun = {
 					StunTime = 0,
 				},
@@ -65,12 +62,8 @@ ClientZombieData.DefaultData = {
 		},
 	},
 
-	Boss = {
-
-	},
+	Boss = {},
 }
-
-
 
 -- ALL CLIENT ZOMBIES
 ClientZombieData.ClientZombieDataTable = {}
@@ -78,13 +71,10 @@ ClientZombieData.ZombieIndex = {}
 ClientZombieData.ZombieArray = {}
 ClientZombieData.GetZombieByID = {}
 
-
-
 -- CREATE CLIENT DATA FOR ZOMBIE
 function ClientZombieData:CreateData(Zombie, ZombieType, ZombieSubType)
 	ZombieType = ZombieType or "Regular"
 	ZombieSubType = ZombieSubType or "Normal"
-
 
 	local SpecificData = self.DefaultData[ZombieType][ZombieSubType]
 	if not SpecificData then
@@ -92,27 +82,20 @@ function ClientZombieData:CreateData(Zombie, ZombieType, ZombieSubType)
 		return nil
 	end
 
-
 	local DataCopy = TableClone.DeepClone(SpecificData)
 	self.ClientZombieDataTable[Zombie] = DataCopy
 
 	return DataCopy
 end
 
-
-
 -- GET CLIENT ZOMBIE DATA
 function ClientZombieData:Get(Zombie)
 	return self.ClientZombieDataTable[Zombie]
 end
 
-
-
 -- REMOVE CLIENT ZOMBIE DATA
 function ClientZombieData:Remove(Zombie)
 	self.ClientZombieDataTable[Zombie] = nil
 end
-
-
 
 return ClientZombieData

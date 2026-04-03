@@ -97,6 +97,7 @@ local function HandleStreamBullet(PlayerFired, PlayerFiredClientGunData, ServerD
 	if not Muzzle then
 		return
 	end
+
 	local PlayerGunAttribute = PlayerFired:GetAttribute("IsEquippingGun")
 	if not PlayerGunAttribute then
 		return

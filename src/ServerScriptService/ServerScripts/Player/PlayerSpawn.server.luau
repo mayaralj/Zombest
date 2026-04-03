@@ -6,7 +6,6 @@ for _, Player in Players:GetPlayers() do
 	end
 end
 
-
 Players.PlayerAdded:Connect(function(Player)
 	Player.CharacterAdded:Connect(function(Character)
 		if Character then

@@ -1,24 +1,20 @@
 local MapSpawn = {}
 
-
 -- SERVICES
 local Players = game:GetService("Players")
 local ServerStorage = game:GetService("ServerStorage")
 local Teams = game:GetService("Teams")
 
-
 -- FOLDERS
 local MapFolder = ServerStorage:FindFirstChild("Maps")
-
-
 
 -- FUNCTION TO SPAWN A RANDOM MAP
 function MapSpawn.SpawnMap()
 	while true do
 		local Success, Result = pcall(function()
 			local Maps = MapFolder:GetChildren()
-			local MapTemplate = Maps[math.random(1,#Maps)]:Clone()
-			
+			local MapTemplate = Maps[math.random(1, #Maps)]:Clone()
+
 			return MapTemplate
 		end)
 
@@ -39,8 +35,6 @@ function MapSpawn.SpawnMap()
 	end
 end
 
-
-
 -- FUNCTION TO SHUFFLE AN ARRAY, USED TO RANDOMIZE SPAWN POINTS
 local function ShuffleArray(Array)
 	for i = #Array, 2, -1 do
@@ -49,11 +43,11 @@ local function ShuffleArray(Array)
 	end
 end
 
-
-
 -- FUNCTION TO DETERMINE IF A PLAYER IS STANDING ON THE GROUND
 local function IsStandingOnGround(Character)
-	if not Character then return false end
+	if not Character then
+		return false
+	end
 
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	if Humanoid and Humanoid.FloorMaterial ~= Enum.Material.Air then
@@ -62,8 +56,6 @@ local function IsStandingOnGround(Character)
 
 	return false
 end
-
-
 
 -- TELEPORT ALL PLAYERS TO MAP SPAWNS
 function MapSpawn.TeleportPlayersToMap(Map)
@@ -85,7 +77,7 @@ function MapSpawn.TeleportPlayersToMap(Map)
 					Success = true
 					break
 				end
-			else 
+			else
 				task.wait(0.1)
 			end
 		end
@@ -95,7 +87,5 @@ function MapSpawn.TeleportPlayersToMap(Map)
 		end
 	end
 end
-
-
 
 return MapSpawn

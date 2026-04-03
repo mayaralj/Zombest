@@ -7,8 +7,6 @@ local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local Utilities = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("ClientUtilities"))
 local Player = Players.LocalPlayer
 
-
-
 -- DISABLE RUNNING VOLUME
 local function DisableDefaultSFX(Character)
 	local Humanoid = Character:WaitForChild("Humanoid")
@@ -18,7 +16,6 @@ local function DisableDefaultSFX(Character)
 		RunningSound.Volume = 0
 	end
 end
-
 
 -- BIND TO CHARACTER
 Utilities.BindToCharacter(Player, DisableDefaultSFX)
