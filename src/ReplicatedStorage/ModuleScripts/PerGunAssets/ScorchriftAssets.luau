@@ -2,51 +2,46 @@ local ScorchriftAssets = {}
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Debris = game:GetService("Debris")
-local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 
-
 -- FOLDERS
-local Frameworks= ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
+local Frameworks = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 local Client = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 local Events = ReplicatedStorage:WaitForChild("Events")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 
-
 -- MODULE
 local ClientGunDataModule = require(Client:WaitForChild("ClientGunData"))
-local ClientZombieDataModule = require(Client:WaitForChild("ClientZombieData"))
 local ClientPlayerData = require(Client:WaitForChild("ClientPlayerData"))
 local RockModule = require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("Rock"):WaitForChild("RockModule"))
 local ScreenShakeModule = require(Frameworks:WaitForChild("Screenshake"):WaitForChild("ScreenShake"))
 local PlaySFXModule = require(Frameworks:WaitForChild("Sound"):WaitForChild("PlaySFX"))
 local LightningAssets = require(ModuleScripts:WaitForChild("PerGunAssets"):WaitForChild("LightningAssets"))
 
-
-
 -- EVENTS
-local TimeChange = Events:WaitForChild("MapEvents"):WaitForChild("TimeChange")
-
-
 
 -- EQUIP ASSETS
 function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEquipped)
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	local RootPart = PlayerEquipped.Character:FindFirstChild("HumanoidRootPart")
-	if not RootPart then return end
+	if not RootPart then
+		return
+	end
 
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
-
+	if not Tracks then
+		return
+	end
 
 	local Character = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
-	
+
 	-- CLEANUP
 	local function FullCleanup()
 		-- DISCONNECT CONNECTIONS
@@ -79,10 +74,9 @@ function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEq
 			Tracks[PlayerEquipped]["EquipAnimation"] = nil
 		end
 	end
-	
+
 	-- INCASE
 	FullCleanup()
-
 
 	-- CREATE SOUNDS
 	local EquipSFX = Instance.new("Sound")
@@ -92,8 +86,7 @@ function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEq
 	EquipSFX.PlaybackSpeed = 2
 	EquipSFX.Parent = RootPart
 	Tracks[PlayerEquipped]["EquipSFX"] = EquipSFX
-	
-	
+
 	local EquipSFX2 = Instance.new("Sound")
 	EquipSFX2.SoundId = DefaultData.SoundFX.EquipSFX2
 	EquipSFX2.Name = "EquipSFX2"
@@ -101,8 +94,6 @@ function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEq
 	EquipSFX2.PlaybackSpeed = 1
 	EquipSFX2.Parent = RootPart
 	Tracks[PlayerEquipped]["EquipSFX2"] = EquipSFX2
-
-
 
 	-- CREATE ANIMATION
 	local EquipAnimation = Instance.new("Animation")
@@ -112,30 +103,31 @@ function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEq
 	EquipTrack.Looped = false
 	EquipTrack.Priority = Enum.AnimationPriority.Action4
 	Tracks[PlayerEquipped]["EquipAnimation"] = EquipTrack
-	
-	
+
 	-- HIGHLIGHT
 	local Highlight = Character:WaitForChild("Highlight")
-	if not Highlight then return end
+	if not Highlight then
+		return
+	end
 	Highlight.FillColor = Color3.fromRGB(141, 1, 1)
-
 
 	-- PLAY TRACK
 	EquipTrack:Play()
 	EquipTrack:AdjustSpeed(0.75)
 
-	local EquipVFX = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("EquipVFX"):Clone()
+	local EquipVFX =
+		ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("EquipVFX"):Clone()
 	Connections[PlayerEquipped]["ArmVFXMarker"] = EquipTrack:GetMarkerReachedSignal("Pick"):Connect(function()
 		EquipVFX.Parent = Character:FindFirstChild("Right Arm")
-		EquipVFX.Position = Vector3.new(0,-1,0)
+		EquipVFX.Position = Vector3.new(0, -1, 0)
 	end)
-	
+
 	Connections[PlayerEquipped]["BodyVFXMarker"] = EquipTrack:GetMarkerReachedSignal("Hit"):Connect(function()
 		-- CLEAN VFX AND PLAY SFX
 		EquipSFX:Play()
 		EquipSFX2:Play()
 		EquipVFX:Destroy()
-		
+
 		Highlight.FillTransparency = 0.5
 		task.spawn(function()
 			while Highlight.FillTransparency < 1 do
@@ -143,9 +135,12 @@ function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEq
 				task.wait(0.02)
 			end
 		end)
-		
+
 		-- IMPACT VFX
-		local EquipVFX2 = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("EquipImpact"):Clone()
+		local EquipVFX2 = ReplicatedStorage:FindFirstChild("GunVFX")
+			:FindFirstChild("Scorchrift")
+			:FindFirstChild("EquipImpact")
+			:Clone()
 		EquipVFX2.Parent = RootPart
 		for _, Emitter in EquipVFX2:GetDescendants() do
 			if Emitter:IsA("ParticleEmitter") then
@@ -154,40 +149,41 @@ function ScorchriftAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEq
 		end
 		Debris:AddItem(EquipVFX2, 3)
 	end)
-	
-
 
 	Connections[PlayerEquipped]["CharacterRemoving_Equip"] = PlayerEquipped.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
-	Connections[PlayerEquipped]["EquippedGunChanged_Equip"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
-			FullCleanup()
-		end
-	end)
-	
+	Connections[PlayerEquipped]["EquippedGunChanged_Equip"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
+				FullCleanup()
+			end
+		end)
+
 	return true
 end
-
-
 
 -- IDLE ASSETS
 function ScorchriftAssets.Idle(PlayerViewing, DefaultData, WeaponName, PlayerEquipped)
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	local RootPart = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
-	if not RootPart then return end
+	if not RootPart then
+		return
+	end
 
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
-
+	if not Tracks then
+		return
+	end
 
 	local Character = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
 
 	-- CLEANUP
 	local function FullCleanup()
@@ -208,11 +204,10 @@ function ScorchriftAssets.Idle(PlayerViewing, DefaultData, WeaponName, PlayerEqu
 			Tracks[PlayerEquipped]["IdleAnimation"] = nil
 		end
 	end
-	
-	
+
 	-- INCASE
 	FullCleanup()
-	
+
 	local IdleAnimation = Instance.new("Animation")
 	IdleAnimation.AnimationId = DefaultData.Animations.IdleAnimation
 	local IdleTrack = Animator:LoadAnimation(IdleAnimation)
@@ -221,41 +216,41 @@ function ScorchriftAssets.Idle(PlayerViewing, DefaultData, WeaponName, PlayerEqu
 	IdleTrack.Looped = true
 	Tracks[PlayerEquipped]["IdleAnimation"] = IdleTrack
 	--if Tracks[PlayerEquipped]["EquipAnimation"] then
-		--Tracks[PlayerEquipped]["EquipAnimation"].Ended:Connect(function()
-			if Tracks[PlayerEquipped]["IdleAnimation"] then
-				Tracks[PlayerEquipped]["IdleAnimation"]:Play(0.25)
-				Tracks[PlayerEquipped]["IdleAnimation"]:AdjustSpeed(0.6)
-			end
-		--end)
+	--Tracks[PlayerEquipped]["EquipAnimation"].Ended:Connect(function()
+	if Tracks[PlayerEquipped]["IdleAnimation"] then
+		Tracks[PlayerEquipped]["IdleAnimation"]:Play(0.25)
+		Tracks[PlayerEquipped]["IdleAnimation"]:AdjustSpeed(0.6)
+	end
+	--end)
 	--end
-
-
 
 	Connections[PlayerEquipped]["CharacterRemoving_Idle"] = PlayerEquipped.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
-	Connections[PlayerEquipped]["EquippedGunChanged_Idle"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
-			FullCleanup()
-		end
-	end)
-	
+	Connections[PlayerEquipped]["EquippedGunChanged_Idle"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
+				FullCleanup()
+			end
+		end)
+
 	return true
 end
-
-
 
 -- MOVEMENT ASSETS
 function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, PlayerRequired)
 	-- TRACKS
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
-
+	if not Tracks then
+		return
+	end
 
 	-- CONNECTIONS
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	-- CHARACTER
 	local Character = PlayerRequired.Character or PlayerRequired.CharacterAdded:Wait()
@@ -264,7 +259,6 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 
 	-- ANIMATOR
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
 
 	-- CLEANUP
 	local function FullCleanup()
@@ -303,7 +297,6 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 			Connections[PlayerRequired]["MoveHeartbeat"] = nil
 		end
 
-
 		-- CLEANUP TRACKS
 		if Tracks[PlayerRequired]["WalkAnimation"] then
 			Tracks[PlayerRequired]["WalkAnimation"]:Stop()
@@ -315,7 +308,7 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 			Tracks[PlayerRequired]["RunAnimation"]:Destroy()
 			Tracks[PlayerRequired]["RunAnimation"] = nil
 		end
-		if Tracks[PlayerRequired]["RunSFX"]  then
+		if Tracks[PlayerRequired]["RunSFX"] then
 			Tracks[PlayerRequired]["RunSFX"]:Stop()
 			Tracks[PlayerRequired]["RunSFX"]:Destroy()
 			Tracks[PlayerRequired]["RunSFX"] = nil
@@ -335,23 +328,25 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 			Tracks[PlayerRequired]["DustVFX"]:Destroy()
 			Tracks[PlayerRequired]["DustVFX"] = nil
 		end
-		
+
 		if Tracks[PlayerRequired]["FlyVFX"] then
 			Tracks[PlayerRequired]["FlyVFX"]:Destroy()
 			Tracks[PlayerRequired]["FlyVFX"] = nil
 		end
 	end
-	
+
 	-- INCASE
 	FullCleanup()
 
-
 	-- ANIMATIONS
 	local WalkAnimId = DefaultData.Animations.WalkAnimation
-	if not WalkAnimId then return end
+	if not WalkAnimId then
+		return
+	end
 	local RunAnimID = DefaultData.Animations.RunAnimation
-	if not RunAnimID then return end
-
+	if not RunAnimID then
+		return
+	end
 
 	-- CREATE SOUNDS
 	local RunSFX = Instance.new("Sound")
@@ -362,15 +357,12 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 	RunSFX.Volume = 0.5
 	Tracks[PlayerRequired]["RunSFX"] = RunSFX
 
-
 	local RunSFX2 = Instance.new("Sound")
 	RunSFX2.SoundId = DefaultData.SoundFX.RunSFX2
 	RunSFX2.Parent = RootPart
 	RunSFX2.Name = "RunSFX2"
 	RunSFX2.Looped = false
 	Tracks[PlayerRequired]["RunSFX2"] = RunSFX2
-
-
 
 	-- CREATE ANIMATION
 	local WalkAnimation = Instance.new("Animation")
@@ -381,8 +373,6 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 	WalkTrack.Looped = true
 	Tracks[PlayerRequired]["WalkAnimation"] = WalkTrack
 
-
-
 	-- WALK SOUND
 	local WalkSFX = Instance.new("Sound")
 	WalkSFX.SoundId = DefaultData.SoundFX.WalkSFX
@@ -392,9 +382,6 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 	WalkSFX.Looped = false
 	Tracks[PlayerRequired]["WalkSFX"] = WalkSFX
 
-
-
-
 	local RunAnimation = Instance.new("Animation")
 	RunAnimation.AnimationId = RunAnimID
 	local RunTrack = Animator:LoadAnimation(RunAnimation)
@@ -402,15 +389,14 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 	RunTrack.Priority = Enum.AnimationPriority.Movement
 	RunTrack.Looped = true
 	Tracks[PlayerRequired]["RunAnimation"] = RunTrack
-	
-	
-	local FlyWind = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("FlyWind"):Clone()
-	if not FlyWind then return end
+
+	local FlyWind =
+		ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("FlyWind"):Clone()
+	if not FlyWind then
+		return
+	end
 	FlyWind.Parent = Character:FindFirstChild("Head")
 	Tracks[PlayerRequired]["FlyVFX"] = FlyWind
-	
-
-
 
 	-- CONNECT TO WHEN RUNNING
 	local WindTurnedOn = false
@@ -424,10 +410,9 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 
 		local Speed = Humanoid.WalkSpeed * Humanoid.MoveDirection.Magnitude
 
-		-- GET ATTRIBUTES	
+		-- GET ATTRIBUTES
 		local IsRunning = PlayerRequired:GetAttribute("IsSprinting")
 		local IsShooting = PlayerRequired:GetAttribute("IsShooting")
-
 
 		if Speed > 2 then
 			-- CANCEL EXISTING DEBOUNCE TASK
@@ -455,7 +440,9 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 					end
 				end
 				while RunSFX.Volume < 2.5 do
-					if not IsRunning or IsShooting then break end
+					if not IsRunning or IsShooting then
+						break
+					end
 					RunSFX.Volume += 0.02
 					task.wait()
 				end
@@ -474,7 +461,9 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 					end
 				end
 				while RunSFX.Volume > 0 do
-					if IsRunning then break end
+					if IsRunning then
+						break
+					end
 					RunSFX.Volume -= 0.02
 					task.wait()
 				end
@@ -497,53 +486,57 @@ function ScorchriftAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Play
 						end
 					end
 					while RunSFX.Volume > 0 do
-						if IsRunning then break end
+						if IsRunning then
+							break
+						end
 						RunSFX.Volume -= 0.02
 						task.wait()
 					end
 					RunSFX:Stop()
-					
+
 					Connections[PlayerRequired]["StopDebounceTask"] = nil
 				end)
 			end
 		end
 	end)
 
-
 	Connections[PlayerRequired]["CharacterRemoving_Walk"] = PlayerRequired.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
+	Connections[PlayerRequired]["EquippedGunChanged_Walk"] = PlayerRequired:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
+				FullCleanup()
+			end
+		end)
 
-	Connections[PlayerRequired]["EquippedGunChanged_Walk"] = PlayerRequired:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-			FullCleanup()
-		end
-	end)
-	
 	return true
 end
-
-
 
 -- SHOOT ASSETS
 function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFired)
 	local Tracks = ClientGunDataModule.Tracks
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	-- GET ANIMATION
 	local StartAnimId = DefaultData.Animations["StartShooting"]
-	if not StartAnimId then return end
+	if not StartAnimId then
+		return
+	end
 	local ContinueAnimID = DefaultData.Animations["ContinueShooting"]
-	if not ContinueAnimID then return end
+	if not ContinueAnimID then
+		return
+	end
 
 	local Character = PlayerFired.Character or PlayerFired.CharacterAdded:Wait()
 	local RootPart = Character:WaitForChild("HumanoidRootPart")
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
-	
+
 	-- CLEANUP FUNCTION
 	local function FullCleanup()
 		-- CANCEL TASKS
@@ -567,11 +560,11 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 		end
 
 		-- STOP ANIMATIONS
-		if Tracks[PlayerFired]["StartShootingAnimation"] then 
-			Tracks[PlayerFired]["StartShootingAnimation"]:Stop() 
+		if Tracks[PlayerFired]["StartShootingAnimation"] then
+			Tracks[PlayerFired]["StartShootingAnimation"]:Stop()
 		end
-		if Tracks[PlayerFired]["ContinueShootingAnimation"] then 
-			Tracks[PlayerFired]["ContinueShootingAnimation"]:Stop() 
+		if Tracks[PlayerFired]["ContinueShootingAnimation"] then
+			Tracks[PlayerFired]["ContinueShootingAnimation"]:Stop()
 		end
 
 		if Tracks[PlayerFired]["StartShootingAnimation"] then
@@ -585,7 +578,7 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 			Tracks[PlayerFired]["ContinueShootingAnimation"]:Destroy()
 			Tracks[PlayerFired]["ContinueShootingAnimation"] = nil
 		end
-		
+
 		if Tracks[PlayerFired]["ContinueShootingSFX"] then
 			Tracks[PlayerFired]["ContinueShootingSFX"]:Stop()
 			Tracks[PlayerFired]["ContinueShootingSFX"]:Destroy()
@@ -594,8 +587,12 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 
 		Connections[PlayerFired]["ShootVolumeTask"] = task.spawn(function()
 			if Tracks[PlayerFired]["ContinueShootingSFX"] then
-				while Tracks[PlayerFired]["ContinueShootingSFX"] and Tracks[PlayerFired]["ContinueShootingSFX"].Volume > 0 do
-					Tracks[PlayerFired]["ContinueShootingSFX"].Volume = math.max(Tracks[PlayerFired]["ContinueShootingSFX"].Volume - 0.05, 0)
+				while
+					Tracks[PlayerFired]["ContinueShootingSFX"]
+					and Tracks[PlayerFired]["ContinueShootingSFX"].Volume > 0
+				do
+					Tracks[PlayerFired]["ContinueShootingSFX"].Volume =
+						math.max(Tracks[PlayerFired]["ContinueShootingSFX"].Volume - 0.05, 0)
 					task.wait(0.01)
 				end
 				if Tracks[PlayerFired]["ContinueShootingSFX"] then
@@ -610,10 +607,9 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 		Tracks[PlayerFired]["StartShootingAnimation"] = nil
 		Tracks[PlayerFired]["ContinueShootingAnimation"] = nil
 	end
-	
+
 	-- INCASSE
 	FullCleanup()
-
 
 	-- BEAM SHOOTING SFX
 	local BeamSFX = Instance.new("Sound")
@@ -625,8 +621,6 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 	BeamSFX.PlaybackRegion = NumberRange.new(0.4, 2)
 	Tracks[PlayerFired]["ContinueShootingSFX"] = BeamSFX
 
-
-
 	-- CREATE ANIMATION
 	local StartAnimation = Instance.new("Animation")
 	StartAnimation.AnimationId = StartAnimId
@@ -636,22 +630,17 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 	StartTrack.Looped = false
 	Tracks[PlayerFired]["StartShootingAnimation"] = StartTrack
 
-
-
 	local ContinueAnimation = Instance.new("Animation")
 	ContinueAnimation.AnimationId = ContinueAnimID
-	-- CREATE CONTINUE TRACK 
+	-- CREATE CONTINUE TRACK
 	local ContinueTrack = Animator:LoadAnimation(ContinueAnimation)
 	ContinueTrack.Name = "ContinueShooting"
 	ContinueTrack.Priority = Enum.AnimationPriority.Action2
 	ContinueTrack.Looped = true
 	Tracks[PlayerFired]["ContinueShootingAnimation"] = ContinueTrack
 
-
-
-
 	local function PartialCleanup()
-		if 	Tracks[PlayerFired]["StartShootingAnimation"] then
+		if Tracks[PlayerFired]["StartShootingAnimation"] then
 			Tracks[PlayerFired]["StartShootingAnimation"]:Stop()
 		end
 
@@ -662,7 +651,8 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 		Connections[PlayerFired]["ShootVolumeTask"] = task.spawn(function()
 			if Tracks[PlayerFired]["ContinueShootingSFX"] then
 				while Tracks[PlayerFired]["ContinueShootingSFX"].Volume > 0 do
-					Tracks[PlayerFired]["ContinueShootingSFX"].Volume = math.max(Tracks[PlayerFired]["ContinueShootingSFX"].Volume - 0.1, 0)
+					Tracks[PlayerFired]["ContinueShootingSFX"].Volume =
+						math.max(Tracks[PlayerFired]["ContinueShootingSFX"].Volume - 0.1, 0)
 					task.wait()
 				end
 				Tracks[PlayerFired]["ContinueShootingSFX"].Volume = 3.5
@@ -672,67 +662,79 @@ function ScorchriftAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerF
 		end)
 	end
 
-
 	Connections[PlayerFired]["CharacterRemoving_Shoot"] = PlayerFired.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
 	-- CLEANUP
-	Connections[PlayerFired]["EquippedGunChanged_Shoot"] = PlayerFired:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerFired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-			FullCleanup()
-		end
-	end)
-
-
+	Connections[PlayerFired]["EquippedGunChanged_Shoot"] = PlayerFired:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerFired:GetAttribute("IsEquippingGun") ~= EquippedGun then
+				FullCleanup()
+			end
+		end)
 
 	-- CONTINUE IF SHOOTING OR NOT
-	Connections[PlayerFired]["IsShootingChanged"] = PlayerFired:GetAttributeChangedSignal("IsShooting"):Connect(function()
-		if not PlayerFired:GetAttribute("IsShooting") then
-			PartialCleanup()
-		else
-			if Connections[PlayerFired]["ShootVolumeTask"] then
-				task.cancel(Connections[PlayerFired]["ShootVolumeTask"])
-				Connections[PlayerFired]["ShootVolumeTask"] = nil
+	Connections[PlayerFired]["IsShootingChanged"] = PlayerFired:GetAttributeChangedSignal("IsShooting")
+		:Connect(function()
+			if not PlayerFired:GetAttribute("IsShooting") then
+				PartialCleanup()
+			else
+				if Connections[PlayerFired]["ShootVolumeTask"] then
+					task.cancel(Connections[PlayerFired]["ShootVolumeTask"])
+					Connections[PlayerFired]["ShootVolumeTask"] = nil
+				end
+				if
+					Tracks[PlayerFired]["StartShootingAnimation"]
+					and not Tracks[PlayerFired]["StartShootingAnimation"].IsPlaying
+				then
+					Tracks[PlayerFired]["StartShootingAnimation"]:Play(0.2)
+				end
+				if
+					Tracks[PlayerFired]["ContinueShootingAnimation"]
+					and not Tracks[PlayerFired]["ContinueShootingAnimation"].IsPlaying
+				then
+					Tracks[PlayerFired]["ContinueShootingAnimation"]:Play(0.2)
+				end
+				if Tracks[PlayerFired]["ContinueShootingSFX"] then
+					task.delay(0.2, function()
+						if not PlayerFired:GetAttribute("IsShooting") then
+							return
+						end
+						if Tracks[PlayerFired]["ContinueShootingSFX"].IsPlaying then
+							Tracks[PlayerFired]["ContinueShootingSFX"].Volume = 3.5
+						else
+							Tracks[PlayerFired]["ContinueShootingSFX"]:Play()
+						end
+					end)
+				end
 			end
-			if Tracks[PlayerFired]["StartShootingAnimation"] and not Tracks[PlayerFired]["StartShootingAnimation"].IsPlaying then
-				Tracks[PlayerFired]["StartShootingAnimation"]:Play(0.2)
-			end
-			if Tracks[PlayerFired]["ContinueShootingAnimation"] and not Tracks[PlayerFired]["ContinueShootingAnimation"].IsPlaying then
-				Tracks[PlayerFired]["ContinueShootingAnimation"]:Play(0.2)
-			end
-			if Tracks[PlayerFired]["ContinueShootingSFX"] then
-				task.delay(0.2, function()
-					if not PlayerFired:GetAttribute("IsShooting") then return end
-					if Tracks[PlayerFired]["ContinueShootingSFX"].IsPlaying then
-						Tracks[PlayerFired]["ContinueShootingSFX"].Volume = 3.5
-					else
-						Tracks[PlayerFired]["ContinueShootingSFX"]:Play()
-					end
-				end)
-			end
-		end
-	end)
-	
+		end)
+
 	return true
 end
-
-
 
 -- CHARGE ASSETS
 function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerCharging)
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
+	if not Tracks then
+		return
+	end
 
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
-
+	if not Connections then
+		return
+	end
 
 	-- GET CHARGE ANIMATION IDS
 	local ChargeStartID = DefaultData.Animations["ChargeStart"]
-	if not ChargeStartID then return end
+	if not ChargeStartID then
+		return
+	end
 	local ContinueChargeID = DefaultData.Animations["ChargeContinue"]
-	if not ContinueChargeID then return end
+	if not ContinueChargeID then
+		return
+	end
 
 	local Character = PlayerCharging.Character or PlayerCharging.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
@@ -741,7 +743,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 
 	local CurrentPlayerData = ClientPlayerData:Get(PlayerViewing)
 	local Highlight = Character:WaitForChild("Highlight")
-	
+
 	-- VARIABLES
 	local LightningChargeUpAuraVFX
 	local LightningChargeVFX
@@ -750,8 +752,6 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 	local ChargeVFX1
 	local ChargeImpact
 	local NewHighlight
-
-
 
 	-- CLEANUP FUNCTIONS
 	local function FullCleanup()
@@ -772,7 +772,6 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 			Connections[PlayerCharging]["IsChargingChanged"]:Disconnect()
 			Connections[PlayerCharging]["IsChargingChanged"] = nil
 		end
-
 
 		-- CLEANUP ANIMATION
 		if Tracks[PlayerCharging]["ChargeStartAnimation"] then
@@ -795,12 +794,12 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 			Tracks[PlayerCharging]["ContinueChargeSFX"]:Destroy()
 			Tracks[PlayerCharging]["ContinueChargeSFX"] = nil
 		end
-		
+
 		if Connections[PlayerCharging]["Land"] then
 			Connections[PlayerCharging]["Land"]:Disconnect()
 			Connections[PlayerCharging]["Land"] = nil
 		end
-		
+
 		if Connections[PlayerCharging]["Jump"] then
 			Connections[PlayerCharging]["Jump"]:Disconnect()
 			Connections[PlayerCharging]["Jump"] = nil
@@ -825,7 +824,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 			Debris:AddItem(EquipVFX, 2)
 			EquipVFX = nil
 		end
-		
+
 		if ChargeVFX1 then
 			for _, Emitter in ChargeVFX1:GetDescendants() do
 				if Emitter:IsA("ParticleEmitter") then
@@ -835,27 +834,25 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 			Debris:AddItem(ChargeVFX1, 1)
 			ChargeVFX1 = nil
 		end
-		
+
 		if ChargeImpact then
 			Debris:AddItem(ChargeImpact, 2)
 			ChargeImpact = nil
 		end
-		
+
 		if NewHighlight then
 			NewHighlight.Enabled = false
 			NewHighlight:Destroy()
 			NewHighlight = nil
 		end
-		
+
 		while Highlight.FillTransparency < 1 do
 			Highlight.FillTransparency += 0.1
 			task.wait()
 		end
 	end
 
-
 	FullCleanup()
-
 
 	-- CREATE SOUNDS
 	local StartChargeSFX = Instance.new("Sound")
@@ -863,12 +860,11 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 	StartChargeSFX.Parent = RootPart
 	StartChargeSFX.Volume = 2
 	StartChargeSFX.PlaybackRegionsEnabled = true
-	StartChargeSFX.PlaybackRegion = NumberRange.new(0,1)
+	StartChargeSFX.PlaybackRegion = NumberRange.new(0, 1)
 	StartChargeSFX.PlaybackSpeed = 1.2
 	StartChargeSFX.Looped = false
 	Tracks[PlayerCharging]["StartChargeSFX"] = StartChargeSFX
-	
-	
+
 	local ContinueChargeSFX = Instance.new("Sound")
 	ContinueChargeSFX.SoundId = DefaultData.SoundFX.ContinueChargeSFX
 	ContinueChargeSFX.Volume = 2
@@ -878,8 +874,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 	ContinueChargeSFX.Looped = true
 	ContinueChargeSFX.Parent = RootPart
 	Tracks[PlayerCharging]["ContinueChargeSFX"] = ContinueChargeSFX
-	
-	
+
 	local LandChargeSFX = Instance.new("Sound")
 	LandChargeSFX.SoundId = DefaultData.SoundFX.LandChargeSFX
 	LandChargeSFX.Volume = 2
@@ -890,7 +885,6 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 	LandChargeSFX.Parent = RootPart
 	Tracks[PlayerCharging]["LandChargeSFX"] = LandChargeSFX
 
-
 	-- CREATE CHARGE ANIMATION
 	local StartAnimation = Instance.new("Animation")
 	StartAnimation.AnimationId = ChargeStartID
@@ -900,7 +894,6 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 	StartTrack.Looped = false
 	Tracks[PlayerCharging]["ChargeStartAnimation"] = StartTrack
 
-
 	local ContinueAnimation = Instance.new("Animation")
 	ContinueAnimation.AnimationId = ContinueChargeID
 	local ContinueTrack = Animator:LoadAnimation(ContinueAnimation)
@@ -908,7 +901,6 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 	ContinueTrack.Priority = Enum.AnimationPriority.Action3
 	ContinueTrack.Looped = true
 	Tracks[PlayerCharging]["ChargeContinueAnimation"] = ContinueTrack
-
 
 	-- PARTIAL CLEANUP
 	local function PartialCleanup()
@@ -929,7 +921,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 		if Tracks[PlayerCharging]["ContinueChargeSFX"] then
 			Tracks[PlayerCharging]["ContinueChargeSFX"]:Stop()
 		end
-		
+
 		if WindEffect then
 			for _, Emitter in WindEffect:GetDescendants() do
 				if Emitter:IsA("ParticleEmitter") then
@@ -939,7 +931,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 			Debris:AddItem(WindEffect, 2)
 			WindEffect = nil
 		end
-		
+
 		if EquipVFX then
 			for _, VFX in EquipVFX:GetDescendants() do
 				if VFX:IsA("ParticleEmitter") then
@@ -949,7 +941,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 			Debris:AddItem(EquipVFX, 2)
 			EquipVFX = nil
 		end
-		
+
 		if ChargeVFX1 then
 			for _, Emitter in ChargeVFX1:GetDescendants() do
 				if Emitter:IsA("ParticleEmitter") then
@@ -957,55 +949,53 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 				end
 			end
 		end
-		
+
 		if NewHighlight then
 			NewHighlight.Enabled = false
 			NewHighlight:Destroy()
 			NewHighlight = nil
 		end
-		
+
 		while Highlight.FillTransparency < 1 do
 			Highlight.FillTransparency += 0.1
 			task.wait()
 		end
 	end
 
-
 	-- FULL CLEANUP CONNECTIONS
-	Connections[PlayerCharging]["EquippedGunChanged_Charge"] = PlayerCharging:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerCharging:GetAttribute("IsEquippingGun") ~= GunEquipped then
-			FullCleanup()
-		end
-	end)
+	Connections[PlayerCharging]["EquippedGunChanged_Charge"] = PlayerCharging
+		:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerCharging:GetAttribute("IsEquippingGun") ~= GunEquipped then
+				FullCleanup()
+			end
+		end)
 
 	Connections[PlayerCharging]["CharacterRemoving_Charge"] = PlayerCharging.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
-
 
 	Connections[PlayerCharging]["Jump"] = StartTrack:GetMarkerReachedSignal("Jump"):Connect(function()
 		if Tracks[PlayerCharging]["StartChargeSFX"] then
 			Tracks[PlayerCharging]["StartChargeSFX"]:Play()
 		end
 	end)
-	
-	
-	ChargeImpact = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("ChargeImpact"):Clone()
+
+	ChargeImpact =
+		ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("ChargeImpact"):Clone()
 	Connections[PlayerCharging]["Land"] = StartTrack:GetMarkerReachedSignal("Land"):Connect(function()
 		if Tracks[PlayerCharging]["LandChargeSFX"] then
 			Tracks[PlayerCharging]["LandChargeSFX"]:Play()
 		end
 
-
-		ChargeImpact.Position = RootPart.Position + Vector3.new(0,-1,0)
+		ChargeImpact.Position = RootPart.Position + Vector3.new(0, -1, 0)
 		for _, Emitter in ChargeImpact:GetDescendants() do
 			if Emitter:IsA("ParticleEmitter") then
 				Emitter:Emit(40)
 			end
 		end
 		ChargeImpact.Parent = workspace:FindFirstChild("ActiveVFX")
-		
-		
+
 		-- ROCK DEBRIS
 		local RockDebrisSettings = {
 			Part = nil,
@@ -1022,7 +1012,6 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 		ScreenShakeModule.ApplyScreenShake(false, PlayerViewing, PlayerCharging, 0.3, 100, 25)
 	end)
 
-	
 	local function PlayChargeAssets()
 		-- PLAY ASSETS
 		if Tracks[PlayerCharging]["ChargeStartAnimation"] then
@@ -1035,7 +1024,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 		-- START TRACK ENDED CONNECTION
 		Connections[PlayerCharging]["StartTrackEnded"] = StartTrack.Ended:Connect(function()
 			Tracks[PlayerCharging]["ContinueChargeSFX"]:Play()
-			
+
 			-- WIND EFFECT
 			WindEffect = ReplicatedStorage.GunVFX.WindEffect.WindEffect:Clone()
 			WindEffect.Parent = RootPart
@@ -1047,31 +1036,36 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 				end
 			end
 			WindEffect.Position = Vector3.new(0, -2, 0)
-			
+
 			-- CHARGE VFX
-			ChargeVFX1 = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("ChargeVFX1"):Clone()
+			ChargeVFX1 = ReplicatedStorage:FindFirstChild("GunVFX")
+				:FindFirstChild("Scorchrift")
+				:FindFirstChild("ChargeVFX1")
+				:Clone()
 			ChargeVFX1.Parent = Character:FindFirstChild("Torso")
 			for _, Emitter in ChargeVFX1:GetDescendants() do
 				if Emitter:IsA("ParticleEmitter") then
 					Emitter.Enabled = true
 				end
 			end
-			
+
 			task.spawn(function()
 				while PlayerCharging:GetAttribute("VisuallyCharging") do
 					ScreenShakeModule.ApplyScreenShake(false, PlayerViewing, PlayerCharging, 0.04, 100, 1)
 					task.wait()
 				end
 			end)
-			
+
 			task.spawn(function()
 				while PlayerCharging:GetAttribute("VisuallyCharging") do
 					while Highlight.FillTransparency > 0.8 do
-						if not PlayerCharging:GetAttribute("VisuallyCharging") then break end
+						if not PlayerCharging:GetAttribute("VisuallyCharging") then
+							break
+						end
 						Highlight.FillTransparency -= 0.02
 						task.wait(0.02)
 					end
-					if PlayerCharging:GetAttribute("VisuallyCharging") then 
+					if PlayerCharging:GetAttribute("VisuallyCharging") then
 						task.wait(1)
 					end
 					while Highlight.FillTransparency < 1 do
@@ -1081,8 +1075,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 				end
 			end)
 		end)
-		
-		
+
 		-- ARM HIGHLIGHT
 		NewHighlight = Instance.new("Highlight")
 		NewHighlight.FillTransparency = 1
@@ -1090,7 +1083,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 		NewHighlight.Parent = Character:FindFirstChild("Right Arm")
 		NewHighlight.FillTransparency = 0.65
 		Debris:AddItem(NewHighlight, 2)
-		
+
 		task.spawn(function()
 			while NewHighlight and NewHighlight.FillTransparency < 1 do
 				NewHighlight.FillTransparency += 0.01
@@ -1104,42 +1097,33 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 		end)
 	end
 
-
-
 	-- ATTRIBUTE CHANGED CONNECTION
-	Connections[PlayerCharging]["IsChargingChanged"] = PlayerCharging:GetAttributeChangedSignal("VisuallyCharging"):Connect(function()
-		if not PlayerCharging:GetAttribute("VisuallyCharging") or PlayerCharging:GetAttribute("IsShooting") then
-			PartialCleanup()
-		else
-			PlayChargeAssets()
-		end
-	end)
-	
+	Connections[PlayerCharging]["IsChargingChanged"] = PlayerCharging:GetAttributeChangedSignal("VisuallyCharging")
+		:Connect(function()
+			if not PlayerCharging:GetAttribute("VisuallyCharging") or PlayerCharging:GetAttribute("IsShooting") then
+				PartialCleanup()
+			else
+				PlayChargeAssets()
+			end
+		end)
+
 	return true
 end
-
-
 
 -- DASH ASSETS
 function ScorchriftAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDashing)
 	return true -- no dash for this gun
 end
 
-
-
 -- RELOAD
 function ScorchriftAssets.Reload(PlayerViewing, DefaultData, GunEquipped, PlayerDashing)
 	return true -- unused function this gun dont have reload
 end
 
-
-
 -- UI
 function ScorchriftAssets.UI(LocalPlayer, GunEquipped)
 	return LightningAssets.UI(LocalPlayer, GunEquipped)
 end
-
-
 
 -- WALL HIT VFX
 local LightningSFX = {}
@@ -1147,12 +1131,18 @@ local TimeSinceHit = {}
 local SFXRunning = {}
 local MostRecentPosition = {}
 function ScorchriftAssets.WallHit(PlayerShot, ResultData)
-	if not ResultData.Normal then return end
+	if not ResultData.Normal then
+		return
+	end
 	-- DEFAULT DATA
 	local EquippedGun = PlayerShot:GetAttribute("IsEquippingGun")
-	if not EquippedGun then return end
+	if not EquippedGun then
+		return
+	end
 	local DefaultData = ClientGunDataModule:Get(PlayerShot)
-	if not DefaultData then return end
+	if not DefaultData then
+		return
+	end
 
 	TimeSinceHit[PlayerShot] = tick()
 	MostRecentPosition[PlayerShot] = ResultData.Position
@@ -1162,7 +1152,9 @@ function ScorchriftAssets.WallHit(PlayerShot, ResultData)
 			Volume = 1.5,
 			PlaybackSpeed = 1,
 			Looped = true,
-			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX"):FindFirstChild("Scorchrift"):FindFirstChild("WallHitSFX")
+			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX")
+				:FindFirstChild("Scorchrift")
+				:FindFirstChild("WallHitSFX"),
 		}
 
 		task.spawn(function()
@@ -1177,30 +1169,36 @@ function ScorchriftAssets.WallHit(PlayerShot, ResultData)
 			PlaySFXModule.DestroySFX(PlayerShot, ID, 0.35)
 		end)
 	end
-	
-	
-	local WallHitVFX = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("WallHit"):Clone()
-	if not WallHitVFX then return end
+
+	local WallHitVFX =
+		ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("WallHit"):Clone()
+	if not WallHitVFX then
+		return
+	end
 	WallHitVFX.CFrame = CFrame.new(ResultData.Position, ResultData.Position - ResultData.Normal * -2)
 	WallHitVFX.Parent = workspace:FindFirstChild("ActiveVFX")
 	for _, Emitter in WallHitVFX:GetChildren() do
-		if math.random() <= 0.25 then continue end
+		if math.random() <= 0.25 then
+			continue
+		end
 		Emitter:Emit(1)
 	end
 	Debris:AddItem(WallHitVFX, 0.7)
 end
-
-
 
 -- WALL MARK VFX
 local LightningWallEffect = {}
 local LastWallMarkPos = {}
 local LastWallMarkConn = {}
 function ScorchriftAssets.WallMark(PlayerShot, ResultData)
-	if not ResultData.Normal then return end
-	
+	if not ResultData.Normal then
+		return
+	end
+
 	local LightningVFX = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Lightning")
-	if not LightningVFX then return end 
+	if not LightningVFX then
+		return
+	end
 
 	if LastWallMarkPos[PlayerShot] and LastWallMarkPos[PlayerShot]["WallEffect"] then
 		if (LastWallMarkPos[PlayerShot]["WallEffect"].Position - ResultData.Position).Magnitude < 0.03 then
@@ -1210,13 +1208,15 @@ function ScorchriftAssets.WallMark(PlayerShot, ResultData)
 	end
 
 	-- WALL EFFECT AND POS OFFSET
-	local WallEffect = LightningVFX:FindFirstChild("LightningHitEffect"):FindFirstChild("WallEffect"):FindFirstChild("WallEffect"):Clone()
+	local WallEffect = LightningVFX:FindFirstChild("LightningHitEffect")
+		:FindFirstChild("WallEffect")
+		:FindFirstChild("WallEffect")
+		:Clone()
 	local Offset = 0.001
 	local OffsetPos = ResultData.Position + (ResultData.Normal * Offset)
 	WallEffect.CFrame = CFrame.new(OffsetPos, OffsetPos - ResultData.Normal)
 	WallEffect.Parent = workspace:FindFirstChild("ActiveVFX")
-	
-	
+
 	if not LastWallMarkPos[PlayerShot] then
 		LastWallMarkPos[PlayerShot] = {}
 	end
@@ -1234,7 +1234,6 @@ function ScorchriftAssets.WallMark(PlayerShot, ResultData)
 		LastWallMarkConn[PlayerShot] = nil
 	end)
 
-
 	for _, ClonedChild in ipairs(WallEffect:GetDescendants()) do
 		if ClonedChild:IsA("ParticleEmitter") then
 			ClonedChild.Transparency = NumberSequence.new(0)
@@ -1245,17 +1244,19 @@ function ScorchriftAssets.WallMark(PlayerShot, ResultData)
 	Debris:AddItem(WallEffect, 1)
 end
 
-
-
 -- ZOMBIE HIT VFX
 local ZombieHit = {}
 local TimeSinceBloodSFX = {}
 function ScorchriftAssets.ZombieHit(PlayerShot, ResultData)
 	-- DEFAULT DATA
 	local EquippedGun = PlayerShot:GetAttribute("IsEquippingGun")
-	if not EquippedGun then return end
+	if not EquippedGun then
+		return
+	end
 	local DefaultData = ClientGunDataModule:Get(PlayerShot)
-	if not DefaultData then return end
+	if not DefaultData then
+		return
+	end
 
 	TimeSinceHit[PlayerShot] = tick()
 	MostRecentPosition[PlayerShot] = ResultData.Position
@@ -1265,7 +1266,9 @@ function ScorchriftAssets.ZombieHit(PlayerShot, ResultData)
 			Volume = 1.5,
 			PlaybackSpeed = 1,
 			Looped = true,
-			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX"):FindFirstChild("Scorchrift"):FindFirstChild("ZombieHitSFX")
+			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX")
+				:FindFirstChild("Scorchrift")
+				:FindFirstChild("ZombieHitSFX"),
 		}
 
 		task.spawn(function()
@@ -1281,35 +1284,41 @@ function ScorchriftAssets.ZombieHit(PlayerShot, ResultData)
 		end)
 	end
 
-
-	local WallHitVFX = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("WallHit"):Clone()
-	if not WallHitVFX then return end
+	local WallHitVFX =
+		ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Scorchrift"):FindFirstChild("WallHit"):Clone()
+	if not WallHitVFX then
+		return
+	end
 	if ResultData.Normal then
 		WallHitVFX.CFrame = CFrame.new(ResultData.Position, ResultData.Position - ResultData.Normal)
 	else
 		WallHitVFX.CFrame = CFrame.new(ResultData.Position)
 	end
 	WallHitVFX.Parent = workspace:FindFirstChild("ActiveVFX")
-	
+
 	for _, Emitter in WallHitVFX:GetChildren() do
-		if math.random() <= 0.5 then continue end
+		if math.random() <= 0.5 then
+			continue
+		end
 		Emitter:Emit(1)
 	end
 	Debris:AddItem(WallHitVFX, 0.7)
-	
 
-	if not ResultData.Position or not ResultData.Instance then return end -- some reason was crashing code
-	if ZombieHit[ResultData.Instance] and (tick() - ZombieHit[ResultData.Instance] < 0.5) then return end
+	if not ResultData.Position or not ResultData.Instance then
+		return
+	end -- some reason was crashing code
+	if ZombieHit[ResultData.Instance] and (tick() - ZombieHit[ResultData.Instance] < 0.5) then
+		return
+	end
 	ZombieHit[ResultData.Instance] = tick()
-	
-	
-	
+
 	-- VFX
 	local BloodVFX = ReplicatedStorage:WaitForChild("GunVFX"):WaitForChild("BloodVFX"):Clone()
-	if not BloodVFX then return end
-	
-	--if TimeSinceBloodSFX[PlayerShot] and (tick() - TimeSinceBloodSFX[PlayerShot] < 0.2) then return end
+	if not BloodVFX then
+		return
+	end
 
+	--if TimeSinceBloodSFX[PlayerShot] and (tick() - TimeSinceBloodSFX[PlayerShot] < 0.2) then return end
 
 	for _, VFX in pairs(BloodVFX:GetDescendants()) do
 		if VFX:IsA("Attachment") then
@@ -1334,7 +1343,7 @@ function ScorchriftAssets.ZombieHit(PlayerShot, ResultData)
 
 	BloodVFX.Parent = workspace:FindFirstChild("ActiveVFX")
 	Debris:AddItem(BloodVFX, 1)
-	
+
 	-- SFX
 	local BloodSFX = Instance.new("Sound")
 	BloodSFX.SoundId = DefaultData.SoundFX.BloodSFX
@@ -1349,67 +1358,69 @@ function ScorchriftAssets.ZombieHit(PlayerShot, ResultData)
 	BloodSFX:Play()
 
 	Debris:AddItem(BloodSFX, 2)
-	
+
 	TimeSinceBloodSFX[PlayerShot] = tick()
 end
-
-
 
 -- STREAM BULLET
 function ScorchriftAssets.StreamBullet(PlayerFired, BulletData)
 	local StreamBulletModel
-	if not ClientGunDataModule.StreamBullet[PlayerFired] or ClientGunDataModule.StreamBullet[PlayerFired].CharacterFired ~= PlayerFired.Character then	
+	if
+		not ClientGunDataModule.StreamBullet[PlayerFired]
+		or ClientGunDataModule.StreamBullet[PlayerFired].CharacterFired ~= PlayerFired.Character
+	then
 		local GunVFX = ReplicatedStorage:FindFirstChild("GunVFX")
-		if not GunVFX then return end 
+		if not GunVFX then
+			return
+		end
 		local Muzzle = PlayerFired.Character:FindFirstChild("EquippedGun"):FindFirstChild("Muzzle")
-		if not Muzzle then return end
-		
+		if not Muzzle then
+			return
+		end
 
 		-- CLONE VFX
 		local BeamEffect = GunVFX:FindFirstChild("Scorchrift"):FindFirstChild("BeamEffect"):Clone()
 		BeamEffect.Parent = workspace:WaitForChild("BulletsFolder")
 
-
 		-- DESTROY PREVIOUS BULLET MODEL
-		local PreviousModel = ClientGunDataModule.StreamBullet[PlayerFired] and ClientGunDataModule.StreamBullet[PlayerFired].BulletClone
-		if PreviousModel then PreviousModel:Destroy() end
-
+		local PreviousModel = ClientGunDataModule.StreamBullet[PlayerFired]
+			and ClientGunDataModule.StreamBullet[PlayerFired].BulletClone
+		if PreviousModel then
+			PreviousModel:Destroy()
+		end
 
 		-- CREATE NEW BULLET MODEL
 		StreamBulletModel = BeamEffect
 		local StartBeam = BeamEffect:FindFirstChild("StartBeam")
 		local EndBeam = BeamEffect:FindFirstChild("EndBeam")
-		
+
 		local BeamEffect2 = BeamEffect:Clone()
 		BeamEffect2.Parent = BeamEffect
 		local StartBeam2 = BeamEffect2:FindFirstChild("StartBeam")
 		local EndBeam2 = BeamEffect2:FindFirstChild("EndBeam")
-		
-		
+
 		-- WELD START BEAM2 TO START BEAM 1
 		local Weld3 = Instance.new("Weld")
 		Weld3.Name = "StartBeamWeld2"
 		Weld3.Part0 = StartBeam
 		Weld3.Part1 = StartBeam2
-		Weld3.C0  = CFrame.new(-0.6,0,0)
+		Weld3.C0 = CFrame.new(-0.6, 0, 0)
 		Weld3.C1 = CFrame.new(0, 0, 0)
 		Weld3.Parent = StartBeam2
-		
-		
+
 		-- WELD END BEAM2 TO END BEAM 1
 		local Weld4 = Instance.new("Weld")
 		Weld4.Name = "EndBeamWeld2"
 		Weld4.Part0 = EndBeam
 		Weld4.Part1 = EndBeam2
-		Weld4.C0  = CFrame.new(-0.6,0,0)
+		Weld4.C0 = CFrame.new(-0.6, 0, 0)
 		Weld4.C1 = CFrame.new(0, 0, 0)
 		Weld4.Parent = EndBeam2
-		
-		
+
 		-- BEAM 2PROPERTIES
 		StartBeam2.Anchored = false
 		StartBeam2.CanCollide = false
-		StartBeam2.Massless = true	
+		StartBeam2.Massless = true
 		StartBeam2.Color = Color3.fromRGB(255, 0, 4)
 		StartBeam2.Transparency = 1
 		EndBeam2.Anchored = false
@@ -1418,22 +1429,21 @@ function ScorchriftAssets.StreamBullet(PlayerFired, BulletData)
 		EndBeam2.Color = Color3.fromRGB(255, 0, 4)
 		EndBeam2.Transparency = 1
 
-
 		-- BEAM PROPERTIES
 		StartBeam.Anchored = false
 		StartBeam.CanCollide = false
-		StartBeam.Massless = true	
+		StartBeam.Massless = true
 		StartBeam.Transparency = 1
 		EndBeam.Anchored = false
 		EndBeam.CanCollide = false
-		EndBeam.Massless = true	
+		EndBeam.Massless = true
 		EndBeam.Transparency = 1
 
 		local Weld = Instance.new("Weld")
 		Weld.Name = "StartBeamWeld"
 		Weld.Part0 = Muzzle
 		Weld.Part1 = StartBeam
-		Weld.C0  = CFrame.new(0.3,0,0)
+		Weld.C0 = CFrame.new(0.3, 0, 0)
 		Weld.C1 = CFrame.new(0, 0, 0)
 		Weld.Parent = BeamEffect
 
@@ -1441,7 +1451,7 @@ function ScorchriftAssets.StreamBullet(PlayerFired, BulletData)
 		Weld2.Name = "EndBeamWeld"
 		Weld2.Part0 = Muzzle
 		Weld2.Part1 = EndBeam
-		Weld2.C0  = CFrame.new(0.3,0,0)
+		Weld2.C0 = CFrame.new(0.3, 0, 0)
 		Weld2.C1 = CFrame.new(0, 0, 0)
 		Weld2.Parent = BeamEffect
 	else
@@ -1450,8 +1460,6 @@ function ScorchriftAssets.StreamBullet(PlayerFired, BulletData)
 
 	return StreamBulletModel
 end
-
-
 
 -- RETURN
 return ScorchriftAssets

@@ -5,13 +5,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local Teams = game:GetService("Teams")
 
-
 -- FOLDERS
 local MapFolder = ServerStorage:FindFirstChild("Maps")
 local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 local Misc = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Misc")
-
 
 -- MODULES
 local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
@@ -20,10 +18,11 @@ local MapSpawn = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("MapSpa
 local GunFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("GunFW"))
 local Utilities = require(Misc:WaitForChild("Utilities"))
 
-
 task.spawn(function()
 	local GiveGunParts = workspace:WaitForChild("GiveGunParts")
-	if not GiveGunParts then return end
+	if not GiveGunParts then
+		return
+	end
 	local AvailableCFrames = {}
 	for _, Part in GiveGunParts:GetChildren() do
 		if Part:IsA("BasePart") and Part.Name ~= "LightningFist" then
@@ -88,52 +87,63 @@ task.spawn(function()
 	end
 end)
 
-
 task.wait(3)
 --- TEST TEST TESTTTTTTTTTTTTTTT ---
 -- HELPER
 local Connections = {}
 local function GivePistolToPlayer(Character)
 	local Player = Players:GetPlayerFromCharacter(Character)
-	if not Player then return end
+	if not Player then
+		return
+	end
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-	if not Humanoid then return end
+	if not Humanoid then
+		return
+	end
 
 	-- GIVE GUN DONT ALLOW IF ALREADY HAS GUN AND ADD A DELAY
 	task.delay(1, function()
-		if not Player or not Character then return end
+		if not Player or not Character then
+			return
+		end
 		local CurrentPlayerData = PlayerData:Get(Player)
-		if not CurrentPlayerData then return end
+		if not CurrentPlayerData then
+			return
+		end
 		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
-		
+
 		GunFW.GiveWeapon(Player, "Scorchrift", true)
 		--task.wait(2)
 		--GunFW.GiveWeapon(Player, "Pistol", true)
 	end)
-	
+
 	task.delay(5, function()
-		if not Player or not Player.Parent or not Character then return end
+		if not Player or not Player.Parent or not Character then
+			return
+		end
 		Player.Team = Teams:FindFirstChild("InRound")
 	end)
-	
+
 	if Connections[Player] then
 		Connections[Player]:Disconnect()
 		Connections[Player] = nil
 	end
-	
+
 	Connections[Player] = Humanoid.Died:Connect(function()
 		local CurrentPlayerData = PlayerData:Get(Player)
-		if not CurrentPlayerData then return end
-		
+		if not CurrentPlayerData then
+			return
+		end
+
 		-- RESET TEAM
 		Player.Team = Teams:FindFirstChild("Lobby")
-		
+
 		-- LOWER POINTS IF DEAD
 		CurrentPlayerData.Points.CurrentPoints = CurrentPlayerData.Points.CurrentPoints * 0.75
-		
+
 		-- UPDATE ATTRIBUTE
 		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
-		
+
 		if Connections[Player] then
 			Connections[Player]:Disconnect()
 		end
@@ -141,8 +151,6 @@ local function GivePistolToPlayer(Character)
 end
 -- GIVE PISTOL TO PLAYERS ON EACH RESPAWN
 Utilities.BindToCharacter(GivePistolToPlayer)
-
-
 
 -- CURRENT MAP
 local CurrentMap = MapSpawn.SpawnMap()

@@ -9,7 +9,6 @@ local Humanoid = Character:WaitForChild("Humanoid")
 
 -- MODULES
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
-local ClientGunData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientGunData"))
 local ClientPlayerData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientPlayerData"))
 
 -- UI
@@ -62,7 +61,7 @@ CurrentPointsConn = LocalPlayer:GetAttributeChangedSignal("CurrentPoints"):Conne
 	local TweenUp = TweenService:Create(
 		PointChangeClone,
 		TweenInfoUp,
-		{ Position = PointChangeText.Position - UDim2.new(math.random(-25, 25) / 100, 0, 0.6, 0) }
+		{ Position = PointChangeText.Position - UDim2.fromScale(math.random(-25, 25) / 100, 0.6) }
 	)
 	TweenUp:Play()
 	Debris:AddItem(TweenUp, 2)

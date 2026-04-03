@@ -6,13 +6,11 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
-
 -- FOLDERS
-local Frameworks= ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
+local Frameworks = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 local Client = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 local Events = ReplicatedStorage:WaitForChild("Events")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
-
 
 -- MODULE
 local ClientGunDataModule = require(Client:WaitForChild("ClientGunData"))
@@ -22,30 +20,30 @@ local RockModule = require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild
 local ScreenShakeModule = require(Frameworks:WaitForChild("Screenshake"):WaitForChild("ScreenShake"))
 local PlaySFXModule = require(Frameworks:WaitForChild("Sound"):WaitForChild("PlaySFX"))
 
-
-
 -- EVENTS
 local TimeChange = Events:WaitForChild("MapEvents"):WaitForChild("TimeChange")
-
-
 
 -- EQUIP ASSETS
 function LightningAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEquipped)
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	local RootPart = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
-	if not RootPart then return end
+	if not RootPart then
+		return
+	end
 
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
-
+	if not Tracks then
+		return
+	end
 
 	local Character = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
-	
+
 	-- CLEANUP
 	local function FullCleanup()
 		-- DISCONNECT CONNECTIONS
@@ -78,10 +76,9 @@ function LightningAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEqu
 			Tracks[PlayerEquipped]["EquipAnimation"] = nil
 		end
 	end
-	
+
 	-- INCASE
 	FullCleanup()
-
 
 	-- CREATE SOUNDS
 	local EquipSFX = Instance.new("Sound")
@@ -90,8 +87,6 @@ function LightningAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEqu
 	EquipSFX.Volume = 0.25
 	EquipSFX.Parent = RootPart
 	Tracks[PlayerEquipped]["EquipSFX"] = EquipSFX
-
-
 
 	-- CREATE ANIMATION
 	local EquipAnimation = Instance.new("Animation")
@@ -102,13 +97,14 @@ function LightningAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEqu
 	EquipTrack.Priority = Enum.AnimationPriority.Action4
 	Tracks[PlayerEquipped]["EquipAnimation"] = EquipTrack
 
-
 	-- PLAY TRACK
 	local EquipVFX
 	if DefaultData.VFX.EquipVFX then
 		EquipVFX = ReplicatedStorage.GunVFX:FindFirstChild("Lightning"):FindFirstChild(DefaultData.VFX.EquipVFX):Clone()
 	end
-	if not EquipVFX then return end
+	if not EquipVFX then
+		return
+	end
 	EquipVFX.Parent = RootPart
 	EquipTrack:Play()
 
@@ -129,40 +125,41 @@ function LightningAssets.Equip(PlayerViewing, DefaultData, WeaponName, PlayerEqu
 		end
 	end)
 	Debris:AddItem(EquipVFX, 2)
-	
-
 
 	Connections[PlayerEquipped]["CharacterRemoving_Equip"] = PlayerEquipped.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
-	Connections[PlayerEquipped]["EquippedGunChanged_Equip"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
-			FullCleanup()
-		end
-	end)
-	
+	Connections[PlayerEquipped]["EquippedGunChanged_Equip"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
+				FullCleanup()
+			end
+		end)
+
 	return true
 end
-
-
 
 -- IDLE ASSETS
 function LightningAssets.Idle(PlayerViewing, DefaultData, WeaponName, PlayerEquipped)
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	local RootPart = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
-	if not RootPart then return end
+	if not RootPart then
+		return
+	end
 
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
-
+	if not Tracks then
+		return
+	end
 
 	local Character = PlayerEquipped.Character or PlayerEquipped.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
 
 	-- CLEANUP
 	local function FullCleanup()
@@ -183,11 +180,9 @@ function LightningAssets.Idle(PlayerViewing, DefaultData, WeaponName, PlayerEqui
 			Tracks[PlayerEquipped]["IdleAnimation"] = nil
 		end
 	end
-	
-	
+
 	-- INCASE
 	FullCleanup()
-	
 
 	local IdleAnimation = Instance.new("Animation")
 	IdleAnimation.AnimationId = DefaultData.Animations.IdleAnimation
@@ -198,22 +193,19 @@ function LightningAssets.Idle(PlayerViewing, DefaultData, WeaponName, PlayerEqui
 	Tracks[PlayerEquipped]["IdleAnimation"] = IdleTrack
 	Tracks[PlayerEquipped]["IdleAnimation"]:Play()
 
-
 	Connections[PlayerEquipped]["CharacterRemoving_Idle"] = PlayerEquipped.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
-	Connections[PlayerEquipped]["EquippedGunChanged_Idle"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
-			FullCleanup()
-		end
-	end)
-	
+	Connections[PlayerEquipped]["EquippedGunChanged_Idle"] = PlayerEquipped:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerEquipped:GetAttribute("IsEquippingGun") ~= WeaponName then
+				FullCleanup()
+			end
+		end)
+
 	return true
 end
-
-
-
 
 -- BUNCH OF RUN ASSETS
 -- RUN VFX
@@ -222,7 +214,6 @@ local function RunVFX(DefaultData, RootPart)
 	local RunVFX = DefaultData.VFX.RunVFX
 	local LightningAuraVFX = GunVFXFolder:WaitForChild("Lightning"):FindFirstChild(RunVFX):Clone()
 	LightningAuraVFX.Parent = RootPart
-
 
 	for _, Particle in ipairs(LightningAuraVFX:GetDescendants()) do
 		if Particle:IsA("ParticleEmitter") then
@@ -233,8 +224,6 @@ local function RunVFX(DefaultData, RootPart)
 	end
 	Debris:AddItem(LightningAuraVFX, 2)
 end
-
-
 
 -- RUN LAND VFX
 local function RunLandVFX(PlayerViewing, PlayerShaking, Character, RootPart, DefaultData, LeftOrRight)
@@ -248,22 +237,26 @@ local function RunLandVFX(PlayerViewing, PlayerShaking, Character, RootPart, Def
 
 	-- VFX CLONE
 	local RunLandVFX = DefaultData.VFX.RunLandVFX
-	local LightningRunVFX = ReplicatedStorage.GunVFX:WaitForChild("Lightning"):FindFirstChild(RunLandVFX):FindFirstChild(RunLandVFX):Clone()
+	local LightningRunVFX =
+		ReplicatedStorage.GunVFX:WaitForChild("Lightning"):FindFirstChild(RunLandVFX):FindFirstChild(RunLandVFX):Clone()
 
 	-- RAY PARAMS
 	local RayParams = RaycastParams.new()
-	RayParams.FilterDescendantsInstances = {Character}
+	RayParams.FilterDescendantsInstances = { Character }
 	RayParams.FilterType = Enum.RaycastFilterType.Exclude
 	RayParams.IgnoreWater = true
 
 	-- RAY RESULT
 	local RayResult = workspace:Raycast(Leg.Position, Vector3.new(0, -5, 0), RayParams)
-	if not RayResult then return end
+	if not RayResult then
+		return
+	end
 
 	-- UPDATE CFRAME
-	local NewCFrame = if RayResult then CFrame.new(RayResult.Position + Vector3.new(0,0.15,0)) else CFrame.new(Leg.Position + Vector3.new(0, -1, 0))
+	local NewCFrame = if RayResult
+		then CFrame.new(RayResult.Position + Vector3.new(0, 0.15, 0))
+		else CFrame.new(Leg.Position + Vector3.new(0, -1, 0))
 	LightningRunVFX.CFrame = NewCFrame
-
 
 	-- LOOP THROUGH PARTICLES
 	for _, Particle in ipairs(LightningRunVFX:GetDescendants()) do
@@ -292,18 +285,19 @@ local function RunLandVFX(PlayerViewing, PlayerShaking, Character, RootPart, Def
 	ScreenShakeModule.ApplyScreenShake(true, PlayerViewing, PlayerShaking, 0.1, 100)
 end
 
-
-
 -- MOVEMENT ASSETS
 function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, PlayerRequired)
 	-- TRACKS
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
-
+	if not Tracks then
+		return
+	end
 
 	-- CONNECTIONS
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	-- CHARACTER
 	local Character = PlayerRequired.Character or PlayerRequired.CharacterAdded:Wait()
@@ -312,7 +306,6 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 
 	-- ANIMATOR
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
 
 	-- CLEANUP
 	local function FullCleanup()
@@ -351,7 +344,6 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 			Connections[PlayerRequired]["MoveHeartbeat"] = nil
 		end
 
-
 		-- CLEANUP TRACKS
 		if Tracks[PlayerRequired]["WalkAnimation"] then
 			Tracks[PlayerRequired]["WalkAnimation"]:Stop()
@@ -363,7 +355,7 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 			Tracks[PlayerRequired]["RunAnimation"]:Destroy()
 			Tracks[PlayerRequired]["RunAnimation"] = nil
 		end
-		if Tracks[PlayerRequired]["RunSFX"]  then
+		if Tracks[PlayerRequired]["RunSFX"] then
 			Tracks[PlayerRequired]["RunSFX"]:Stop()
 			Tracks[PlayerRequired]["RunSFX"]:Destroy()
 			Tracks[PlayerRequired]["RunSFX"] = nil
@@ -384,17 +376,19 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 			Tracks[PlayerRequired]["DustVFX"] = nil
 		end
 	end
-	
+
 	-- INCASE
 	FullCleanup()
 
-
 	-- ANIMATIONS
 	local WalkAnimId = DefaultData.Animations.WalkAnimation
-	if not WalkAnimId then return end
+	if not WalkAnimId then
+		return
+	end
 	local RunAnimID = DefaultData.Animations.RunAnimation
-	if not RunAnimID then return end
-
+	if not RunAnimID then
+		return
+	end
 
 	-- CREATE SOUNDS
 	local RunSFX = Instance.new("Sound")
@@ -404,15 +398,12 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 	RunSFX.Looped = false
 	Tracks[PlayerRequired]["RunSFX"] = RunSFX
 
-
 	local RunSFX2 = Instance.new("Sound")
 	RunSFX2.SoundId = DefaultData.SoundFX.RunSFX2
 	RunSFX2.Parent = RootPart
 	RunSFX2.Name = "RunSFX2"
 	RunSFX2.Looped = false
 	Tracks[PlayerRequired]["RunSFX2"] = RunSFX2
-
-
 
 	-- CREATE ANIMATION
 	local WalkAnimation = Instance.new("Animation")
@@ -423,8 +414,6 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 	WalkTrack.Looped = true
 	Tracks[PlayerRequired]["WalkAnimation"] = WalkTrack
 
-
-
 	-- WALK SOUND
 	local WalkSFX = Instance.new("Sound")
 	WalkSFX.SoundId = DefaultData.SoundFX.WalkSFX
@@ -434,15 +423,10 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 	WalkSFX.Looped = false
 	Tracks[PlayerRequired]["WalkSFX"] = WalkSFX
 
-
-
 	-- WALK/RUN VFX
 	local DustVFX = ReplicatedStorage:WaitForChild("GunVFX"):WaitForChild("Dust"):WaitForChild("Dust"):Clone()
 	DustVFX.Parent = Character:WaitForChild("HumanoidRootPart")
 	Tracks[PlayerRequired]["DustVFX"] = DustVFX
-
-
-
 
 	local RunAnimation = Instance.new("Animation")
 	RunAnimation.AnimationId = RunAnimID
@@ -452,68 +436,72 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 	RunTrack.Looped = true
 	Tracks[PlayerRequired]["RunAnimation"] = RunTrack
 
-
 	-- SETUP MARKER SIGNALS
-	Connections[PlayerRequired]["WalkLeft"] = WalkTrack:GetMarkerReachedSignal(DefaultData.Animations.WalkReachedSignalLeft):Connect(function()
-		RockModule.PlayDustVFX(Character, Tracks[PlayerRequired]["DustVFX"], "Left", 1)
-		if Tracks[PlayerRequired]["WalkSFX"] then
-			local ClonedSFX = WalkSFX:Clone()
-			ClonedSFX.Parent = RootPart
-			ClonedSFX.Volume = 0.25
-			ClonedSFX:Play()
-		end
-	end)
-	Connections[PlayerRequired]["WalkRight"] = WalkTrack:GetMarkerReachedSignal(DefaultData.Animations.WalkReachedSignalRight):Connect(function()
-		RockModule.PlayDustVFX(Character, Tracks[PlayerRequired]["DustVFX"], "Right", 1)
-		if Tracks[PlayerRequired]["WalkSFX"] then
-			local ClonedSFX = WalkSFX:Clone()
-			ClonedSFX.Parent = RootPart
-			ClonedSFX.Volume = 0.25
-			ClonedSFX:Play()
-		end
-	end)
+	Connections[PlayerRequired]["WalkLeft"] = WalkTrack
+		:GetMarkerReachedSignal(DefaultData.Animations.WalkReachedSignalLeft)
+		:Connect(function()
+			RockModule.PlayDustVFX(Character, Tracks[PlayerRequired]["DustVFX"], "Left", 1)
+			if Tracks[PlayerRequired]["WalkSFX"] then
+				local ClonedSFX = WalkSFX:Clone()
+				ClonedSFX.Parent = RootPart
+				ClonedSFX.Volume = 0.25
+				ClonedSFX:Play()
+			end
+		end)
+	Connections[PlayerRequired]["WalkRight"] = WalkTrack
+		:GetMarkerReachedSignal(DefaultData.Animations.WalkReachedSignalRight)
+		:Connect(function()
+			RockModule.PlayDustVFX(Character, Tracks[PlayerRequired]["DustVFX"], "Right", 1)
+			if Tracks[PlayerRequired]["WalkSFX"] then
+				local ClonedSFX = WalkSFX:Clone()
+				ClonedSFX.Parent = RootPart
+				ClonedSFX.Volume = 0.25
+				ClonedSFX:Play()
+			end
+		end)
 
-
-	Connections[PlayerRequired]["RunLeft"] = RunTrack:GetMarkerReachedSignal(DefaultData.Animations.RunReachedSignalLeft):Connect(function()
-		RunLandVFX(PlayerViewing, PlayerRequired, Character, RootPart, DefaultData, "Left")
-		if RunSFX then
-			local ClonedSFX = RunSFX:Clone()
-			ClonedSFX.Parent = RootPart
-			ClonedSFX:Play()
-			ClonedSFX.Volume = 0.2
-			ClonedSFX.PlaybackSpeed = 1
-			Debris:AddItem(ClonedSFX, 1)
-		end
-		if RunSFX2 then
-			local ClonedSFX = RunSFX:Clone()
-			ClonedSFX.Parent = RootPart
-			ClonedSFX:Play()
-			ClonedSFX.Volume = 0.1
-			ClonedSFX.PlaybackSpeed = 1
-			Debris:AddItem(ClonedSFX, 1)
-		end
-	end)
-	Connections[PlayerRequired]["RunRight"] = RunTrack:GetMarkerReachedSignal(DefaultData.Animations.RunReachedSignalRight):Connect(function()
-		RunLandVFX(PlayerViewing, PlayerRequired, Character, RootPart, DefaultData, "Right")
-		if RunSFX then
-			local ClonedSFX = RunSFX:Clone()
-			ClonedSFX.Parent = RootPart
-			ClonedSFX:Play()
-			ClonedSFX.Volume = 0.2
-			ClonedSFX.PlaybackSpeed = 1
-			Debris:AddItem(ClonedSFX, 1)
-		end
-		if RunSFX2 then
-			local ClonedSFX = RunSFX:Clone()
-			ClonedSFX.Parent = RootPart
-			ClonedSFX:Play()
-			ClonedSFX.Volume = 0.1
-			ClonedSFX.PlaybackSpeed = 1
-			Debris:AddItem(ClonedSFX, 1)
-		end
-	end)
-
-
+	Connections[PlayerRequired]["RunLeft"] = RunTrack
+		:GetMarkerReachedSignal(DefaultData.Animations.RunReachedSignalLeft)
+		:Connect(function()
+			RunLandVFX(PlayerViewing, PlayerRequired, Character, RootPart, DefaultData, "Left")
+			if RunSFX then
+				local ClonedSFX = RunSFX:Clone()
+				ClonedSFX.Parent = RootPart
+				ClonedSFX:Play()
+				ClonedSFX.Volume = 0.2
+				ClonedSFX.PlaybackSpeed = 1
+				Debris:AddItem(ClonedSFX, 1)
+			end
+			if RunSFX2 then
+				local ClonedSFX = RunSFX:Clone()
+				ClonedSFX.Parent = RootPart
+				ClonedSFX:Play()
+				ClonedSFX.Volume = 0.1
+				ClonedSFX.PlaybackSpeed = 1
+				Debris:AddItem(ClonedSFX, 1)
+			end
+		end)
+	Connections[PlayerRequired]["RunRight"] = RunTrack
+		:GetMarkerReachedSignal(DefaultData.Animations.RunReachedSignalRight)
+		:Connect(function()
+			RunLandVFX(PlayerViewing, PlayerRequired, Character, RootPart, DefaultData, "Right")
+			if RunSFX then
+				local ClonedSFX = RunSFX:Clone()
+				ClonedSFX.Parent = RootPart
+				ClonedSFX:Play()
+				ClonedSFX.Volume = 0.2
+				ClonedSFX.PlaybackSpeed = 1
+				Debris:AddItem(ClonedSFX, 1)
+			end
+			if RunSFX2 then
+				local ClonedSFX = RunSFX:Clone()
+				ClonedSFX.Parent = RootPart
+				ClonedSFX:Play()
+				ClonedSFX.Volume = 0.1
+				ClonedSFX.PlaybackSpeed = 1
+				Debris:AddItem(ClonedSFX, 1)
+			end
+		end)
 
 	-- CONNECT TO WHEN RUNNING
 	Connections[PlayerRequired]["MoveHeartbeat"] = RunService.Heartbeat:Connect(function(deltaTime)
@@ -526,12 +514,12 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 
 		local Speed = Humanoid.WalkSpeed * Humanoid.MoveDirection.Magnitude
 
-		-- GET ATTRIBUTES	
+		-- GET ATTRIBUTES
 		local IsRunning = PlayerRequired:GetAttribute("IsSprinting")
 		local IsShooting = PlayerRequired:GetAttribute("IsShooting")
 
-		WalkTrack:AdjustSpeed(Humanoid.WalkSpeed/20)
-		RunTrack:AdjustSpeed(Humanoid.WalkSpeed/40)
+		WalkTrack:AdjustSpeed(Humanoid.WalkSpeed / 20)
+		RunTrack:AdjustSpeed(Humanoid.WalkSpeed / 40)
 
 		if Speed > 2 then
 			-- CANCEL EXISTING DEBOUNCE TASK
@@ -559,7 +547,9 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 			-- STOP ANIMATIONS
 			if not Connections[PlayerRequired]["StopDebounceTask"] then
 				Connections[PlayerRequired]["StopDebounceTask"] = task.delay(0.1, function()
-					if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then return end
+					if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
+						return
+					end
 					if RunTrack.IsPlaying then
 						RunTrack:Stop(0.1)
 					end
@@ -572,41 +562,43 @@ function LightningAssets.Movement(PlayerViewing, DefaultData, EquippedGun, Playe
 		end
 	end)
 
-
 	Connections[PlayerRequired]["CharacterRemoving_Walk"] = PlayerRequired.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
+	Connections[PlayerRequired]["EquippedGunChanged_Walk"] = PlayerRequired:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
+				FullCleanup()
+			end
+		end)
 
-	Connections[PlayerRequired]["EquippedGunChanged_Walk"] = PlayerRequired:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-			FullCleanup()
-		end
-	end)
-	
 	return true
 end
-
-
 
 -- SHOOT ASSETS
 function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFired)
 	local Tracks = ClientGunDataModule.Tracks
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	-- GET ANIMATION
 	local StartAnimId = DefaultData.Animations["StartShooting"]
-	if not StartAnimId then return end
+	if not StartAnimId then
+		return
+	end
 	local ContinueAnimID = DefaultData.Animations["ContinueShooting"]
-	if not ContinueAnimID then return end
+	if not ContinueAnimID then
+		return
+	end
 
 	local Character = PlayerFired.Character or PlayerFired.CharacterAdded:Wait()
 	local RootPart = Character:WaitForChild("HumanoidRootPart")
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
-	
-	
+
 	-- CLEANUP FUNCTION
 	local function FullCleanup()
 		-- CANCEL TASKS
@@ -630,11 +622,11 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 		end
 
 		-- STOP ANIMATIONS
-		if Tracks[PlayerFired]["StartShootingAnimation"] then 
-			Tracks[PlayerFired]["StartShootingAnimation"]:Stop() 
+		if Tracks[PlayerFired]["StartShootingAnimation"] then
+			Tracks[PlayerFired]["StartShootingAnimation"]:Stop()
 		end
-		if Tracks[PlayerFired]["ContinueShootingAnimation"] then 
-			Tracks[PlayerFired]["ContinueShootingAnimation"]:Stop() 
+		if Tracks[PlayerFired]["ContinueShootingAnimation"] then
+			Tracks[PlayerFired]["ContinueShootingAnimation"]:Stop()
 		end
 
 		if Tracks[PlayerFired]["StartShootingAnimation"] then
@@ -648,7 +640,7 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 			Tracks[PlayerFired]["ContinueShootingAnimation"]:Destroy()
 			Tracks[PlayerFired]["ContinueShootingAnimation"] = nil
 		end
-		
+
 		if Tracks[PlayerFired]["ContinueShootingSFX"] then
 			Tracks[PlayerFired]["ContinueShootingSFX"]:Stop()
 			Tracks[PlayerFired]["ContinueShootingSFX"]:Destroy()
@@ -657,10 +649,9 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 		Tracks[PlayerFired]["StartShootingAnimation"] = nil
 		Tracks[PlayerFired]["ContinueShootingAnimation"] = nil
 	end
-	
+
 	-- INCASSE
 	FullCleanup()
-
 
 	-- BEAM SHOOTING SFX
 	local BeamSFX = Instance.new("Sound")
@@ -672,8 +663,6 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 	BeamSFX.PlaybackRegion = NumberRange.new(0.4, 2)
 	Tracks[PlayerFired]["ContinueShootingSFX"] = BeamSFX
 
-
-
 	-- CREATE ANIMATION
 	local StartAnimation = Instance.new("Animation")
 	StartAnimation.AnimationId = StartAnimId
@@ -683,22 +672,17 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 	StartTrack.Looped = false
 	Tracks[PlayerFired]["StartShootingAnimation"] = StartTrack
 
-
-
 	local ContinueAnimation = Instance.new("Animation")
 	ContinueAnimation.AnimationId = ContinueAnimID
-	-- CREATE CONTINUE TRACK 
+	-- CREATE CONTINUE TRACK
 	local ContinueTrack = Animator:LoadAnimation(ContinueAnimation)
 	ContinueTrack.Name = "ContinueShooting"
 	ContinueTrack.Priority = Enum.AnimationPriority.Action2
 	ContinueTrack.Looped = true
 	Tracks[PlayerFired]["ContinueShootingAnimation"] = ContinueTrack
 
-
-
-
 	local function PartialCleanup()
-		if 	Tracks[PlayerFired]["StartShootingAnimation"] then
+		if Tracks[PlayerFired]["StartShootingAnimation"] then
 			Tracks[PlayerFired]["StartShootingAnimation"]:Stop()
 		end
 
@@ -709,11 +693,12 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 		Connections[PlayerFired]["ShootVolumeTask"] = task.spawn(function()
 			if Tracks[PlayerFired]["ContinueShootingSFX"] then
 				while Tracks[PlayerFired]["ContinueShootingSFX"].Volume > 0 do
-					if not Tracks[PlayerFired]["ContinueShootingSFX"] then 
+					if not Tracks[PlayerFired]["ContinueShootingSFX"] then
 						Connections[PlayerFired]["ShootVolumeTask"] = nil
 						return
 					end
-					Tracks[PlayerFired]["ContinueShootingSFX"].Volume = math.max(Tracks[PlayerFired]["ContinueShootingSFX"].Volume - 0.05, 0)
+					Tracks[PlayerFired]["ContinueShootingSFX"].Volume =
+						math.max(Tracks[PlayerFired]["ContinueShootingSFX"].Volume - 0.05, 0)
 					task.wait(0.01)
 				end
 				Tracks[PlayerFired]["ContinueShootingSFX"].Volume = 0.5
@@ -723,63 +708,76 @@ function LightningAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFi
 		end)
 	end
 
-
 	Connections[PlayerFired]["CharacterRemoving_Shoot"] = PlayerFired.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
 	-- CLEANUP
-	Connections[PlayerFired]["EquippedGunChanged_Shoot"] = PlayerFired:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerFired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-			FullCleanup()
-		end
-	end)
-
-
+	Connections[PlayerFired]["EquippedGunChanged_Shoot"] = PlayerFired:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerFired:GetAttribute("IsEquippingGun") ~= EquippedGun then
+				FullCleanup()
+			end
+		end)
 
 	-- CONTINUE IF SHOOTING OR NOT
-	Connections[PlayerFired]["IsShootingChanged"] = PlayerFired:GetAttributeChangedSignal("IsShooting"):Connect(function()
-		if not PlayerFired:GetAttribute("IsShooting") then
-			PartialCleanup()
-		else
-			if Connections[PlayerFired]["ShootVolumeTask"] then
-				task.cancel(Connections[PlayerFired]["ShootVolumeTask"])
-				Connections[PlayerFired]["ShootVolumeTask"] = nil
+	Connections[PlayerFired]["IsShootingChanged"] = PlayerFired:GetAttributeChangedSignal("IsShooting")
+		:Connect(function()
+			if not PlayerFired:GetAttribute("IsShooting") then
+				PartialCleanup()
+			else
+				if Connections[PlayerFired]["ShootVolumeTask"] then
+					task.cancel(Connections[PlayerFired]["ShootVolumeTask"])
+					Connections[PlayerFired]["ShootVolumeTask"] = nil
+				end
+				if Tracks[PlayerFired]["ContinueShootingSFX"] then
+					Tracks[PlayerFired]["ContinueShootingSFX"].Volume = 0.5
+				end
+				if
+					Tracks[PlayerFired]["StartShootingAnimation"]
+					and not Tracks[PlayerFired]["StartShootingAnimation"].IsPlaying
+				then
+					Tracks[PlayerFired]["StartShootingAnimation"]:Play(0.2)
+				end
+				if
+					Tracks[PlayerFired]["ContinueShootingAnimation"]
+					and not Tracks[PlayerFired]["ContinueShootingAnimation"].IsPlaying
+				then
+					Tracks[PlayerFired]["ContinueShootingAnimation"]:Play(0.2)
+				end
+				if
+					Tracks[PlayerFired]["ContinueShootingSFX"]
+					and not Tracks[PlayerFired]["ContinueShootingSFX"].IsPlaying
+				then
+					Tracks[PlayerFired]["ContinueShootingSFX"]:Play()
+				end
 			end
-			if Tracks[PlayerFired]["ContinueShootingSFX"] then
-				Tracks[PlayerFired]["ContinueShootingSFX"].Volume = 0.5
-			end
-			if Tracks[PlayerFired]["StartShootingAnimation"] and not Tracks[PlayerFired]["StartShootingAnimation"].IsPlaying then
-				Tracks[PlayerFired]["StartShootingAnimation"]:Play(0.2)
-			end
-			if Tracks[PlayerFired]["ContinueShootingAnimation"] and not Tracks[PlayerFired]["ContinueShootingAnimation"].IsPlaying then
-				Tracks[PlayerFired]["ContinueShootingAnimation"]:Play(0.2)
-			end
-			if Tracks[PlayerFired]["ContinueShootingSFX"] and not Tracks[PlayerFired]["ContinueShootingSFX"].IsPlaying then
-				Tracks[PlayerFired]["ContinueShootingSFX"]:Play()
-			end
-		end
-	end)
-	
+		end)
+
 	return true
 end
-
-
 
 -- CHARGE ASSETS
 function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerCharging)
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
+	if not Tracks then
+		return
+	end
 
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
-
+	if not Connections then
+		return
+	end
 
 	-- GET CHARGE ANIMATION IDS
 	local ChargeStartID = DefaultData.Animations["ChargeStart"]
-	if not ChargeStartID then return end
+	if not ChargeStartID then
+		return
+	end
 	local ContinueChargeID = DefaultData.Animations["ChargeContinue"]
-	if not ContinueChargeID then return end
+	if not ContinueChargeID then
+		return
+	end
 
 	local Character = PlayerCharging.Character or PlayerCharging.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
@@ -788,12 +786,10 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 
 	local CurrentPlayerData = ClientPlayerData:Get(PlayerViewing)
 
-
 	-- VARIABLES
 	local LightningChargeUpAuraVFX
 	local LightningChargeVFX
 	local WindEffect
-
 
 	-- CREATE SOUNDS
 	local StartChargeSFX = Instance.new("Sound")
@@ -802,17 +798,16 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 	StartChargeSFX.Volume = 2
 	StartChargeSFX.Looped = true
 	Tracks[PlayerCharging]["StartChargeSFX"] = StartChargeSFX
-	
+
 	local ContinueChargeSFX = Instance.new("Sound")
 	ContinueChargeSFX.SoundId = DefaultData.SoundFX.ContinueChargeSFX
 	ContinueChargeSFX.Volume = 2
 	ContinueChargeSFX.PlaybackSpeed = 1
 	ContinueChargeSFX.PlaybackRegionsEnabled = true
-	ContinueChargeSFX.PlaybackRegion = NumberRange.new(7,7.5)
+	ContinueChargeSFX.PlaybackRegion = NumberRange.new(7, 7.5)
 	ContinueChargeSFX.Looped = true
 	ContinueChargeSFX.Parent = RootPart
 	Tracks[PlayerCharging]["ContinueChargeSFX"] = ContinueChargeSFX
-
 
 	-- CREATE CHARGE ANIMATION
 	local StartAnimation = Instance.new("Animation")
@@ -823,7 +818,6 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 	StartTrack.Looped = false
 	Tracks[PlayerCharging]["ChargeStartAnimation"] = StartTrack
 
-
 	local ContinueAnimation = Instance.new("Animation")
 	ContinueAnimation.AnimationId = ContinueChargeID
 	local ContinueTrack = Animator:LoadAnimation(ContinueAnimation)
@@ -831,8 +825,6 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 	ContinueTrack.Priority = Enum.AnimationPriority.Action3
 	ContinueTrack.Looped = true
 	Tracks[PlayerCharging]["ChargeContinueAnimation"] = ContinueTrack
-
-
 
 	-- CLEANUP FUNCTIONS
 	local function FullCleanup()
@@ -888,12 +880,10 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 			Debris:AddItem(WindEffect, 0.25)
 		end
 
-
 		-- MAP CLEANUP
 		if PlayerCharging == PlayerViewing then
 			TimeChange:FireServer(false, 0, 0)
 		end
-
 
 		-- CLEANUP ANIMATION
 		if Tracks[PlayerCharging]["ChargeStartAnimation"] then
@@ -917,7 +907,6 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 			Tracks[PlayerCharging]["ContinueChargeSFX"] = nil
 		end
 	end
-
 
 	-- PARTIAL CLEANUP
 	local function PartialCleanup()
@@ -949,12 +938,10 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 			Debris:AddItem(WindEffect, 0.25)
 		end
 
-
 		-- MAP CLEANUP
 		if PlayerCharging == PlayerViewing then
 			TimeChange:FireServer(false, 0, 0)
 		end
-
 
 		-- CLEANUP ANIMATION
 		if Connections[PlayerCharging]["StartTrackEnded"] then
@@ -975,19 +962,18 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 		end
 	end
 
-
 	-- FULL CLEANUP CONNECTIONS
-	Connections[PlayerCharging]["EquippedGunChanged_Charge"] = PlayerCharging:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerCharging:GetAttribute("IsEquippingGun") ~= GunEquipped then
-			FullCleanup()
-		end
-	end)
+	Connections[PlayerCharging]["EquippedGunChanged_Charge"] = PlayerCharging
+		:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerCharging:GetAttribute("IsEquippingGun") ~= GunEquipped then
+				FullCleanup()
+			end
+		end)
 
 	Connections[PlayerCharging]["CharacterRemoving_Charge"] = PlayerCharging.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
-
-
 
 	-- PLAY THE ASSETS
 	local function PlayChargeAssets()
@@ -1002,15 +988,14 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 			Tracks[PlayerCharging]["StartChargeSFX"]:Play()
 		end
 
-
 		-- VFX
 		LightningChargeUpAuraVFX = ReplicatedStorage.GunVFX.Lightning.LightningCharge.LightningChargeUpAura:Clone()
 		LightningChargeUpAuraVFX.Parent = RootPart
 		for _, Aura in pairs(LightningChargeUpAuraVFX:GetDescendants()) do
 			Aura.EmissionDirection = Enum.NormalId.Top
-			Aura.Speed = NumberRange.new(1,1.5)
+			Aura.Speed = NumberRange.new(1, 1.5)
 			Aura.Enabled = true
-			Aura.Rate = Aura.Rate/4
+			Aura.Rate = Aura.Rate / 4
 			Aura.Lifetime = NumberRange.new(0.5, 3)
 		end
 
@@ -1054,15 +1039,15 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 
 			-- ENABLE AND SPEED UP VFX
 			for _, Aura in pairs(LightningChargeUpAuraVFX:GetDescendants()) do
-				Aura.Rate = Aura.Rate*4
-				Aura.Speed = NumberRange.new(0.01,0.01)
+				Aura.Rate = Aura.Rate * 4
+				Aura.Speed = NumberRange.new(0.01, 0.01)
 				Aura.Lifetime = NumberRange.new(0.5, 1)
 			end
 			for _, VFX in pairs(LightningChargeVFX:GetDescendants()) do
 				if VFX:IsA("ParticleEmitter") then
 					VFX.Enabled = true
 				end
-			end	
+			end
 			for _, VFX in pairs(WindEffect:GetDescendants()) do
 				if VFX:IsA("ParticleEmitter") then
 					VFX.Enabled = true
@@ -1080,7 +1065,7 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 
 			local FinalContinueTrack = Tracks[PlayerCharging]["ChargeContinueAnimation"]
 			Connections[PlayerCharging]["WhileTask"] = task.spawn(function()
-				while FinalContinueTrack.IsPlaying and PlayerCharging:GetAttribute("VisuallyCharging") do 
+				while FinalContinueTrack.IsPlaying and PlayerCharging:GetAttribute("VisuallyCharging") do
 					ScreenShakeModule.ApplyScreenShake(false, PlayerViewing, PlayerCharging, 0.33, 100)
 					RockModule.RockDebris(RockDebrisSettings)
 					task.wait(0.1)
@@ -1090,44 +1075,45 @@ function LightningAssets.Charge(PlayerViewing, DefaultData, GunEquipped, PlayerC
 		end)
 	end
 
-
-
 	-- ATTRIBUTE CHANGED CONNECTION
-	Connections[PlayerCharging]["IsChargingChanged"] = PlayerCharging:GetAttributeChangedSignal("VisuallyCharging"):Connect(function()
-		if not PlayerCharging:GetAttribute("VisuallyCharging") or PlayerCharging:GetAttribute("IsShooting") then
-			PartialCleanup()
-		else
-			PlayChargeAssets()
-		end
-	end)
-	
+	Connections[PlayerCharging]["IsChargingChanged"] = PlayerCharging:GetAttributeChangedSignal("VisuallyCharging")
+		:Connect(function()
+			if not PlayerCharging:GetAttribute("VisuallyCharging") or PlayerCharging:GetAttribute("IsShooting") then
+				PartialCleanup()
+			else
+				PlayChargeAssets()
+			end
+		end)
+
 	return true
 end
-
-
 
 -- DASH ASSETS
 function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDashing)
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
+	if not Tracks then
+		return
+	end
 
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
-
+	if not Connections then
+		return
+	end
 
 	-- GET CHARGE ANIMATION IDS
 	local ChargeStartID = DefaultData.Animations["ChargeStart"]
-	if not ChargeStartID then return end
+	if not ChargeStartID then
+		return
+	end
 	local ContinueChargeID = DefaultData.Animations["ChargeContinue"]
-	if not ContinueChargeID then return end
-
+	if not ContinueChargeID then
+		return
+	end
 
 	local Character = PlayerDashing.Character or PlayerDashing.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid")
 	local Animator = Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", Humanoid)
 	local RootPart = Character:WaitForChild("HumanoidRootPart")
-	
-
 
 	-- CLEANUP FUNCTIONS
 	local function FullCleanup()
@@ -1184,26 +1170,33 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 			Connections[PlayerDashing]["CharacterRemoving_Dash"] = nil
 		end
 	end
-	
+
 	-- INCASE
 	FullCleanup()
 
-
 	-- DASH IDS
 	local FrontDashID = DefaultData.Animations["FrontDash"]
-	if not FrontDashID then return end
+	if not FrontDashID then
+		return
+	end
 	local BackDashID = DefaultData.Animations["BackDash"]
-	if not BackDashID then return end
+	if not BackDashID then
+		return
+	end
 	local LeftDashID = DefaultData.Animations["LeftDash"]
-	if not LeftDashID then return end
+	if not LeftDashID then
+		return
+	end
 	local RightDashID = DefaultData.Animations["RightDash"]
-	if not RightDashID then return end
+	if not RightDashID then
+		return
+	end
 
 	-- DASH SFX
 	local DashSFXID = DefaultData.SoundFX["DashSFX"]
-	if not DashSFXID then return end
-
-
+	if not DashSFXID then
+		return
+	end
 
 	-- DASH ANIMATIONS
 	local FrontDashAnimation = Instance.new("Animation")
@@ -1212,7 +1205,6 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 	FrontDashTrack.Priority = Enum.AnimationPriority.Action2
 	FrontDashTrack.Looped = false
 	Tracks[PlayerDashing]["FrontDashTrack"] = FrontDashTrack
-	
 
 	local BackDashAnimation = Instance.new("Animation")
 	BackDashAnimation.AnimationId = BackDashID
@@ -1220,7 +1212,6 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 	BackDashTrack.Priority = Enum.AnimationPriority.Action2
 	BackDashTrack.Looped = false
 	Tracks[PlayerDashing]["BackDashTrack"] = BackDashTrack
-
 
 	local LeftDashAnimation = Instance.new("Animation")
 	LeftDashAnimation.AnimationId = LeftDashID
@@ -1236,8 +1227,6 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 	RightDashTrack.Looped = false
 	Tracks[PlayerDashing]["RightDashTrack"] = RightDashTrack
 
-
-
 	-- DASH SOUNDFX
 	local DashSFX = Instance.new("Sound")
 	DashSFX.SoundId = DashSFXID
@@ -1245,23 +1234,26 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 	DashSFX.Volume = 3
 	DashSFX.PlaybackRegionsEnabled = true
 	DashSFX.PlaybackRegion = NumberRange.new(0.25, 1.5)
-	Tracks[PlayerDashing]["DashSFX"] = DashSFX		
+	Tracks[PlayerDashing]["DashSFX"] = DashSFX
 	Tracks[PlayerDashing]["DashSFX"].PlaybackSpeed = 1
 
-
 	-- DASH VFX
-	local DustVFX = ReplicatedStorage:WaitForChild("GunVFX"):WaitForChild(DefaultData.VFX.WalkVFX):WaitForChild(DefaultData.VFX.WalkVFX):Clone()
+	local DustVFX = ReplicatedStorage:WaitForChild("GunVFX")
+		:WaitForChild(DefaultData.VFX.WalkVFX)
+		:WaitForChild(DefaultData.VFX.WalkVFX)
+		:Clone()
 	DustVFX.Parent = Character:WaitForChild("Torso")
 	DustVFX.Position = Vector3.new(0, -1, 0)
 	Tracks[PlayerDashing]["DustVFX"] = DustVFX
 
-
-	local LightningDashVFX = ReplicatedStorage:WaitForChild("GunVFX"):WaitForChild("Lightning"):WaitForChild(DefaultData.VFX.DashVFX):WaitForChild(DefaultData.VFX.DashVFX):Clone()
+	local LightningDashVFX = ReplicatedStorage:WaitForChild("GunVFX")
+		:WaitForChild("Lightning")
+		:WaitForChild(DefaultData.VFX.DashVFX)
+		:WaitForChild(DefaultData.VFX.DashVFX)
+		:Clone()
 	LightningDashVFX.Parent = Character:WaitForChild("Torso")
 	LightningDashVFX.Orientation = Vector3.new(0, 0, 0)
 	Tracks[PlayerDashing]["LightningDashVFX"] = LightningDashVFX
-
-
 
 	-- HELPER VFX PLAYER
 	local function PlayVFX(VFXAttachment, EmitCount)
@@ -1277,7 +1269,9 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 
 		-- DO NOT set Orientation here - it will override the CFrame
 
-		if not EmitCount then EmitCount = 3 end
+		if not EmitCount then
+			EmitCount = 3
+		end
 		for _, Particle in pairs(VFXAttachment:GetDescendants()) do
 			if Particle:IsA("ParticleEmitter") then
 				Particle:Emit(EmitCount)
@@ -1285,107 +1279,111 @@ function LightningAssets.Dash(PlayerViewing, DefaultData, GunEquipped, PlayerDas
 		end
 	end
 
+	Connections[PlayerDashing]["DashingSignal"] = PlayerDashing:GetAttributeChangedSignal("IsDashing")
+		:Connect(function()
+			if PlayerDashing:GetAttribute("IsDashing") then
+				local DashDirection = PlayerDashing:GetAttribute("DashDirection")
 
-
-	Connections[PlayerDashing]["DashingSignal"] = PlayerDashing:GetAttributeChangedSignal("IsDashing"):Connect(function()
-		if PlayerDashing:GetAttribute("IsDashing") then
-			local DashDirection = PlayerDashing:GetAttribute("DashDirection")
-
-			-- PLAY SFX
-			if Tracks[PlayerDashing]["DashSFX"] then
-				local ClonedSFX = Tracks[PlayerDashing]["DashSFX"]:Clone()
-				ClonedSFX.Parent = RootPart
-				ClonedSFX:Play()
-				Debris:AddItem(ClonedSFX, 2)
-			end
-			PlayVFX(Tracks[PlayerDashing]["LightningDashVFX"], 1)
-			-- LOOP AND PLAY VFX
-			task.spawn(function()
-				while (PlayerDashing == PlayerViewing and PlayerDashing:GetAttribute("IsDashing")) or 
-					(PlayerDashing ~= PlayerViewing and PlayerDashing:GetAttribute("DashingVFX")) do
-					RockModule.PlayDustVFX(Character, Tracks[PlayerDashing]["DustVFX"], nil, 1)
-
-					RockModule.PlayRockTrailVFX(Character, 2)
-					task.wait(0.05)
+				-- PLAY SFX
+				if Tracks[PlayerDashing]["DashSFX"] then
+					local ClonedSFX = Tracks[PlayerDashing]["DashSFX"]:Clone()
+					ClonedSFX.Parent = RootPart
+					ClonedSFX:Play()
+					Debris:AddItem(ClonedSFX, 2)
 				end
-			end)
+				PlayVFX(Tracks[PlayerDashing]["LightningDashVFX"], 1)
+				-- LOOP AND PLAY VFX
+				task.spawn(function()
+					while
+						(PlayerDashing == PlayerViewing and PlayerDashing:GetAttribute("IsDashing"))
+						or (PlayerDashing ~= PlayerViewing and PlayerDashing:GetAttribute("DashingVFX"))
+					do
+						RockModule.PlayDustVFX(Character, Tracks[PlayerDashing]["DustVFX"], nil, 1)
 
-			if DashDirection == "Front" then
-				Tracks[PlayerDashing]["FrontDashTrack"]:Play()
-				Tracks[PlayerDashing]["FrontDashTrack"]:AdjustSpeed(2)
-			elseif DashDirection == "Back" then
-				Tracks[PlayerDashing]["BackDashTrack"]:Play()
-				Tracks[PlayerDashing]["BackDashTrack"]:AdjustSpeed(1.5) 
-			elseif DashDirection == "Left" then
-				Tracks[PlayerDashing]["LeftDashTrack"]:Play()
-			elseif DashDirection == "Right" then
-				Tracks[PlayerDashing]["RightDashTrack"]:Play()
-			end
-		else
-			if Tracks[PlayerDashing]["FrontDashTrack"] then
-				Tracks[PlayerDashing]["FrontDashTrack"]:Stop(0.25)
-			end
-			if Tracks[PlayerDashing]["LeftDashTrack"] then
-				Tracks[PlayerDashing]["LeftDashTrack"]:Stop(0.25)
-			end
-			if Tracks[PlayerDashing]["BackDashTrack"] then
-				Tracks[PlayerDashing]["BackDashTrack"]:Stop(0.25)
-			end
-			if Tracks[PlayerDashing]["RightDashTrack"] then
-				Tracks[PlayerDashing]["RightDashTrack"]:Stop(0.25)
-			end
-		end
-	end)
+						RockModule.PlayRockTrailVFX(Character, 2)
+						task.wait(0.05)
+					end
+				end)
 
+				if DashDirection == "Front" then
+					Tracks[PlayerDashing]["FrontDashTrack"]:Play()
+					Tracks[PlayerDashing]["FrontDashTrack"]:AdjustSpeed(2)
+				elseif DashDirection == "Back" then
+					Tracks[PlayerDashing]["BackDashTrack"]:Play()
+					Tracks[PlayerDashing]["BackDashTrack"]:AdjustSpeed(1.5)
+				elseif DashDirection == "Left" then
+					Tracks[PlayerDashing]["LeftDashTrack"]:Play()
+				elseif DashDirection == "Right" then
+					Tracks[PlayerDashing]["RightDashTrack"]:Play()
+				end
+			else
+				if Tracks[PlayerDashing]["FrontDashTrack"] then
+					Tracks[PlayerDashing]["FrontDashTrack"]:Stop(0.25)
+				end
+				if Tracks[PlayerDashing]["LeftDashTrack"] then
+					Tracks[PlayerDashing]["LeftDashTrack"]:Stop(0.25)
+				end
+				if Tracks[PlayerDashing]["BackDashTrack"] then
+					Tracks[PlayerDashing]["BackDashTrack"]:Stop(0.25)
+				end
+				if Tracks[PlayerDashing]["RightDashTrack"] then
+					Tracks[PlayerDashing]["RightDashTrack"]:Stop(0.25)
+				end
+			end
+		end)
 
-	Connections[PlayerDashing]["EquippedGunChanged_Dash"] = PlayerDashing:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if PlayerDashing:GetAttribute("IsEquippingGun") ~= GunEquipped then
-			FullCleanup()
-		end
-	end)
+	Connections[PlayerDashing]["EquippedGunChanged_Dash"] = PlayerDashing:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if PlayerDashing:GetAttribute("IsEquippingGun") ~= GunEquipped then
+				FullCleanup()
+			end
+		end)
 
 	Connections[PlayerDashing]["CharacterRemoving_Dash"] = PlayerDashing.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
-	
+
 	return true
 end
-
-
 
 -- RELOAD
 function LightningAssets.Reload(PlayerViewing, DefaultData, GunEquipped, PlayerDashing)
 	return true -- unused function this gun dont have reload
 end
 
-
-
 -- UI
 function LightningAssets.UI(LocalPlayer, GunEquipped)
 	-- GET PLAYER UI
 	local PlayerGui = LocalPlayer.PlayerGui
-	if not PlayerGui then return end
+	if not PlayerGui then
+		return
+	end
 
 	-- GET GUN GUI
 	local GunGui = PlayerGui:WaitForChild("GunGuiFolder"):WaitForChild("GunGui")
-	if not GunGui then return end
+	if not GunGui then
+		return
+	end
 
 	-- TRACKS AND CONNECTIONS
 	local Tracks = ClientGunDataModule.Tracks
-	if not Tracks then return end
+	if not Tracks then
+		return
+	end
 	local Connections = ClientGunDataModule.Connections
-	if not Connections then return end
+	if not Connections then
+		return
+	end
 
 	local CurrentlyLerping = false
 
-
 	local function FullCleanup()
-		if Connections[LocalPlayer]["EquippedGunChanged_UI"]  then
+		if Connections[LocalPlayer]["EquippedGunChanged_UI"] then
 			Connections[LocalPlayer]["EquippedGunChanged_UI"]:Disconnect()
 			Connections[LocalPlayer]["EquippedGunChanged_UI"] = nil
 		end
 
-		if Connections[LocalPlayer]["CharacterRemoving_UI"]  then
+		if Connections[LocalPlayer]["CharacterRemoving_UI"] then
 			Connections[LocalPlayer]["CharacterRemoving_UI"]:Disconnect()
 			Connections[LocalPlayer]["CharacterRemoving_UI"] = nil
 		end
@@ -1401,63 +1399,69 @@ function LightningAssets.UI(LocalPlayer, GunEquipped)
 	-- INCASE
 	FullCleanup()
 
-
-	Connections[LocalPlayer]["EquippedGunChanged_UI"] = LocalPlayer:GetAttributeChangedSignal("IsEquippingGun"):Connect(function()
-		if LocalPlayer:GetAttribute("IsEquippingGun") ~= GunEquipped then
-			FullCleanup()
-		end
-	end)
+	Connections[LocalPlayer]["EquippedGunChanged_UI"] = LocalPlayer:GetAttributeChangedSignal("IsEquippingGun")
+		:Connect(function()
+			if LocalPlayer:GetAttribute("IsEquippingGun") ~= GunEquipped then
+				FullCleanup()
+			end
+		end)
 
 	Connections[LocalPlayer]["CharacterRemoving_UI"] = LocalPlayer.CharacterRemoving:Connect(function()
 		FullCleanup()
 	end)
 
-
 	-- GET ORIGINAL COLORS
 	local OriginalCurrentColor = GunGui.Frame.CurrentAmmo.TextColor3
 
 	-- SHOOTING
-	Connections[LocalPlayer]["ShotAttribute_UI"] = LocalPlayer:GetAttributeChangedSignal("OutOfCharge"):Connect(function()
-		if not LocalPlayer:GetAttribute("OutOfCharge") then return end
-		if CurrentlyLerping then return end
-
-		-- IF NO CURRENT OR TOTAL AMMO (TWEEN COLORS OF UI)
-		if LocalPlayer:GetAttribute("OutOfCharge") and LocalPlayer:GetAttribute("WantsToShoot") then
-			-- TWEEN TO
-			local TweenToInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-			local TargetColor = {TextColor3 = Color3.fromRGB(255, 0, 0)}
-
-			local Tween
-			for _, AmmoType in ipairs({GunGui.Frame.CurrentAmmo, GunGui.Frame.TotalAmmo}) do
-				Tween = TweenService:Create(AmmoType, TweenToInfo, TargetColor)
-				Tween:Play()
+	Connections[LocalPlayer]["ShotAttribute_UI"] = LocalPlayer:GetAttributeChangedSignal("OutOfCharge")
+		:Connect(function()
+			if not LocalPlayer:GetAttribute("OutOfCharge") then
+				return
 			end
-			CurrentlyLerping = true
-			Tween.Completed:Wait()
-			Tween:Destroy()
-			
-			while LocalPlayer:GetAttribute("CurrentCharge") <= 0 and LocalPlayer:GetAttribute("WantsToShoot") do
-				task.wait(0.05)
+			if CurrentlyLerping then
+				return
 			end
 
-			-- TWEEN BACK
-			local TweenBackInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-			local TargetColor = {TextColor3 = OriginalCurrentColor}
-			local Tween
-			for _, AmmoType in ipairs({GunGui.Frame.CurrentAmmo, GunGui.Frame.TotalAmmo}) do
-				Tween = TweenService:Create(AmmoType, TweenToInfo, TargetColor)
-				Tween:Play()
+			-- IF NO CURRENT OR TOTAL AMMO (TWEEN COLORS OF UI)
+			if LocalPlayer:GetAttribute("OutOfCharge") and LocalPlayer:GetAttribute("WantsToShoot") then
+				-- TWEEN TO
+				local TweenToInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				local TargetColor = { TextColor3 = Color3.fromRGB(255, 0, 0) }
+
+				local Tween
+				for _, AmmoType in ipairs({ GunGui.Frame.CurrentAmmo, GunGui.Frame.TotalAmmo }) do
+					Tween = TweenService:Create(AmmoType, TweenToInfo, TargetColor)
+					Tween:Play()
+				end
+				CurrentlyLerping = true
+				Tween.Completed:Wait()
+				Tween:Destroy()
+
+				while
+					GunEquipped == LocalPlayer:GetAttribute("IsEquippingGun")
+					and LocalPlayer:GetAttribute("CurrentCharge") <= 0
+					and LocalPlayer:GetAttribute("WantsToShoot")
+				do
+					task.wait(0.05)
+				end
+
+				-- TWEEN BACK
+				local TweenBackInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				local TargetColor = { TextColor3 = OriginalCurrentColor }
+				local Tween
+				for _, AmmoType in ipairs({ GunGui.Frame.CurrentAmmo, GunGui.Frame.TotalAmmo }) do
+					Tween = TweenService:Create(AmmoType, TweenToInfo, TargetColor)
+					Tween:Play()
+				end
+				Tween.Completed:Wait()
+				Tween:Destroy()
+				CurrentlyLerping = false
 			end
-			Tween.Completed:Wait()
-			Tween:Destroy()
-			CurrentlyLerping = false
-		end
-	end)
-	
+		end)
+
 	return true
 end
-
-
 
 -- WALL HIT VFX
 local LightningSFX = {}
@@ -1465,13 +1469,19 @@ local TimeSinceHit = {}
 local SFXRunning = {}
 local MostRecentPosition = {}
 function LightningAssets.WallHit(PlayerShot, ResultData)
-	if not ResultData.Normal then return end
+	if not ResultData.Normal then
+		return
+	end
 
 	-- DEFAULT DATA
 	local EquippedGun = PlayerShot:GetAttribute("IsEquippingGun")
-	if not EquippedGun then return end
+	if not EquippedGun then
+		return
+	end
 	local DefaultData = ClientGunDataModule:Get(PlayerShot)
-	if not DefaultData then return end
+	if not DefaultData then
+		return
+	end
 
 	TimeSinceHit[PlayerShot] = tick()
 	MostRecentPosition[PlayerShot] = ResultData.Position
@@ -1481,7 +1491,9 @@ function LightningAssets.WallHit(PlayerShot, ResultData)
 			Volume = 2,
 			PlaybackSpeed = 1,
 			Looped = true,
-			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX"):FindFirstChild("LightningFist"):FindFirstChild("ZombieHitSFX")
+			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX")
+				:FindFirstChild("LightningFist")
+				:FindFirstChild("ZombieHitSFX"),
 		}
 
 		task.spawn(function()
@@ -1497,7 +1509,6 @@ function LightningAssets.WallHit(PlayerShot, ResultData)
 		end)
 	end
 
-
 	-- ROCK STUFF
 	local RockDebrisSettings = {
 		Part = ResultData.Instance,
@@ -1507,12 +1518,10 @@ function LightningAssets.WallHit(PlayerShot, ResultData)
 		HorizontalStrength = 10,
 		VerticalStrength = 15,
 		Time = 1,
-		Chance = 90
+		Chance = 90,
 	}
 	RockModule.RockDebris(RockDebrisSettings)
 end
-
-
 
 -- WALL MARK VFX
 local LightningWallEffect = {}
@@ -1520,10 +1529,14 @@ local LastWallMarkPos = {}
 local LastWallMarkConn = {}
 function LightningAssets.WallMark(PlayerShot, ResultData)
 	-- NEEDS NORMAL
-	if not ResultData.Normal then return end
-	
+	if not ResultData.Normal then
+		return
+	end
+
 	local LightningVFX = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Lightning")
-	if not LightningVFX then return end 
+	if not LightningVFX then
+		return
+	end
 
 	if LastWallMarkPos[PlayerShot] and LastWallMarkPos[PlayerShot]["WallEffect"] then
 		if (LastWallMarkPos[PlayerShot]["WallEffect"].Position - ResultData.Position).Magnitude < 0.03 then
@@ -1532,12 +1545,15 @@ function LightningAssets.WallMark(PlayerShot, ResultData)
 		end
 	end
 
-	local WallEffect = LightningVFX:FindFirstChild("LightningHitEffect"):FindFirstChild("WallEffect"):FindFirstChild("WallEffect"):Clone()
+	local WallEffect = LightningVFX:FindFirstChild("LightningHitEffect")
+		:FindFirstChild("WallEffect")
+		:FindFirstChild("WallEffect")
+		:Clone()
 	local Offset = 0.001
 	local OffsetPos = ResultData.Position + (ResultData.Normal * Offset)
 	WallEffect.CFrame = CFrame.new(OffsetPos, OffsetPos - ResultData.Normal)
 	WallEffect.Parent = workspace:FindFirstChild("ActiveVFX")
-	
+
 	if not LastWallMarkPos[PlayerShot] then
 		LastWallMarkPos[PlayerShot] = {}
 	end
@@ -1546,7 +1562,7 @@ function LightningAssets.WallMark(PlayerShot, ResultData)
 		task.cancel(LastWallMarkConn[PlayerShot])
 		LastWallMarkConn[PlayerShot] = nil
 	end
-	
+
 	LastWallMarkConn[PlayerShot] = task.delay(1, function()
 		if LastWallMarkPos[PlayerShot] and LastWallMarkPos[PlayerShot]["WallEffect"] then
 			LastWallMarkPos[PlayerShot]["WallEffect"]:Destroy()
@@ -1554,7 +1570,6 @@ function LightningAssets.WallMark(PlayerShot, ResultData)
 		end
 		LastWallMarkConn[PlayerShot] = nil
 	end)
-
 
 	for _, ClonedChild in ipairs(WallEffect:GetDescendants()) do
 		if ClonedChild:IsA("ParticleEmitter") then
@@ -1566,17 +1581,19 @@ function LightningAssets.WallMark(PlayerShot, ResultData)
 	Debris:AddItem(WallEffect, 1)
 end
 
-
-
 -- ZOMBIE HIT VFX
 local ZombieHit = {}
 local TimeSinceBloodSFX = {}
 function LightningAssets.ZombieHit(PlayerShot, ResultData)
 	-- DEFAULT DATA
 	local EquippedGun = PlayerShot:GetAttribute("IsEquippingGun")
-	if not EquippedGun then return end
+	if not EquippedGun then
+		return
+	end
 	local DefaultData = ClientGunDataModule:Get(PlayerShot)
-	if not DefaultData then return end
+	if not DefaultData then
+		return
+	end
 
 	TimeSinceHit[PlayerShot] = tick()
 	MostRecentPosition[PlayerShot] = ResultData.Position
@@ -1586,7 +1603,9 @@ function LightningAssets.ZombieHit(PlayerShot, ResultData)
 			Volume = 2,
 			PlaybackSpeed = 1,
 			Looped = true,
-			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX"):FindFirstChild("LightningFist"):FindFirstChild("ZombieHitSFX")
+			SFXToClone = ReplicatedStorage:FindFirstChild("GunSFX")
+				:FindFirstChild("LightningFist")
+				:FindFirstChild("ZombieHitSFX"),
 		}
 
 		task.spawn(function()
@@ -1602,11 +1621,16 @@ function LightningAssets.ZombieHit(PlayerShot, ResultData)
 		end)
 	end
 
+	local ZombieHitVFX = ReplicatedStorage:FindFirstChild("GunVFX")
+		:FindFirstChild("Lightning")
+		:FindFirstChild("LightningHitEffect")
+		:FindFirstChild("ZombieEffect")
+		:FindFirstChild("ZombieEffect")
+		:Clone()
+	if not ZombieHitVFX then
+		return
+	end
 
-	local ZombieHitVFX = ReplicatedStorage:FindFirstChild("GunVFX"):FindFirstChild("Lightning"):FindFirstChild("LightningHitEffect"):FindFirstChild("ZombieEffect"):FindFirstChild("ZombieEffect"):Clone()
-	if not ZombieHitVFX then return end
-	
-	
 	if ResultData.Normal then
 		local Offset = -2
 		local OffsetPos = ResultData.Position + (ResultData.Normal * Offset)
@@ -1617,28 +1641,32 @@ function LightningAssets.ZombieHit(PlayerShot, ResultData)
 
 	ZombieHitVFX.Parent = workspace:FindFirstChild("ActiveVFX")
 
-
 	for _, Emitter in ZombieHitVFX:GetChildren() do
-		if math.random() <= 0.5 then continue end
+		if math.random() <= 0.5 then
+			continue
+		end
 		Emitter:Emit(1)
 	end
 	Debris:AddItem(ZombieHitVFX, 0.7)
 
-
-	if not ResultData.Position then return end -- some reason was crashing code
-	if ZombieHit[ResultData.Instance] and (tick() - ZombieHit[ResultData.Instance] < 0.25) then return end
+	if not ResultData.Position then
+		return
+	end -- some reason was crashing code
+	if ZombieHit[ResultData.Instance] and (tick() - ZombieHit[ResultData.Instance] < 0.25) then
+		return
+	end
 	ZombieHit[ResultData.Instance] = tick()
-
 
 	-- VFX
 	local BloodVFX = ReplicatedStorage:WaitForChild("GunVFX"):WaitForChild("BloodVFX"):Clone()
-	if not BloodVFX then return end
-
+	if not BloodVFX then
+		return
+	end
 
 	for _, VFX in pairs(BloodVFX:GetDescendants()) do
 		if VFX:IsA("Attachment") then
 			local AveragePosition = (ResultData.Position + ResultData.Instance.Position) / 2
-			
+
 			if ResultData.Normal then
 				local Offset = -0.5
 				local OffsetPos = AveragePosition + (ResultData.Normal * Offset)
@@ -1660,7 +1688,8 @@ function LightningAssets.ZombieHit(PlayerShot, ResultData)
 	Debris:AddItem(BloodVFX, 1)
 
 	-- SFX
-	local BloodSFX = ReplicatedStorage:FindFirstChild("GunSFX"):FindFirstChild("LightningFist"):FindFirstChild("BloodSFX"):Clone()
+	local BloodSFX =
+		ReplicatedStorage:FindFirstChild("GunSFX"):FindFirstChild("LightningFist"):FindFirstChild("BloodSFX"):Clone()
 	BloodSFX.Volume = 0.1
 
 	-- PICK RANDOM PLAYBACK SPEED
@@ -1674,49 +1703,54 @@ function LightningAssets.ZombieHit(PlayerShot, ResultData)
 	Debris:AddItem(BloodSFX, 2)
 end
 
-
-
 -- STREAM BULLET
 function LightningAssets.StreamBullet(PlayerFired, BulletData)
 	local StreamBulletModel
-	if not ClientGunDataModule.StreamBullet[PlayerFired] or ClientGunDataModule.StreamBullet[PlayerFired].CharacterFired ~= PlayerFired.Character then	
+	if
+		not ClientGunDataModule.StreamBullet[PlayerFired]
+		or ClientGunDataModule.StreamBullet[PlayerFired].CharacterFired ~= PlayerFired.Character
+	then
 		local GunVFX = ReplicatedStorage:FindFirstChild("GunVFX")
-		if not GunVFX then return end 
+		if not GunVFX then
+			return
+		end
 		local Muzzle = PlayerFired.Character:FindFirstChild("EquippedGun"):FindFirstChild("Muzzle")
-		if not Muzzle then return end
-
+		if not Muzzle then
+			return
+		end
 
 		-- CLONE VFX
-		local BeamEffect = GunVFX:WaitForChild("Lightning"):WaitForChild("LightningBeam"):FindFirstChild("BeamEffect"):Clone()
+		local BeamEffect =
+			GunVFX:WaitForChild("Lightning"):WaitForChild("LightningBeam"):FindFirstChild("BeamEffect"):Clone()
 		BeamEffect.Parent = workspace:WaitForChild("BulletsFolder")
 
-
 		-- DESTROY PREVIOUS BULLET MODEL
-		local PreviousModel = ClientGunDataModule.StreamBullet[PlayerFired] and ClientGunDataModule.StreamBullet[PlayerFired].BulletClone
-		if PreviousModel then PreviousModel:Destroy() end
-
+		local PreviousModel = ClientGunDataModule.StreamBullet[PlayerFired]
+			and ClientGunDataModule.StreamBullet[PlayerFired].BulletClone
+		if PreviousModel then
+			PreviousModel:Destroy()
+		end
 
 		-- CREATE NEW BULLET MODEL
 		StreamBulletModel = BeamEffect
 		local StartBeam = BeamEffect:FindFirstChild("StartBeam")
 		local EndBeam = BeamEffect:FindFirstChild("EndBeam")
 
-
 		-- BEAM PROPERTIES
 		StartBeam.Anchored = false
 		StartBeam.CanCollide = false
-		StartBeam.Massless = true	
+		StartBeam.Massless = true
 		StartBeam.Transparency = 1
 		EndBeam.Anchored = false
 		EndBeam.CanCollide = false
-		EndBeam.Massless = true	
+		EndBeam.Massless = true
 		EndBeam.Transparency = 1
 
 		local Weld = Instance.new("Weld")
 		Weld.Name = "StartBeamWeld"
 		Weld.Part0 = Muzzle
 		Weld.Part1 = StartBeam
-		Weld.C0  = CFrame.new(0,0,0)
+		Weld.C0 = CFrame.new(0, 0, 0)
 		Weld.C1 = CFrame.new(0, 0, 0)
 		Weld.Parent = BeamEffect
 
@@ -1724,7 +1758,7 @@ function LightningAssets.StreamBullet(PlayerFired, BulletData)
 		Weld2.Name = "EndBeamWeld"
 		Weld2.Part0 = Muzzle
 		Weld2.Part1 = EndBeam
-		Weld2.C0  = CFrame.new(0,0,0)
+		Weld2.C0 = CFrame.new(0, 0, 0)
 		Weld2.C1 = CFrame.new(0, 0, 0)
 		Weld2.Parent = BeamEffect
 	else
@@ -1733,8 +1767,6 @@ function LightningAssets.StreamBullet(PlayerFired, BulletData)
 
 	return StreamBulletModel
 end
-
-
 
 -- RETURN
 return LightningAssets
