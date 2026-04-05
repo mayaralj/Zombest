@@ -1,18 +1,15 @@
 -- SERVICES
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local StarterPlayerScripts = game.StarterPlayer.StarterPlayerScripts
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 -- PLAYER AND CAMERA
-local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 Camera.CameraType = Enum.CameraType.Scriptable
 
 -- FOLDERS
-local Events = ReplicatedStorage:WaitForChild("Events")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local ClientData = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 

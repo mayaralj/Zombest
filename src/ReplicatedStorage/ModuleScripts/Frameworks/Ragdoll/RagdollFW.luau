@@ -1,15 +1,10 @@
 local RagdollFW = {}
 
-
 -- SERVICES
-local Players = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
-
 
 -- MISC
 local DeadCharacters = workspace:WaitForChild("DeadCharacters")
-
-
 
 -- CREATE ATTACHMENT
 local function CreateAttachment(Part, Name, Pos)
@@ -19,8 +14,6 @@ local function CreateAttachment(Part, Name, Pos)
 	Attachment.Parent = Part
 	return Attachment
 end
-
-
 
 -- CREATE BALLSOCKETCONSTRAINTS
 local function CreateBallSocket(Name, Attachment0, Attachment1, Parent, UpperAngle, TwistLower, TwistUpper)
@@ -37,8 +30,6 @@ local function CreateBallSocket(Name, Attachment0, Attachment1, Parent, UpperAng
 	return BallSocket
 end
 
-
-
 -- APPLY ATTACHMENTS AND BALLSOCKETCONSTRAINTS TO ALLOW RAGDOLL PHYSICS
 local function RagdollRig(Model)
 	-- GET ALL PARTS
@@ -47,10 +38,10 @@ local function RagdollRig(Model)
 	local RootPart = Model:FindFirstChild("HumanoidRootPart")
 
 	local Limbs = {
-		["Left Arm"]  = {TorsoPos = Vector3.new(-1, 0.5, 0), LimbPos = Vector3.new(0.5, 1, 0)},
-		["Right Arm"] = {TorsoPos = Vector3.new(1, 0.5, 0),  LimbPos = Vector3.new(-0.5, 1, 0)},
-		["Left Leg"]  = {TorsoPos = Vector3.new(-0.5, -1, 0), LimbPos = Vector3.new(-0.5, 1, 0)}, 
-		["Right Leg"] = {TorsoPos = Vector3.new(0.5, -1, 0), LimbPos = Vector3.new(0.5, 1, 0)},   
+		["Left Arm"] = { TorsoPos = Vector3.new(-1, 0.5, 0), LimbPos = Vector3.new(0.5, 1, 0) },
+		["Right Arm"] = { TorsoPos = Vector3.new(1, 0.5, 0), LimbPos = Vector3.new(-0.5, 1, 0) },
+		["Left Leg"] = { TorsoPos = Vector3.new(-0.5, -1, 0), LimbPos = Vector3.new(-0.5, 1, 0) },
+		["Right Leg"] = { TorsoPos = Vector3.new(0.5, -1, 0), LimbPos = Vector3.new(0.5, 1, 0) },
 	}
 
 	-- TORSO AND HEAD BALL SOCKET
@@ -59,7 +50,6 @@ local function RagdollRig(Model)
 		local AttachHead = CreateAttachment(Head, "NeckAttachHead", Vector3.new(0, -0.5, 0))
 		CreateBallSocket("HeadSocket", AttachTorso, AttachHead, Torso)
 	end
-
 
 	-- LIMB BALLSOCKET
 	for LimbName, Pos in pairs(Limbs) do
@@ -80,8 +70,6 @@ local function RagdollRig(Model)
 		RootPart:Destroy()
 	end
 end
-
-
 
 -- APPLY CORRECT SETTINGS TO HUMANOID TO ALLOW RAGDOLL TO WORK
 local function ActivateRagdoll(Model)
@@ -105,15 +93,13 @@ local function ActivateRagdoll(Model)
 		--if Part:IsA("BasePart") and not IsZombie then
 		--	Part:SetNetworkOwner(nil)
 		--end
-		
+
 		if Part:IsA("BasePart") then
 			Part.CollisionGroup = "Default"
 			Part.CanCollide = CollidableParts[Part.Name] or false
 		end
 	end
 end
-
-
 
 -- RANDOMIZE X, Y, Z VALUES OF A GIVEN VECTOR
 local function RandomizeVector(Vector)
@@ -123,22 +109,23 @@ local function RandomizeVector(Vector)
 	return Vector3.new(RandomX, RandomY, RandomZ)
 end
 
-
-
 -- APPLY FORCE TO RAGDOLL PARTS
 local function ApplyImpulseToRagdollParts(Model, ImpulseVector, Direction)
 	for _, Part in pairs(Model:GetChildren()) do
 		if Part:IsA("BasePart") then
 			local RandomizedImpulse = RandomizeVector(ImpulseVector)
-			
+
 			-- APPLY IMPUSE BASED ON DIRECTION
-			if not Direction then Direction = Vector3.new(1,1,1) end
-			Part:ApplyImpulse(Vector3.new(RandomizedImpulse.X * Direction.X, RandomizedImpulse.Y, RandomizedImpulse.Z * Direction.Z) * Part:GetMass())
+			if not Direction then
+				Direction = Vector3.new(1, 1, 1)
+			end
+			Part:ApplyImpulse(
+				Vector3.new(RandomizedImpulse.X * Direction.X, RandomizedImpulse.Y, RandomizedImpulse.Z * Direction.Z)
+					* Part:GetMass()
+			)
 		end
 	end
 end
-
-
 
 -- DEATH, APPLY RAGDOLL TO CHARACTER/NPC
 local MaxAllowedRagdolls = 25
@@ -158,12 +145,10 @@ function RagdollFW.ActivateRagdoll(Character, ImpulseVector, Direction)
 	else
 		ApplyImpulseToRagdollParts(Character, Vector3.new(0, 15, 0), Direction) -- nice impulse for players
 	end
-	
+
 	-- ADD RAGDOLL TO ACTIVE RAGDOLL TABLE
 	table.insert(ActiveRagdolls, Character)
 end
-
-
 
 -- RETURN
 return RagdollFW

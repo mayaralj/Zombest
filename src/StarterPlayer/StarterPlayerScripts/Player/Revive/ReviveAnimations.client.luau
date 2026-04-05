@@ -1,12 +1,9 @@
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local ContentProvider = game:GetService("ContentProvider")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 
 -- FOLDERS
-local Events = ReplicatedStorage:WaitForChild("Events")
 local ClientData = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 
 -- MODULES

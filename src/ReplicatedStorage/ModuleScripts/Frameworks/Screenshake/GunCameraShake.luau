@@ -2,9 +2,6 @@ local GunCameraShake = {}
 
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UIS = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
 -- FOLDERS
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")

@@ -1364,6 +1364,9 @@ end
 
 -- STREAM BULLET
 function ScorchriftAssets.StreamBullet(PlayerFired, BulletData)
+	if PlayerFired:GetAttribute("IsWelding") then
+		return
+	end
 	local StreamBulletModel
 	if
 		not ClientGunDataModule.StreamBullet[PlayerFired]

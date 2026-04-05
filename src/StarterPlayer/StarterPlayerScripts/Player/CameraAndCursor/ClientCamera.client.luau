@@ -1,10 +1,7 @@
 -- SERVICES
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local StarterPlayerScripts = game.StarterPlayer.StarterPlayerScripts
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 
 -- FOLDERS
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
@@ -13,7 +10,6 @@ local ClientData = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild(
 -- MODULES
 local CharacterUtilities = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("ClientUtilities"))
 local ClientPlayerData = require(ClientData:WaitForChild("ClientPlayerData"))
-local ClientGunData = require(ClientData:WaitForChild("ClientGunData"))
 
 -- PLAYER AND CAMERA
 local Player = game.Players.LocalPlayer
@@ -45,6 +41,8 @@ local function DetermineOffset(Count, Offset)
 	elseif Count == 5 then
 		return CFrame.Angles(math.rad(-20), 0, 0) * Offset
 	end
+
+	return
 end
 
 -- APPLY CAMERA MOVEMENT

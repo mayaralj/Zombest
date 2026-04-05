@@ -27,7 +27,7 @@ PlayerData.DefaultData = {
 	},
 
 	Points = {
-		CurrentPoints = 5000,
+		CurrentPoints = 99999,
 	},
 
 	Stamina = {

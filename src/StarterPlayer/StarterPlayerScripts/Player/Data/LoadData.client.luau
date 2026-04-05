@@ -31,6 +31,7 @@ end)
 
 -- CREATE GUN DATA
 CreateClientGun.OnClientEvent:Connect(function(PlayerToCreate, EquippedGun)
+	ClientGunData:Remove(PlayerToCreate)
 	ClientGunData:CreateData(PlayerToCreate, EquippedGun)
 end)
 

@@ -1,23 +1,19 @@
 local GunFW = {}
 
 -- SERVICES
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CollectionService = game:GetService("CollectionService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 -- FOLDERS
-local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local Events = ReplicatedStorage:WaitForChild("Events")
 local GunModels = ReplicatedStorage:WaitForChild("GunModels")
-local GunEvents = Events:WaitForChild("GunEvents")
 local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 local ServerData = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Data")
-local Misc = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Misc")
 
 -- MODULES
 local PlayerData = require(ServerData:WaitForChild("PlayerData"))
 local GunData = require(ServerData:WaitForChild("GunData"))
-local BulletCleanupFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("BulletCleanupFW"))
 
 -- EVENTS
 local CreateClientGun = Events:WaitForChild("DataEvents"):WaitForChild("CreateClientGun")
@@ -26,7 +22,6 @@ local RemoveClientGun = Events:WaitForChild("DataEvents"):WaitForChild("RemoveCl
 -- TABLES
 local KnockedAttribute = {}
 local DeathConnection = {}
-local StoredWeaponModels = {}
 
 -- HELPER TO RESET GUN STATES
 local function ResetGunStates(PlayerToReset)
@@ -106,6 +101,9 @@ end
 
 -- HEAD GRIP POSITION
 local function HeadWeld(Character, GunClone, GripLocation)
+	local Player = Players:GetPlayerFromCharacter(Character)
+	Player:SetAttribute("IsWelding", true)
+	task.wait(0.15)
 	local Grip = Character:FindFirstChild(GripLocation)
 	if Grip and GunClone:IsA("Model") and GunClone.PrimaryPart then
 		GunClone.Parent = Character
@@ -136,6 +134,7 @@ local function HeadWeld(Character, GunClone, GripLocation)
 		GunClone.PrimaryPart.Massless = true
 		GunClone.PrimaryPart.CanCollide = false
 	end
+	Player:SetAttribute("IsWelding", false)
 end
 
 -- DETERMINE GRIP POSITION
@@ -174,7 +173,6 @@ local function GiveKnockedGun(Player, WeaponName)
 	end
 
 	-- ATTRIBUTES
-	SetAttributes(Data, Player)
 
 	-- DESTROY OTHER EQUIPPED GUN
 	local CurrentEquippedGun = Player.Character:FindFirstChild("EquippedGun")
@@ -199,10 +197,6 @@ local function GiveKnockedGun(Player, WeaponName)
 	end
 	Muzzle.Transparency = 1
 
-	-- DETERMINE GRIP
-	local GripLocation = Data.About.Location or "Right Arm"
-	DetermineWeld(Character, GunClone, GripLocation)
-
 	-- GIVE A THIRD OF GUNS TOTAL AMMO
 	Data.Ammo.TotalAmmo = math.floor(GunData.DefaultData[WeaponName].Ammo.TotalAmmo / 3)
 	-- RESET AMMO
@@ -212,6 +206,10 @@ local function GiveKnockedGun(Player, WeaponName)
 	SetAttributes(Data, Player)
 	Player:SetAttribute("IsEquippingGun", WeaponName)
 	Player:SetAttribute("IsEquipping", true)
+
+	-- DETERMINE GRIP
+	local GripLocation = Data.About.Location or "Right Arm"
+	DetermineWeld(Character, GunClone, GripLocation)
 
 	-- EQUIP TIME CHECKS
 	task.delay(0.5, function()
@@ -344,14 +342,14 @@ local function EquipAndWeld(Player, WeaponName, CreateData)
 	end
 	Muzzle.Transparency = 1
 
-	-- DETERMINE GRIP
-	local GripLocation = Data.About.Location or "Right Arm"
-	DetermineWeld(Character, GunClone, GripLocation)
-
 	-- SET EQUIPPING ATTRIBUTES
 	SetAttributes(Data, Player)
 	Player:SetAttribute("IsEquippingGun", WeaponName)
 	Player:SetAttribute("IsEquipping", true)
+
+	-- DETERMINE GRIP
+	local GripLocation = Data.About.Location or "Right Arm"
+	DetermineWeld(Character, GunClone, GripLocation)
 
 	-- EQUIP TIME CHECKS
 	local EquipTime
@@ -481,7 +479,6 @@ function GunFW.GiveWeapon(Player, WeaponName, CreateData)
 	local WeaponSlotData = CurrentPlayerData.WeaponSlots
 
 	-- ATTEMPT TO EQUIP GUN
-	ResetGunStates(Player)
 	local SuccessfulEquip = EquipAndWeld(Player, WeaponName, CreateData)
 
 	-- SET KNOCKED SIGNAL
@@ -491,10 +488,6 @@ function GunFW.GiveWeapon(Player, WeaponName, CreateData)
 			local AllowedKnockedGuns = { "Pistol", "RayGun" }
 			-- GUNS
 			local EquippingGun = Player:GetAttribute("IsEquippingGun")
-			local IsEquipping = Player:GetAttribute("IsEquipping")
-
-			-- RESET GUN STATES
-			ResetGunStates(Player)
 
 			-- IF PLAYER IS KNOCKED
 			if Player:GetAttribute("IsKnocked") then

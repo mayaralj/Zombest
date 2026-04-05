@@ -2,21 +2,14 @@ local ClientZombieEffects = {}
 
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local ContentProvider = game:GetService("ContentProvider")
 local TweenService = game:GetService("TweenService")
-local CollectionService = game:GetService("CollectionService")
 local DebrisService = game:GetService("Debris")
-local PLayers = game:GetService("Players")
-local LocalPlayer = PLayers.LocalPlayer
 
 -- FOLDERS
-local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 
 -- EVENTS
 
 -- MODULES
-local ClientZombieData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientZombieData"))
 
 -- CLEANUP BURN
 local BurnHighlightTween = {}

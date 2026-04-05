@@ -1,14 +1,11 @@
 -- SERVICES
-local StartPlayerScripts = game:GetService("StarterPlayer"):WaitForChild("StarterPlayerScripts")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- FOLDERS
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
-local Client = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 
 -- MODULES
 local CharacterUtlities = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("ClientUtilities"))
-local ClientPlayerData = require(Client:WaitForChild("ClientPlayerData"))
 
 -- PLAYER
 local Players = game:GetService("Players")

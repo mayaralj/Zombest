@@ -1,8 +1,6 @@
 -- SERVICES
 local UIS = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 
 -- FOLDERS
 local Events = ReplicatedStorage:WaitForChild("Events")

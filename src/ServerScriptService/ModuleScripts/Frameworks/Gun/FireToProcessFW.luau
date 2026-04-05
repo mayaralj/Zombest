@@ -5,32 +5,20 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local CollectionService = game:GetService("CollectionService")
 
 -- FOLDERS
 local Events = ReplicatedStorage:WaitForChild("Events")
 local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
-local PhaseParts = workspace:WaitForChild("PhaseParts")
-local Client = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 
 -- EVENTS
-local StartShooting = Events:WaitForChild("GunEvents"):WaitForChild("StartShooting")
-local StopShooting = Events:WaitForChild("GunEvents"):WaitForChild("StopShooting")
 local FireVisualBullet = Events:WaitForChild("GunEvents"):WaitForChild("FireVisualBullet")
-local DeleteVisualBullet = Events:WaitForChild("GunEvents"):WaitForChild("DeleteVisualBullet")
 local GunCameraShakeEvent = Events:WaitForChild("GunEvents"):WaitForChild("GunCameraShakeEvent")
 
 -- MODULES
-local BulletFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("BulletFW"))
 local PlayerData =
 	require(ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Data"):WaitForChild("PlayerData"))
 local GunData = require(ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Data"):WaitForChild("GunData"))
-local ZombieData =
-	require(ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Data"):WaitForChild("ZombieData"))
-local ClientGunData = require(Client:WaitForChild("ClientGunData"))
 local BulletCleanupFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("BulletCleanupFW"))
-local GunMiscFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("GunMiscFW"))
 local BulletProcessFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("BulletProcessFW"))
 
 -- RAYPARAMS FOR PLAYER

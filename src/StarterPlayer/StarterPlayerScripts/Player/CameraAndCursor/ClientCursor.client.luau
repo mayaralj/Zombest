@@ -1,11 +1,9 @@
 -- SERVICES
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local StarterPlayerScripts = game.StarterPlayer.StarterPlayerScripts
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local Workspace = game:GetService("Workspace")
 
 -- PLAYER AND CAMERA
 local Player = Players.LocalPlayer
@@ -13,7 +11,6 @@ local PlayerMouse = Player:GetMouse()
 local PlayerGUI = Player.PlayerGui
 
 -- FOLDERS
-local Events = ReplicatedStorage:WaitForChild("Events")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local ClientData = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 

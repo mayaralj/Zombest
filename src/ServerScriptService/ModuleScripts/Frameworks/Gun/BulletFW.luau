@@ -2,7 +2,6 @@ local BulletEffects = {}
 
 -- SERVICES
 local Players = game:GetService("Players")
-local Debris = game:GetService("Debris")
 local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,7 +10,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Data = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Data")
 local Events = ReplicatedStorage:WaitForChild("Events")
 local BulletEvents = Events:WaitForChild("BulletEvents")
-local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 
 -- MODULES
 local PlayerData = require(Data:WaitForChild("PlayerData"))
@@ -25,7 +23,6 @@ local AOEFX = BulletEvents:WaitForChild("AOEFX")
 local BurnEffect = BulletEvents:WaitForChild("BurnEffect")
 
 -- TABLES
-local EffectCooldown = {}
 
 -- HANDLE EFFECTS ON BULLET HIT
 function BulletEffects.OnBulletHitEffect(ResultData, BulletData, IsZombie)

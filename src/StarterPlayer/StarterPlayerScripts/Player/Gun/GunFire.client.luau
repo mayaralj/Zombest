@@ -2,9 +2,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
-local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
-local StarterPlayer = game:GetService("StarterPlayer")
 
 -- PLAYER
 local Player = Players.LocalPlayer
@@ -89,6 +87,9 @@ local function CalculateShotDirection()
 		return
 	end
 	if Player:GetAttribute("IsReviving") then
+		return
+	end
+	if Player:GetAttribute("IsRevived") then
 		return
 	end
 
@@ -183,7 +184,6 @@ local function ProcessShotRequest()
 	if not Origin or not FinalDirection or not HandlePos then
 		return
 	end
-
 	StartShooting:FireServer(Origin, FinalDirection, HandlePos)
 end
 

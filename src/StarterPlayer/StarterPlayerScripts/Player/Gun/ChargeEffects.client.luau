@@ -1,20 +1,15 @@
 -- SERVICES
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
-local CollectionService = game:GetService("CollectionService")
-local ContentProvider = game:GetService("ContentProvider")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Player = Players.LocalPlayer
 
 -- FOLDERS
 local Events = ReplicatedStorage:WaitForChild("Events")
-local BulletEvents = Events:WaitForChild("BulletEvents")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 
 -- MODULES
 local ClientGunData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientGunData"))
-local ClientZombieData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientZombieData"))
-local ClientPlayerData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientPlayerData"))
 local ScreenShake =
 	require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("Screenshake"):WaitForChild("ScreenShake"))
 

@@ -1,7 +1,5 @@
 -- PLAYER
 local Players = game:GetService("Players")
-local StarterPlayer = game:GetService("StarterPlayer")
-local StarterPlayerScripts = StarterPlayer.StarterPlayerScripts
 local Player = Players.LocalPlayer
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

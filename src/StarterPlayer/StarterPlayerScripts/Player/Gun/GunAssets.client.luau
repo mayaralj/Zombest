@@ -1,10 +1,5 @@
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CollectionService = game:GetService("CollectionService")
-local ContentProvider = game:GetService("ContentProvider")
-local TweenService = game:GetService("TweenService")
-local Debris = game:GetService("Debris")
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -15,13 +10,11 @@ local PerGunAssets = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChil
 
 -- MODULES
 local ClientGunDataModule = require(ClientData:WaitForChild("ClientGunData"))
-local ClientPlayerData = require(ClientData:WaitForChild("ClientPlayerData"))
 local ClientUtilities =
 	require(ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Misc"):WaitForChild("ClientUtilities"))
 local DetermineAssets = require(PerGunAssets:WaitForChild("DetermineAssets"))
 
 -- EVENTS
-local TimeChange = Events:WaitForChild("MapEvents"):WaitForChild("TimeChange")
 
 -- GUN ASSETS FOLDER AND EVENTS
 local GunAssetsEvents = Events:WaitForChild("GunAssetsEvents")

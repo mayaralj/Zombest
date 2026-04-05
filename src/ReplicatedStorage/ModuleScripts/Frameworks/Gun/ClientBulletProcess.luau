@@ -3,31 +3,18 @@ local ClientBulletProcess = {}
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
-local Debris = game:GetService("Debris")
-local RunService = game:GetService("RunService")
-local Player = game.Players.LocalPlayer
 
 -- FOLDERS
-local Events = ReplicatedStorage:WaitForChild("Events")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local Frameworks = ModuleScripts:WaitForChild("Frameworks")
-local Client = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
 
 -- EVENTS
-local FireVisualBullet = Events:WaitForChild("GunEvents"):WaitForChild("FireVisualBullet")
-local DeleteVisualBullet = Events:WaitForChild("GunEvents"):WaitForChild("DeleteVisualBullet")
 
 -- MODULES
-local ClientGunData = require(Client:WaitForChild("ClientGunData"))
 local ClientBulletCleanup = require(Frameworks:WaitForChild("Gun"):WaitForChild("ClientBulletCleanup"))
-local RockModule = require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("Rock"):WaitForChild("RockModule"))
 local DetermineAssets = require(ModuleScripts:WaitForChild("PerGunAssets"):WaitForChild("DetermineAssets"))
-local ObjectPoolFW =
-	require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("ObjectPool"):WaitForChild("ObjectPoolFW"))
 
 -- OTHER
-local BulletTypes = ReplicatedStorage:WaitForChild("BulletTypes")
-local BulletsFolder = workspace:WaitForChild("BulletsFolder")
 
 -- PROCESS REGULAR BULLETS
 local function ProcessRegularBullet(BulletData, DT)

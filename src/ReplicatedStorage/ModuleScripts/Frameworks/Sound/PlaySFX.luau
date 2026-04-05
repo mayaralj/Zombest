@@ -1,7 +1,6 @@
 local PlaySFX = {}
 
 -- SERVICES
-local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

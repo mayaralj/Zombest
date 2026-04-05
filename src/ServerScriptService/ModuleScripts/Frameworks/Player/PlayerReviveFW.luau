@@ -112,13 +112,13 @@ function PlayerReviveFW.ReviveInteract(KnockedPlayer)
 		task.delay(5, function()
 			-- DESTROY PROMPT
 			Prompt:Destroy()
-			-- REMOVE ISREVIVING ATTRIBUTE
-			RevivePlayer(KnockedPlayer)
 			-- GIVE KNOCKED PLAYER REVIVED ATTRIBUTE
 			KnockedPlayer:SetAttribute("IsRevived", true)
 			task.delay(1, function()
 				KnockedPlayer:SetAttribute("IsRevived", false)
 			end)
+			-- REMOVE ISREVIVING ATTRIBUTE
+			RevivePlayer(KnockedPlayer)
 			-- SET GETTING REVIVED ATTRIBUTE TO KNOCKED PLAYER
 			KnockedPlayer:SetAttribute("IsGettingRevived", false)
 		end)

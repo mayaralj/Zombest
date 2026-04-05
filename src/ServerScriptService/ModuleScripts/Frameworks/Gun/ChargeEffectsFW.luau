@@ -1,20 +1,15 @@
 local ChargeEffectsFW = {}
 
 -- SERVICES
-local Players = game:GetService("Players")
-local Debris = game:GetService("Debris")
 local ServerScriptService = game:GetService("ServerScriptService")
-local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- FOLDERS
 local Data = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Data")
 local Events = ReplicatedStorage:WaitForChild("Events")
-local BulletEvents = Events:WaitForChild("BulletEvents")
 
 -- MODULES
 local PlayerData = require(Data:WaitForChild("PlayerData"))
-local ZombieData = require(Data:WaitForChild("ZombieData"))
 
 -- EVENTS
 local GunOverChargeEvent = Events:WaitForChild("GunEvents"):WaitForChild("GunOverCharge")

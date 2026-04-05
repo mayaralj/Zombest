@@ -5,11 +5,9 @@ local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 
-
 -- MODULES
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local ClientGunData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientGunData"))
-
 
 -- UI
 local PlayerGui = LocalPlayer.PlayerGui
@@ -19,11 +17,8 @@ local GunName = Frame:WaitForChild("GunName")
 local CurrentAmmo = Frame:WaitForChild("CurrentAmmo")
 local TotalAmmo = Frame:WaitForChild("TotalAmmo")
 
-
 -- CONNECTIONS
 local Connections = {}
-
-
 
 -- AMMO GUI
 local function SetUpAmmoGui()
@@ -35,41 +30,49 @@ local function SetUpAmmoGui()
 	end
 	Connections["CurrentAmmoChanged"] = LocalPlayer:GetAttributeChangedSignal("CurrentAmmo"):Connect(function()
 		local EquippingGun = LocalPlayer:GetAttribute("IsEquippingGun")
-		if not EquippingGun then return end
+		if not EquippingGun then
+			return
+		end
 		CurrentAmmo.Text = LocalPlayer:GetAttribute("CurrentAmmo")
 	end)
 	Connections["TotalAmmoChanged"] = LocalPlayer:GetAttributeChangedSignal("TotalAmmo"):Connect(function()
 		local EquippingGun = LocalPlayer:GetAttribute("IsEquippingGun")
-		if not EquippingGun then return end
+		if not EquippingGun then
+			return
+		end
 		TotalAmmo.Text = LocalPlayer:GetAttribute("TotalAmmo")
 	end)
 end
-
-
 
 -- CHARGE GUI
 local function SetUpChargeGui()
 	if LocalPlayer:GetAttribute("CurrentCharge") then
 		local EquippingGun = LocalPlayer:GetAttribute("IsEquippingGun")
-		if not EquippingGun then return end
-		
+		if not EquippingGun then
+			return
+		end
+
 		local CurrentCharge = LocalPlayer:GetAttribute("CurrentCharge")
-		if CurrentCharge <= 0 then CurrentCharge = 0 end
+		if CurrentCharge <= 0 then
+			CurrentCharge = 0
+		end
 		CurrentAmmo.Text = CurrentCharge
 		TotalAmmo.Text = "%"
 	end
 	Connections["CurrentChargeChanged"] = LocalPlayer:GetAttributeChangedSignal("CurrentCharge"):Connect(function()
 		local EquippingGun = LocalPlayer:GetAttribute("IsEquippingGun")
-		if not EquippingGun then return end
-		
+		if not EquippingGun then
+			return
+		end
+
 		local CurrentCharge = LocalPlayer:GetAttribute("CurrentCharge")
-		if CurrentCharge <= 0 then CurrentCharge = 0 end
+		if CurrentCharge <= 0 then
+			CurrentCharge = 0
+		end
 		CurrentAmmo.Text = CurrentCharge
 		TotalAmmo.Text = "%"
 	end)
 end
-
-
 
 -- GUN GUi
 local function SetUpGunGui()
@@ -79,10 +82,12 @@ local function SetUpGunGui()
 		local Count = 0
 		repeat
 			CurrentGunData = ClientGunData:Get(LocalPlayer)
-			Count+=1
+			Count += 1
 			task.wait()
 		until CurrentGunData or Count == 10
-		if not CurrentGunData then return end
+		if not CurrentGunData then
+			return
+		end
 
 		-- SET UP THE AMMO/CHARGE
 		GunName.Text = CurrentGunData.About.Name
@@ -93,7 +98,7 @@ local function SetUpGunGui()
 			--TotalAmmo.Position = UDim2.new(0.725, 0, 0.196, 0)
 			SetUpChargeGui()
 		end
-		
+
 		-- ENABLE
 		GunGui.Enabled = true
 	else
@@ -101,8 +106,6 @@ local function SetUpGunGui()
 		GunGui.Enabled = false
 	end
 end
-
-
 
 -- SET UP GUI
 local function SetUpAllGun()
@@ -116,7 +119,6 @@ local function SetUpAllGun()
 end
 -- SET UP ON FIRST SPAWN
 SetUpAllGun()
-
 
 -- CLEAN UP ALL CONNECTIONS ON DEATH
 Humanoid.Died:Connect(function()

@@ -2,20 +2,14 @@ local ClientFireProcess = {}
 
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
-local Player = game.Players.LocalPlayer
 
 -- FOLDERS
-local Events = ReplicatedStorage:WaitForChild("Events")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local Frameworks = ModuleScripts:WaitForChild("Frameworks")
 local Client = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Client")
-local GunVFX = ReplicatedStorage:WaitForChild("GunVFX")
 
 -- EVENTS
-local FireVisualBullet = Events:WaitForChild("GunEvents"):WaitForChild("FireVisualBullet")
-local DeleteVisualBullet = Events:WaitForChild("GunEvents"):WaitForChild("DeleteVisualBullet")
 
 -- MODULES
 local ClientGunData = require(Client:WaitForChild("ClientGunData"))
@@ -28,7 +22,6 @@ local DetermineAssets = require(ModuleScripts:WaitForChild("PerGunAssets"):WaitF
 -- OTHER
 local BulletTypes = ReplicatedStorage:WaitForChild("BulletTypes")
 local BulletCasings = ReplicatedStorage:WaitForChild("BulletCasings")
-local BulletsFolder = workspace:WaitForChild("BulletsFolder")
 
 -- CREATE POOL FOR EACH BULLET TYPE
 for _, BulletType in BulletTypes:GetChildren() do
