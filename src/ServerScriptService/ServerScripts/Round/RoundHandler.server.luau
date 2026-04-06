@@ -156,5 +156,7 @@ while #Players:GetPlayers() == 0 do
 	task.wait(1)
 end
 RoundStart.StartTimer(15)
---RoundStart.TeleportPlayersToMap()
+task.wait(3)
+RoundStart.TeleportPlayersToMap()
+RoundStart.SetPlayersTeams()
 ZombieSpawnerFW.SpawnZombies(1000000)

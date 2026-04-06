@@ -51,7 +51,7 @@ UpdateTimerEvent.OnClientEvent:Connect(function(EndTime)
 				i = (i % 4)
 				RoundText.Text = "ROUND STARTING" .. string.rep(". ", i)
 				i += 1
-				task.wait(0.2)
+				task.wait(0.25)
 			end
 
 			-- RESET GUI PROPERTIES CHANGED

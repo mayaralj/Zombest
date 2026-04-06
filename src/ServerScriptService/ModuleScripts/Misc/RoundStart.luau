@@ -2,6 +2,7 @@ local RoundStart = {}
 
 -- SERVICES
 local Players = game:GetService("Players")
+local Teams = game:GetService("Teams")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -11,32 +12,55 @@ local RoundEvents = Events:WaitForChild("RoundEvents")
 local UpdateTimerEvent = RoundEvents:WaitForChild("UpdateTimerEvent")
 
 -- FUNCTION TO BEGIN TIMER
+local TimerConnection
+local PlayerAddedConn
 function RoundStart.StartTimer(Duration)
 	local StartTime = workspace:GetServerTimeNow()
 	local EndTime = StartTime + Duration
 	UpdateTimerEvent:FireAllClients(EndTime)
 
-	local PlayerAddedConn
+	if TimerConnection then
+		TimerConnection:Disconnect()
+	end
+	if PlayerAddedConn then
+		PlayerAddedConn:Disconnect()
+	end
+
 	PlayerAddedConn = Players.PlayerAdded:Connect(function(PlayerJoined)
 		UpdateTimerEvent:FireClient(PlayerJoined, EndTime)
 	end)
 
-	local Connection
-	local TimerEnded = false
-	Connection = RunService.Heartbeat:Connect(function()
-		if TimerEnded then
-			return
-		end
+	TimerConnection = RunService.Heartbeat:Connect(function()
 		local CurrentTime = workspace:GetServerTimeNow()
 		if CurrentTime >= EndTime then
-			TimerEnded = true
-			task.delay(3, function()
-				RoundStart.TeleportPlayersToMap()
-				Connection:Disconnect()
-				PlayerAddedConn:Disconnect()
-			end)
+			TimerConnection:Disconnect()
+			TimerConnection = nil
+			PlayerAddedConn:Disconnect()
+			PlayerAddedConn = nil
 		end
 	end)
+
+	-- YIELD TILL TIMER ENDS
+	while TimerConnection and PlayerAddedConn do
+		task.wait(0.1)
+	end
+end
+
+-- FUNCTION TO SET PLAYERS TEAMS
+function RoundStart.SetPlayersTeams()
+	local InRound = Teams:FindFirstChild("InRound")
+	local Lobby = Teams:FindFirstChild("Lobby")
+
+	for _, Player in pairs(Players:GetPlayers()) do
+		Player.Team = InRound
+		local Character = Player.Character
+		local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+		if Humanoid then
+			Humanoid.Died:Once(function()
+				Player.Team = Lobby
+			end)
+		end
+	end
 end
 
 -- FUNCTION TO SHUFFLE AN ARRAY, USED TO RANDOMIZE SPAWN POINTS
