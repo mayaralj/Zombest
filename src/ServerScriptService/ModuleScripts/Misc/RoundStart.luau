@@ -16,17 +16,24 @@ function RoundStart.StartTimer(Duration)
 	local EndTime = StartTime + Duration
 	UpdateTimerEvent:FireAllClients(EndTime)
 
-	Players.PlayerAdded:Connect(function(PlayerJoined)
+	local PlayerAddedConn
+	PlayerAddedConn = Players.PlayerAdded:Connect(function(PlayerJoined)
 		UpdateTimerEvent:FireClient(PlayerJoined, EndTime)
 	end)
 
 	local Connection
+	local TimerEnded = false
 	Connection = RunService.Heartbeat:Connect(function()
+		if TimerEnded then
+			return
+		end
 		local CurrentTime = workspace:GetServerTimeNow()
 		if CurrentTime >= EndTime then
+			TimerEnded = true
 			task.delay(3, function()
-				UpdateTimerEvent:FireAllClients("0")
+				RoundStart.TeleportPlayersToMap()
 				Connection:Disconnect()
+				PlayerAddedConn:Disconnect()
 			end)
 		end
 	end)
