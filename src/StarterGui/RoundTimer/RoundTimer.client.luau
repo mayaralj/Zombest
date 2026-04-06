@@ -15,17 +15,53 @@ local Frame = RoundTimerGui:WaitForChild("Frame")
 local RoundText = Frame:WaitForChild("RoundText")
 local TimerText = Frame:WaitForChild("TimerText")
 
+local Connection
 UpdateTimerEvent.OnClientEvent:Connect(function(EndTime)
-	local TimeLeft = math.max(0, EndTime - workspace:GetServerTimeNow())
-	local Connection
-	Connection = RunService.Heartbeat:Connect(function()
-		TimeLeft = math.max(0, EndTime - workspace:GetServerTimeNow())
-		-- ROUND TIME LEFT
-		TimeLeft = math.ceil(TimeLeft)
-		TimerText.Text = TimeLeft
-		if TimeLeft <= 0 then
-			TimerText.Text = "0"
+	if EndTime == "0" then
+		RoundTimerGui.Enabled = false
+		TimerText.Text = "0"
+		RoundText.Text = "ROUND STARTING IN: "
+		if Connection then
 			Connection:Disconnect()
+		end
+	else
+		TimerText.Text = math.ceil(math.max(0, EndTime - workspace:GetServerTimeNow()))
+		RoundTimerGui.Enabled = true
+	end
+
+	local TimerEnded = false
+
+	Connection = RunService.Heartbeat:Connect(function()
+		if TimerEnded then
+			return
+		end
+
+		local TimeLeft = math.ceil(math.max(0, EndTime - workspace:GetServerTimeNow()))
+		TimerText.Text = TimeLeft
+
+		if TimeLeft <= 0 then
+			TimerEnded = true
+			TimerText.Text = ""
+
+			-- STORE ORIGINAL GUI PROPERTIES BEFORE CHANGING
+			local OriginalAnchor = RoundText.AnchorPoint
+			local OriginalPosition = RoundText.Position
+
+			RoundText.AnchorPoint = Vector2.new(0.5, 0.5)
+			RoundText.Position = UDim2.fromScale(0.5, 0.5)
+
+			local i = 0
+			while Connection do
+				i = (i % 4)
+				RoundText.Text = "ROUND STARTING" .. string.rep(". ", i)
+				i += 1
+				task.wait(0.2)
+			end
+
+			-- RESET GUI PROPERTIES CHANGED
+			RoundText.AnchorPoint = OriginalAnchor
+			RoundText.Position = OriginalPosition
+			RoundText.Text = ""
 		end
 	end)
 end)

@@ -24,7 +24,10 @@ function RoundStart.StartTimer(Duration)
 	Connection = RunService.Heartbeat:Connect(function()
 		local CurrentTime = workspace:GetServerTimeNow()
 		if CurrentTime >= EndTime then
-			Connection:Disconnect()
+			task.delay(3, function()
+				UpdateTimerEvent:FireAllClients("0")
+				Connection:Disconnect()
+			end)
 		end
 	end)
 end
