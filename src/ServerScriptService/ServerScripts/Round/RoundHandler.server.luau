@@ -6,7 +6,6 @@ local ServerStorage = game:GetService("ServerStorage")
 local Teams = game:GetService("Teams")
 
 -- FOLDERS
-local MapFolder = ServerStorage:FindFirstChild("Maps")
 local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
 local Misc = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Misc")
@@ -14,10 +13,11 @@ local Misc = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Mis
 -- MODULES
 local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
 local ZombieSpawnerFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieSpawnerFW"))
-local MapSpawn = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("MapSpawn"))
+local RoundStart = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("RoundStart"))
 local GunFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("GunFW"))
 local Utilities = require(Misc:WaitForChild("Utilities"))
 
+-- KEEP SHUFFLING THE GIVE GUN PARTS AROUND MAP
 task.spawn(function()
 	local GiveGunParts = workspace:WaitForChild("GiveGunParts")
 	if not GiveGunParts then
@@ -87,72 +87,74 @@ task.spawn(function()
 	end
 end)
 
-task.wait(3)
 --- TEST TEST TESTTTTTTTTTTTTTTT ---
 -- HELPER
-local Connections = {}
-local function GivePistolToPlayer(Character)
-	local Player = Players:GetPlayerFromCharacter(Character)
-	if not Player then
-		return
-	end
-	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-	if not Humanoid then
-		return
-	end
+--local Connections = {}
+-- local function GivePistolToPlayer(Character)
+-- 	local Player = Players:GetPlayerFromCharacter(Character)
+-- 	if not Player then
+-- 		return
+-- 	end
+-- 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+-- 	if not Humanoid then
+-- 		return
+-- 	end
 
-	-- GIVE GUN DONT ALLOW IF ALREADY HAS GUN AND ADD A DELAY
-	task.delay(1, function()
-		if not Player or not Character then
-			return
-		end
-		local CurrentPlayerData = PlayerData:Get(Player)
-		if not CurrentPlayerData then
-			return
-		end
-		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
+-- 	-- GIVE GUN DONT ALLOW IF ALREADY HAS GUN AND ADD A DELAY
+-- 	task.delay(1, function()
+-- 		if not Player or not Character then
+-- 			return
+-- 		end
+-- 		local CurrentPlayerData = PlayerData:Get(Player)
+-- 		if not CurrentPlayerData then
+-- 			return
+-- 		end
+-- 		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 
-		GunFW.GiveWeapon(Player, "Scorchrift", true)
-		--task.wait(2)
-		--GunFW.GiveWeapon(Player, "Pistol", true)
-	end)
+-- 		GunFW.GiveWeapon(Player, "Pistol", true)
+-- 		--task.wait(2)
+-- 		--GunFW.GiveWeapon(Player, "Pistol", true)
+-- 	end)
 
-	task.delay(5, function()
-		if not Player or not Player.Parent or not Character then
-			return
-		end
-		Player.Team = Teams:FindFirstChild("InRound")
-	end)
+-- 	task.delay(5, function()
+-- 		if not Player or not Player.Parent or not Character then
+-- 			return
+-- 		end
+-- 		Player.Team = Teams:FindFirstChild("InRound")
+-- 	end)
 
-	if Connections[Player] then
-		Connections[Player]:Disconnect()
-		Connections[Player] = nil
-	end
+-- 	if Connections[Player] then
+-- 		Connections[Player]:Disconnect()
+-- 		Connections[Player] = nil
+-- 	end
 
-	Connections[Player] = Humanoid.Died:Connect(function()
-		local CurrentPlayerData = PlayerData:Get(Player)
-		if not CurrentPlayerData then
-			return
-		end
+-- 	Connections[Player] = Humanoid.Died:Connect(function()
+-- 		local CurrentPlayerData = PlayerData:Get(Player)
+-- 		if not CurrentPlayerData then
+-- 			return
+-- 		end
 
-		-- RESET TEAM
-		Player.Team = Teams:FindFirstChild("Lobby")
+-- 		-- RESET TEAM
+-- 		Player.Team = Teams:FindFirstChild("Lobby")
 
-		-- LOWER POINTS IF DEAD
-		CurrentPlayerData.Points.CurrentPoints = CurrentPlayerData.Points.CurrentPoints * 0.75
+-- 		-- LOWER POINTS IF DEAD
+-- 		CurrentPlayerData.Points.CurrentPoints = CurrentPlayerData.Points.CurrentPoints * 0.75
 
-		-- UPDATE ATTRIBUTE
-		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
+-- 		-- UPDATE ATTRIBUTE
+-- 		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 
-		if Connections[Player] then
-			Connections[Player]:Disconnect()
-		end
-	end)
-end
--- GIVE PISTOL TO PLAYERS ON EACH RESPAWN
-Utilities.BindToCharacter(GivePistolToPlayer)
+-- 		if Connections[Player] then
+-- 			Connections[Player]:Disconnect()
+-- 		end
+-- 	end)
+-- end
+-- -- GIVE PISTOL TO PLAYERS ON EACH RESPAWN
+-- Utilities.BindToCharacter(GivePistolToPlayer)
 
 -- CURRENT MAP
-local CurrentMap = MapSpawn.SpawnMap()
---MapSpawn.TeleportPlayersToMap(CurrentMap)
-ZombieSpawnerFW.SpawnZombies(1000000, CurrentMap)
+while #Players:GetPlayers() == 0 do
+	task.wait(1)
+end
+RoundStart.StartTimer(1000)
+--RoundStart.TeleportPlayersToMap()
+ZombieSpawnerFW.SpawnZombies(1000000)

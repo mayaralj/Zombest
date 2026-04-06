@@ -818,7 +818,7 @@ local function ZombieLoop()
 end
 
 -- FUNCTION TO MASS SPAWN ZOMBIES AT CORRECT LOCATION
-function ZombieSpawnerFW.SpawnZombies(Count, Map)
+function ZombieSpawnerFW.SpawnZombies(Count)
 	--local SpawnFolder = Map:WaitForChild("Spawns")
 	--local SpawnPoints = SpawnFolder:GetChildren()
 	local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()

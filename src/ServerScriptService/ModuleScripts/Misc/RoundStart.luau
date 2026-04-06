@@ -1,38 +1,32 @@
-local MapSpawn = {}
+local RoundStart = {}
 
 -- SERVICES
 local Players = game:GetService("Players")
-local ServerStorage = game:GetService("ServerStorage")
-local Teams = game:GetService("Teams")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- FOLDERS
-local MapFolder = ServerStorage:FindFirstChild("Maps")
+-- EVENTS
+local Events = ReplicatedStorage:WaitForChild("Events")
+local RoundEvents = Events:WaitForChild("RoundEvents")
+local UpdateTimerEvent = RoundEvents:WaitForChild("UpdateTimerEvent")
 
--- FUNCTION TO SPAWN A RANDOM MAP
-function MapSpawn.SpawnMap()
-	while true do
-		local Success, Result = pcall(function()
-			local Maps = MapFolder:GetChildren()
-			local MapTemplate = Maps[math.random(1, #Maps)]:Clone()
+-- FUNCTION TO BEGIN TIMER
+function RoundStart.StartTimer(Duration)
+	local StartTime = workspace:GetServerTimeNow()
+	local EndTime = StartTime + Duration
+	UpdateTimerEvent:FireAllClients(EndTime)
 
-			return MapTemplate
-		end)
+	Players.PlayerAdded:Connect(function(PlayerJoined)
+		UpdateTimerEvent:FireClient(PlayerJoined, EndTime)
+	end)
 
-		if Success then
-			local ClonedMap = Result
-			ClonedMap.Parent = workspace
-
-			if ClonedMap.PrimaryPart then
-				ClonedMap:SetPrimaryPartCFrame(CFrame.new(0, 1000, 0))
-			end
-
-			return ClonedMap
-		else
-			local ErrorMessage = Result
-			warn("Failed to spawn map:", ErrorMessage)
-			task.wait(0.2)
+	local Connection
+	Connection = RunService.Heartbeat:Connect(function()
+		local CurrentTime = workspace:GetServerTimeNow()
+		if CurrentTime >= EndTime then
+			Connection:Disconnect()
 		end
-	end
+	end)
 end
 
 -- FUNCTION TO SHUFFLE AN ARRAY, USED TO RANDOMIZE SPAWN POINTS
@@ -58,10 +52,8 @@ local function IsStandingOnGround(Character)
 end
 
 -- TELEPORT ALL PLAYERS TO MAP SPAWNS
-function MapSpawn.TeleportPlayersToMap(Map)
-	local SpawnsFolder = Map:WaitForChild("Spawns")
-	local Spawns = SpawnsFolder:GetChildren()
-
+function RoundStart.TeleportPlayersToMap()
+	local Spawns = workspace:WaitForChild("SpawnLocations"):GetChildren()
 	ShuffleArray(Spawns)
 
 	for i, Player in pairs(Players:GetPlayers()) do
@@ -88,4 +80,4 @@ function MapSpawn.TeleportPlayersToMap(Map)
 	end
 end
 
-return MapSpawn
+return RoundStart
