@@ -108,21 +108,21 @@ function PlayerReviveFW.ReviveInteract(KnockedPlayer)
 		ReviveConnections[KnockedPlayer] = {}
 	end
 
-	if #Players:GetPlayers() == 1 then
-		task.delay(5, function()
-			-- DESTROY PROMPT
-			Prompt:Destroy()
-			-- GIVE KNOCKED PLAYER REVIVED ATTRIBUTE
-			KnockedPlayer:SetAttribute("IsRevived", true)
-			task.delay(1, function()
-				KnockedPlayer:SetAttribute("IsRevived", false)
-			end)
-			-- REMOVE ISREVIVING ATTRIBUTE
-			RevivePlayer(KnockedPlayer)
-			-- SET GETTING REVIVED ATTRIBUTE TO KNOCKED PLAYER
-			KnockedPlayer:SetAttribute("IsGettingRevived", false)
-		end)
-	end
+	-- if #Players:GetPlayers() == 1 then
+	-- 	task.delay(5, function()
+	-- 		-- DESTROY PROMPT
+	-- 		Prompt:Destroy()
+	-- 		-- GIVE KNOCKED PLAYER REVIVED ATTRIBUTE
+	-- 		KnockedPlayer:SetAttribute("IsRevived", true)
+	-- 		task.delay(1, function()
+	-- 			KnockedPlayer:SetAttribute("IsRevived", false)
+	-- 		end)
+	-- 		-- REMOVE ISREVIVING ATTRIBUTE
+	-- 		RevivePlayer(KnockedPlayer)
+	-- 		-- SET GETTING REVIVED ATTRIBUTE TO KNOCKED PLAYER
+	-- 		KnockedPlayer:SetAttribute("IsGettingRevived", false)
+	-- 	end)
+	-- end
 
 	-- PROMPT TRIGGERED
 	ReviveConnections[KnockedPlayer]["PromptTriggered"] = Prompt.Triggered:Connect(function(PlayerReviving)

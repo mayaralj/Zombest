@@ -87,76 +87,14 @@ task.spawn(function()
 	end
 end)
 
---- TEST TEST TESTTTTTTTTTTTTTTT ---
--- HELPER
---local Connections = {}
--- local function GivePistolToPlayer(Character)
--- 	local Player = Players:GetPlayerFromCharacter(Character)
--- 	if not Player then
--- 		return
--- 	end
--- 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
--- 	if not Humanoid then
--- 		return
--- 	end
-
--- 	-- GIVE GUN DONT ALLOW IF ALREADY HAS GUN AND ADD A DELAY
--- 	task.delay(1, function()
--- 		if not Player or not Character then
--- 			return
--- 		end
--- 		local CurrentPlayerData = PlayerData:Get(Player)
--- 		if not CurrentPlayerData then
--- 			return
--- 		end
--- 		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
-
--- 		GunFW.GiveWeapon(Player, "Pistol", true)
--- 		--task.wait(2)
--- 		--GunFW.GiveWeapon(Player, "Pistol", true)
--- 	end)
-
--- 	task.delay(5, function()
--- 		if not Player or not Player.Parent or not Character then
--- 			return
--- 		end
--- 		Player.Team = Teams:FindFirstChild("InRound")
--- 	end)
-
--- 	if Connections[Player] then
--- 		Connections[Player]:Disconnect()
--- 		Connections[Player] = nil
--- 	end
-
--- 	Connections[Player] = Humanoid.Died:Connect(function()
--- 		local CurrentPlayerData = PlayerData:Get(Player)
--- 		if not CurrentPlayerData then
--- 			return
--- 		end
-
--- 		-- RESET TEAM
--- 		Player.Team = Teams:FindFirstChild("Lobby")
-
--- 		-- LOWER POINTS IF DEAD
--- 		CurrentPlayerData.Points.CurrentPoints = CurrentPlayerData.Points.CurrentPoints * 0.75
-
--- 		-- UPDATE ATTRIBUTE
--- 		Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
-
--- 		if Connections[Player] then
--- 			Connections[Player]:Disconnect()
--- 		end
--- 	end)
--- end
--- -- GIVE PISTOL TO PLAYERS ON EACH RESPAWN
--- Utilities.BindToCharacter(GivePistolToPlayer)
-
 -- CURRENT MAP
 while #Players:GetPlayers() == 0 do
 	task.wait(1)
 end
-RoundStart.StartTimer(15)
-task.wait(3)
-RoundStart.TeleportPlayersToMap()
-RoundStart.SetPlayersTeams()
-ZombieSpawnerFW.SpawnZombies(1000000)
+while true do
+	RoundStart.StartTimer(15)
+	task.wait(3)
+	RoundStart.TeleportPlayersToMap()
+	RoundStart.SetPlayersTeams()
+	ZombieSpawnerFW.SpawnZombies(1000000)
+end

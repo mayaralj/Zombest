@@ -98,7 +98,7 @@ function PlayerKnockedFW.KnockedState(Character)
 		if Health <= 0 and Player:GetAttribute("ForceKill") then
 			return
 		end
-		if Health <= 1 and not Player:GetAttribute("IsKnocked") then
+		if Health <= 1 and not Player:GetAttribute("IsKnocked") and #Players:GetPlayers() > 1 then
 			Data.Knockdown.IsKnocked = true
 			Player:SetAttribute("IsKnocked", true)
 			KnockedEffect(Character)
