@@ -36,10 +36,13 @@ local ZombieEffectFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("Z
 local ZombieSpawn = ZombieEvents:WaitForChild("ZombieSpawn")
 local ZombieDelete = ZombieEvents:WaitForChild("ZombieDelete")
 local UpdateClientZombie = ZombieEvents:WaitForChild("UpdateClientZombie")
+local WaveEvents = Events:WaitForChild("WaveEvents")
+local RoundResult = WaveEvents:WaitForChild("RoundResult")
 
 -- VARIABLES
 local ZombieID = 0
 local AliveZombies = 0
+local ZombiesCurrentSpawning = false
 local ZombieIndex = {}
 local ZombieArray = {}
 
@@ -47,6 +50,16 @@ local ZombieArray = {}
 local VERY_CLOSE = 40
 local CLOSE = 100
 local MEDIUM = 200
+
+-- HELPER TO GET ALIVE ZOMBIES
+function ZombieSpawnerFW.GetAliveZombies()
+	return AliveZombies
+end
+
+-- HELPER TO CHECK IF ZOMBIES CURRENTLY SPAWNING
+function ZombieSpawnerFW.IsSpawningZombies()
+	return ZombiesCurrentSpawning
+end
 
 -- REMOVE ZOMBIE FROM ARRAY AND CORRECT INDEXES
 local function RemoveZombieFromArray(ZombieIDToRemove)
@@ -819,23 +832,34 @@ end
 
 -- FUNCTION TO MASS SPAWN ZOMBIES AT CORRECT LOCATION
 function ZombieSpawnerFW.SpawnZombies(Count)
+	if AliveZombies > 0 then
+		warn("Zombies are still currently alive")
+	end
 	--local SpawnFolder = Map:WaitForChild("Spawns")
 	--local SpawnPoints = SpawnFolder:GetChildren()
 	local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
-	local AllowedZombies = math.floor(Count / 10000)
+	local AllowedZombies = math.floor(Count / 4)
 	local Spawned = 0
 
 	-- START LOOPS
-	while Spawned < Count do
-		if AliveZombies < AllowedZombies then
-			task.wait(0.001)
-			local SpawnPart = SpawnPoints[math.random(1, #SpawnPoints)]
-			ZombieSpawnerFW.SpawnZombie(SpawnPart)
-			Spawned += 1
-		else
+	task.spawn(function()
+		ZombiesCurrentSpawning = true
+		while Spawned < Count do
+			if AliveZombies < AllowedZombies then
+				task.wait(0.001)
+				local SpawnPart = SpawnPoints[math.random(1, #SpawnPoints)]
+				ZombieSpawnerFW.SpawnZombie(SpawnPart)
+				Spawned += 1
+			else
+				task.wait(0.5)
+			end
+		end
+		ZombiesCurrentSpawning = false
+		while AliveZombies > 0 do
 			task.wait(0.5)
 		end
-	end
+		RoundResult:Fire(true)
+	end)
 end
 -- START LOOP
 task.spawn(ZombieLoop)

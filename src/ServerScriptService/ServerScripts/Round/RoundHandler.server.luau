@@ -11,6 +11,7 @@ local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChil
 local Misc = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Misc")
 
 -- MODULES
+local WaveManager = require(ServerScriptService.ModuleScripts.Misc.WaveManager)
 local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
 local ZombieSpawnerFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieSpawnerFW"))
 local RoundStart = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("RoundStart"))
@@ -92,9 +93,6 @@ while #Players:GetPlayers() == 0 do
 	task.wait(1)
 end
 while true do
-	RoundStart.StartTimer(15)
-	task.wait(3)
-	RoundStart.TeleportPlayersToMap()
-	RoundStart.SetPlayersTeams()
-	ZombieSpawnerFW.SpawnZombies(1000000)
+	RoundStart.StartTimer(5)
+	WaveManager.StartWaves()
 end

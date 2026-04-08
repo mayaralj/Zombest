@@ -15,7 +15,14 @@ local Frame = RoundTimerGui:WaitForChild("Frame")
 local RoundText = Frame:WaitForChild("RoundText")
 local TimerText = Frame:WaitForChild("TimerText")
 
+-- GET WAVE GUI STUFF
+local WaveGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("Wave"):WaitForChild("WaveGui")
+
 UpdateTimerEvent.OnClientEvent:Connect(function(EndTime)
+	-- DISABLE WAVE GUI FIRST SO IT DOESNT COLLIDE
+	WaveGui.Enabled = false
+
+	-- ROUND TIMER GUI ENABLE AND UPDATES
 	local Connection
 	local TimerEnded = false
 	TimerText.Text = math.ceil(math.max(0, EndTime - workspace:GetServerTimeNow()))
@@ -33,7 +40,7 @@ UpdateTimerEvent.OnClientEvent:Connect(function(EndTime)
 			TimerEnded = true
 			TimerText.Text = ""
 
-			task.delay(3, function()
+			task.delay(2, function()
 				RoundTimerGui.Enabled = false
 				Connection:Disconnect()
 				Connection = nil

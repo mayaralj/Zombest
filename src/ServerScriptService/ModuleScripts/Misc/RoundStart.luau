@@ -10,6 +10,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Events = ReplicatedStorage:WaitForChild("Events")
 local RoundEvents = Events:WaitForChild("RoundEvents")
 local UpdateTimerEvent = RoundEvents:WaitForChild("UpdateTimerEvent")
+local WaveEvents = Events:WaitForChild("WaveEvents")
+local RoundResult = WaveEvents:WaitForChild("RoundResult")
+
+RoundStart.InRoundCount = 0
 
 -- FUNCTION TO BEGIN TIMER
 local TimerConnection
@@ -53,11 +57,16 @@ function RoundStart.SetPlayersTeams()
 
 	for _, Player in pairs(Players:GetPlayers()) do
 		Player.Team = InRound
+		RoundStart.InRoundCount += 1
 		local Character = Player.Character
 		local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
 		if Humanoid then
 			Humanoid.Died:Once(function()
+				RoundStart.InRoundCount -= 1
 				Player.Team = Lobby
+				if RoundStart.InRoundCount <= 0 then
+					RoundResult:Fire(false)
+				end
 			end)
 		end
 	end
@@ -91,6 +100,10 @@ function RoundStart.TeleportPlayersToMap()
 	ShuffleArray(Spawns)
 
 	for i, Player in pairs(Players:GetPlayers()) do
+		-- CHECK IF PLAYER PART OF LOBBY TEAM, IF NOT, SKIP
+		if Player.Team ~= Teams:FindFirstChild("Lobby") then
+			continue
+		end
 		local SpawnPart = Spawns[i]
 		local Success = false
 
