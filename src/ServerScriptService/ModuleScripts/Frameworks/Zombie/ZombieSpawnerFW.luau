@@ -173,29 +173,6 @@ local function CreateZombieModel(SpawnPart)
 	return ZombiePart, "Regular", RandomZombieType
 end
 
--- TRACK ALIVE ZOMBIE AMOUNT
-local function TrackZombieLifecycle(Zombie)
-	AliveZombies += 1
-	local HasBeenRemoved = false
-
-	local function OnRemoved()
-		if not HasBeenRemoved then
-			HasBeenRemoved = true
-			AliveZombies -= 1
-		end
-	end
-
-	-- ON ZOMBIE DEATH
-	local ZombieDestroyingConn
-	ZombieDestroyingConn = Zombie.Destroying:Connect(function(_, Parent)
-		OnRemoved()
-		if ZombieDestroyingConn then
-			ZombieDestroyingConn:Disconnect()
-			ZombieDestroyingConn = nil
-		end
-	end)
-end
-
 -- SETUP ZOMBIE DEATH HANDLER
 local StuckTogether = {}
 local function SetupZombieDeathHandler(Zombie)
@@ -240,6 +217,10 @@ local function SetupZombieDeathHandler(Zombie)
 	-- RESPAWN TIME
 	Zombie.Parent = workspace:FindFirstChild("DeadCharacters")
 	DebrisService:AddItem(Zombie, 0.25)
+
+	-- DECREMENT ALIVE ZOMBIES
+	AliveZombies -= 1
+	print(AliveZombies)
 end
 
 -- FUNCTiON TO SPAWN A ZOMBIE AND APPLY SETTINGS TO IT
@@ -276,7 +257,7 @@ function ZombieSpawnerFW.SpawnZombie(SpawnPart)
 	CurrentZombieData.Health.CurrentHealth += 1000
 	CurrentZombieData.Position.LastZomPos = ZombiePart.Position
 
-	TrackZombieLifecycle(ZombiePart)
+	AliveZombies += 1
 	local ReplicationTask = task.delay(0, function()
 		-- TRACK REPLICATION
 		CurrentZombieData.Health.CurrentHealth = CurrentZombieData.Health.MaxHealth
@@ -831,18 +812,23 @@ local function ZombieLoop()
 end
 
 -- FUNCTION TO MASS SPAWN ZOMBIES AT CORRECT LOCATION
+local CurrentSpawnTask
+function ZombieSpawnerFW.StopSpawning()
+	if CurrentSpawnTask then
+		task.cancel(CurrentSpawnTask)
+	end
+end
 function ZombieSpawnerFW.SpawnZombies(Count)
 	if AliveZombies > 0 then
-		warn("Zombies are still currently alive")
+		warn(AliveZombies, "Zombies are still currently alive")
 	end
-	--local SpawnFolder = Map:WaitForChild("Spawns")
-	--local SpawnPoints = SpawnFolder:GetChildren()
+
 	local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
 	local AllowedZombies = math.floor(Count / 4)
 	local Spawned = 0
 
 	-- START LOOPS
-	task.spawn(function()
+	CurrentSpawnTask = task.spawn(function()
 		ZombiesCurrentSpawning = true
 		while Spawned < Count do
 			if AliveZombies < AllowedZombies then
@@ -863,5 +849,21 @@ function ZombieSpawnerFW.SpawnZombies(Count)
 end
 -- START LOOP
 task.spawn(ZombieLoop)
+
+-- FUNCTION TO KILL ALL ZOMBIES
+function ZombieSpawnerFW.KillAllZombies()
+	for i = 1, #ZombieArray do
+		local ZombiePart = ZombieArray[i]
+		if not ZombiePart then
+			continue
+		end
+		local Data = ZombieData:Get(ZombiePart)
+		if not Data then
+			continue
+		end
+
+		Data.Health.CurrentHealth = 0
+	end
+end
 
 return ZombieSpawnerFW

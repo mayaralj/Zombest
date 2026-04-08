@@ -79,8 +79,8 @@ function RoundStart.SetPlayersTeams()
 			end)
 		end
 
-		-- SAME CHECKS FOR CHARACTER REMOVED TO HANDLE DC
-		Player.CharacterRemoving:Connect(function()
+		-- SAME CHECKS FOR PLAYER REMOVING TO HANDLE DC
+		Players.PlayerRemoving:Once(function()
 			if RoundStart.InRoundLookup[Player] then
 				RoundStart.InRoundCounter -= 1
 				RoundStart.InRoundLookup[Player] = nil
@@ -146,6 +146,32 @@ function RoundStart.TeleportPlayersToMap()
 
 		if not Success then
 			warn("Failed to teleport player:", Player.Name, "after 10 attempts.")
+		end
+	end
+end
+
+-- TELEPORT ALL PLAYERS TO LOBBY
+function RoundStart.TeleportPlayersToLobby()
+	local LobbySpawns = workspace:WaitForChild("Lobby"):WaitForChild("Spawns"):GetChildren()
+	ShuffleArray(LobbySpawns)
+	for i, Player in pairs(Players:GetPlayers()) do
+		local SpawnPart = LobbySpawns[i]
+		local Success = false
+		for Attempt = 1, 10 do
+			local Character = Player.Character
+			if Character and SpawnPart and Character.PrimaryPart then
+				Player.Character:SetPrimaryPartCFrame(SpawnPart.CFrame * CFrame.new(0, 3, 0))
+				task.wait(0.1 + (Attempt * 0.02))
+				if IsStandingOnGround(Character) then
+					Success = true
+					break
+				end
+			else
+				task.wait(0.1)
+			end
+		end
+		if not Success then
+			warn("Failed to teleport player Back to lobby:", Player.Name, "after 10 attempts.")
 		end
 	end
 end

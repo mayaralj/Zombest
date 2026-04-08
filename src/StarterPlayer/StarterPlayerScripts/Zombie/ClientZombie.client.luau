@@ -36,9 +36,8 @@ local ClientZombies = workspace:FindFirstChild("ClientZombies")
 -- SETTINGS
 local VERY_CLOSE = 20
 local CLOSE = 60
-local MEDIUM = 175
-local FAR = 200
-local VERY_FAR = 300
+local MEDIUM = 225
+local FAR = 275
 
 -- PLAYER POS
 local function GetPlayerPosition()
@@ -57,8 +56,6 @@ local function GetUpdateInterval(Distance)
 	elseif Distance < MEDIUM then
 		return 0
 	elseif Distance < FAR then
-		return -1
-	elseif Distance < VERY_FAR then
 		return -1
 	else
 		return -1

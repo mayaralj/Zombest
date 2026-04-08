@@ -36,7 +36,6 @@ else
 	-- SET POINTS TEXT
 	PointsText.Text = 0
 end
-PointsGui.Enabled = true
 CurrentPointsConn = LocalPlayer:GetAttributeChangedSignal("CurrentPoints"):Connect(function()
 	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
 	if not CurrentPlayerData then
@@ -45,7 +44,13 @@ CurrentPointsConn = LocalPlayer:GetAttributeChangedSignal("CurrentPoints"):Conne
 
 	-- IF NO POINTS THEN RETURN END
 	if not LocalPlayer:GetAttribute("CurrentPoints") then
+		PointsGui.Enabled = false
 		return
+	end
+
+	-- ENABLE IF NOT ENABLED ALREADY
+	if not PointsGui.Enabled then
+		PointsGui.Enabled = true
 	end
 
 	-- UPDATE LAST POINTS
