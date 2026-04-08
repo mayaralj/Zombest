@@ -13,8 +13,6 @@ local UpdateTimerEvent = RoundEvents:WaitForChild("UpdateTimerEvent")
 local WaveEvents = Events:WaitForChild("WaveEvents")
 local RoundResult = WaveEvents:WaitForChild("RoundResult")
 
-RoundStart.InRoundCount = 0
-
 -- FUNCTION TO BEGIN TIMER
 local TimerConnection
 local PlayerAddedConn
@@ -51,24 +49,49 @@ function RoundStart.StartTimer(Duration)
 end
 
 -- FUNCTION TO SET PLAYERS TEAMS
+local InRound = Teams:FindFirstChild("InRound")
+local Lobby = Teams:FindFirstChild("Lobby")
+RoundStart.InRoundLookup = {}
+RoundStart.InRoundCounter = 0
 function RoundStart.SetPlayersTeams()
-	local InRound = Teams:FindFirstChild("InRound")
-	local Lobby = Teams:FindFirstChild("Lobby")
-
+	-- LOOP THROUGH PLAYERS AND SET TEAMS
 	for _, Player in pairs(Players:GetPlayers()) do
+		if Player.Team ~= Lobby then
+			continue
+		end
 		Player.Team = InRound
-		RoundStart.InRoundCount += 1
+		RoundStart.InRoundLookup[Player] = true
+		RoundStart.InRoundCounter += 1
 		local Character = Player.Character
 		local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+
+		-- UPDATE LOOKUP TABLE WHEN PLAYER DIES, IF NO PLAYERS LEFT IN ROUND, FIRE ROUND RESULT
 		if Humanoid then
 			Humanoid.Died:Once(function()
-				RoundStart.InRoundCount -= 1
+				if RoundStart.InRoundLookup[Player] then
+					RoundStart.InRoundCounter -= 1
+					RoundStart.InRoundLookup[Player] = nil
+				end
 				Player.Team = Lobby
-				if RoundStart.InRoundCount <= 0 then
+				if RoundStart.InRoundCounter <= 0 then
 					RoundResult:Fire(false)
 				end
 			end)
 		end
+
+		-- SAME CHECKS FOR CHARACTER REMOVED TO HANDLE DC
+		Player.CharacterRemoving:Connect(function()
+			if RoundStart.InRoundLookup[Player] then
+				RoundStart.InRoundCounter -= 1
+				RoundStart.InRoundLookup[Player] = nil
+			end
+			if Player and Player.Parent and Player.Team ~= Lobby then
+				Player.Team = Lobby
+			end
+			if RoundStart.InRoundCounter <= 0 then
+				RoundResult:Fire(false)
+			end
+		end)
 	end
 end
 

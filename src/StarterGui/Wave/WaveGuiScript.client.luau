@@ -4,7 +4,7 @@ local LocalPlayer = Players.LocalPlayer
 
 -- GET THE WAVE GUI
 local playerGui = LocalPlayer:WaitForChild("PlayerGui")
-local waveGui = playerGui:WaitForChild("Wave"):WaitForChild("WaveGui")
+local waveGui = playerGui:WaitForChild("WaveGuiFolder"):WaitForChild("WaveGui")
 local Frame = waveGui:WaitForChild("Frame")
 local WaveText = Frame:WaitForChild("WaveText")
 local WaveCount = Frame:WaitForChild("WaveCount")
