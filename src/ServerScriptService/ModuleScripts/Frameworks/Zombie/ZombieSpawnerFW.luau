@@ -220,7 +220,6 @@ local function SetupZombieDeathHandler(Zombie)
 
 	-- DECREMENT ALIVE ZOMBIES
 	AliveZombies -= 1
-	print(AliveZombies)
 end
 
 -- FUNCTiON TO SPAWN A ZOMBIE AND APPLY SETTINGS TO IT
@@ -811,6 +810,44 @@ local function ZombieLoop()
 	end)
 end
 
+-- FUNCTION TO PICK PLAYER AND PICK CLOSEST SPAWN POINT
+local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
+local function ClosestSpawnPoint()
+	local PlayerCount = #Players:GetPlayers()
+	local RandomPlayer = Players:GetPlayers()[math.random(1, PlayerCount)]
+	if not RandomPlayer then
+		warn("Random PLayer not found")
+		return workspace:WaitForChild("ZombieSpawners").GetChildren()[1]
+	end
+
+	-- SETTINGS
+	local MinDistanceFromPlayer = 50
+
+	-- LOOP THROUGH SPAWNPOINTS
+	local ClosestDistance
+	local ClosestSpawn = math.huge
+	for _, SpawnPoint in ipairs(SpawnPoints) do
+		-- CHECK DISTANCE TO PLAYER
+		local Character = RandomPlayer.Character
+		if not Character then
+			continue
+		end
+		local RootPart = Character:FindFirstChild("HumanoidRootPart")
+		if not RootPart then
+			continue
+		end
+
+		-- CHECK DISTANCE
+		local Distance = (SpawnPoint.Position - RootPart.Position).Magnitude
+
+		if (not ClosestDistance or Distance < ClosestDistance) and Distance > MinDistanceFromPlayer then
+			ClosestDistance = Distance
+			ClosestSpawn = SpawnPoint
+		end
+	end
+	return ClosestSpawn
+end
+
 -- FUNCTION TO MASS SPAWN ZOMBIES AT CORRECT LOCATION
 local CurrentSpawnTask
 function ZombieSpawnerFW.StopSpawning()
@@ -823,7 +860,6 @@ function ZombieSpawnerFW.SpawnZombies(Count)
 		warn(AliveZombies, "Zombies are still currently alive")
 	end
 
-	local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
 	local AllowedZombies = math.floor(Count / 4)
 	local Spawned = 0
 
@@ -833,7 +869,7 @@ function ZombieSpawnerFW.SpawnZombies(Count)
 		while Spawned < Count do
 			if AliveZombies < AllowedZombies then
 				task.wait(0.001)
-				local SpawnPart = SpawnPoints[math.random(1, #SpawnPoints)]
+				local SpawnPart = ClosestSpawnPoint()
 				ZombieSpawnerFW.SpawnZombie(SpawnPart)
 				Spawned += 1
 			else
