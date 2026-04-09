@@ -53,6 +53,20 @@ local InRound = Teams:FindFirstChild("InRound")
 local Lobby = Teams:FindFirstChild("Lobby")
 RoundStart.InRoundLookup = {}
 RoundStart.InRoundCounter = 0
+
+-- SAME CHECKS FOR PLAYER REMOVING TO HANDLE DC
+Players.PlayerRemoving:Once(function(RemovingPlayer)
+	if RoundStart.InRoundLookup[RemovingPlayer] then
+		RoundStart.InRoundCounter -= 1
+		RoundStart.InRoundLookup[RemovingPlayer] = nil
+	end
+	if RemovingPlayer and RemovingPlayer.Parent and RemovingPlayer.Team ~= Lobby then
+		RemovingPlayer.Team = Lobby
+	end
+	if RoundStart.InRoundCounter <= 0 then
+		RoundResult:Fire(false)
+	end
+end)
 function RoundStart.SetPlayersTeams()
 	-- LOOP THROUGH PLAYERS AND SET TEAMS
 	for _, Player in pairs(Players:GetPlayers()) do
@@ -78,20 +92,6 @@ function RoundStart.SetPlayersTeams()
 				end
 			end)
 		end
-
-		-- SAME CHECKS FOR PLAYER REMOVING TO HANDLE DC
-		Players.PlayerRemoving:Once(function()
-			if RoundStart.InRoundLookup[Player] then
-				RoundStart.InRoundCounter -= 1
-				RoundStart.InRoundLookup[Player] = nil
-			end
-			if Player and Player.Parent and Player.Team ~= Lobby then
-				Player.Team = Lobby
-			end
-			if RoundStart.InRoundCounter <= 0 then
-				RoundResult:Fire(false)
-			end
-		end)
 	end
 end
 

@@ -2,8 +2,8 @@ local PlayerReviveFW = {}
 
 -- SERVICES
 local ServerScriptService = game:GetService("ServerScriptService")
-local Players = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 
 -- FOLDERS
 local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")

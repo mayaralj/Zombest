@@ -9,11 +9,13 @@ local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 local Frameworks = ModuleScripts:WaitForChild("Frameworks")
 
 -- MODULES
+local RoundStart = require(ServerScriptService.ModuleScripts.Misc.RoundStart)
 local PlayerHealthFW = require(Frameworks:WaitForChild("Player"):WaitForChild("PlayerHealthFW"))
 local PlayerReviveFW = require(Frameworks:WaitForChild("Player"):WaitForChild("PlayerReviveFW"))
 local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
 
--- EVENTS
+-- VARS
+PlayerKnockedFW.KnockedPlayerCount = 0
 
 -- APPLY KNOCKED EFFECT
 local function KnockedEffect(Character)
@@ -43,7 +45,7 @@ local function KnockedEffect(Character)
 	end
 
 	Data.Knockdown.HealthDrainTask = task.spawn(function()
-		while Player and Humanoid and Humanoid.Health > 0 do
+		while Player and Player.Parent and Humanoid and Humanoid.Health > 0 do
 			-- IF NO LONGER KNOCKED BREAK
 			if not Player:GetAttribute("IsKnocked") then
 				break
@@ -95,10 +97,26 @@ function PlayerKnockedFW.KnockedState(Character)
 	end
 
 	Data.Knockdown.KnockedHealthConnections = Humanoid.HealthChanged:Connect(function(Health)
+		-- IGNORE KNOCKED IF FORCE KILL ACTIVATED
 		if Health <= 0 and Player:GetAttribute("ForceKill") then
 			return
 		end
-		if Health <= 1 and not Player:GetAttribute("IsKnocked") and #Players:GetPlayers() > 1 then
+
+		-- CHECK IF ABOUT TO BE LAST TO GET KNOCKED
+		if
+			Health <= 1
+			and not Player:GetAttribute("IsKnocked")
+			and (PlayerKnockedFW.KnockedPlayerCount + 1) >= RoundStart.InRoundCounter
+		then
+			-- LOOP THROUGH ALL PLAYERS AND KILL THEM ALL
+			for _, OtherPlayer in pairs(Players:GetPlayers()) do
+				PlayerHealthFW.ForceKill(OtherPlayer)
+			end
+			return
+		end
+
+		-- KNOCK PLAYERS IF MORE THAN 1 NON KNOCKED PLAYER
+		if Health <= 1 and not Player:GetAttribute("IsKnocked") and RoundStart.InRoundCounter > 1 then
 			Data.Knockdown.IsKnocked = true
 			Player:SetAttribute("IsKnocked", true)
 			KnockedEffect(Character)
@@ -127,5 +145,40 @@ function PlayerKnockedFW.RemoveKnockedHealthConns(Character)
 		Data.Knockdown.HealthDrainTask = nil
 	end
 end
+
+-- HANDLE PLAYER REMOVAL TO UPDATE KNOCKED COUNT AND CLEANUP CONNS
+local KnockedAttributeConns = {}
+local ReviveAttributeConns = {}
+local function HandlePlayerRemoving(Player)
+	KnockedAttributeConns[Player]:Disconnect()
+	KnockedAttributeConns[Player] = nil
+	if Player:GetAttribute("IsKnocked") then
+		PlayerKnockedFW.KnockedPlayerCount -= 1
+		local Character = Player.Character
+		if Character then
+			PlayerKnockedFW.RemoveKnockedHealthConns(Character)
+		end
+	end
+end
+Players.PlayerRemoving:Connect(function(Player)
+	HandlePlayerRemoving(Player)
+end)
+
+-- SET UP ATTRIBUTE CHANGED SIGNAL TO TRACK KNOCKED PLAYER COUNT
+local function HandlePlayerAdded(Player)
+	KnockedAttributeConns[Player] = Player:GetAttributeChangedSignal("IsKnocked"):Connect(function()
+		if Player:GetAttribute("IsKnocked") then
+			PlayerKnockedFW.KnockedPlayerCount += 1
+		else
+			PlayerKnockedFW.KnockedPlayerCount -= 1
+		end
+	end)
+end
+for _, Player in pairs(Players:GetPlayers()) do
+	HandlePlayerAdded(Player)
+end
+Players.PlayerAdded:Connect(function(Player)
+	HandlePlayerAdded(Player)
+end)
 
 return PlayerKnockedFW
