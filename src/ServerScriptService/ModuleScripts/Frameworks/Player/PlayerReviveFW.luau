@@ -161,6 +161,13 @@ function PlayerReviveFW.ReviveInteract(KnockedPlayer)
 		-- SET GETTING REVIVED ATTRIBUTE TO KNOCKED PLAYER
 		KnockedPlayer:SetAttribute("IsGettingRevived", false)
 
+		-- PLAYER REVIVING PLAYER DATA
+		local PlayerRevivingData = PlayerData:Get(PlayerReviving)
+		if PlayerRevivingData and PlayerRevivingData.RoundStats then
+			PlayerRevivingData.RoundStats.Revives += 1
+			PlayerReviving:SetAttribute("Revives", PlayerRevivingData.RoundStats.Revives)
+		end
+
 		-- GIVE POINTS TO PLAYER REVIVING
 		local PlayerRevivingData = PlayerData:Get(PlayerReviving)
 		if not PlayerRevivingData then

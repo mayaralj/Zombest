@@ -101,6 +101,8 @@ local function ProcessBulletRayResult(ResultData, BulletData, IsOverlapParams)
 			-- EXTRA ON ZOMBIE KILL
 			if ZombiePartData.Health.CurrentHealth <= 0 then
 				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				CurrentPlayerData.RoundStats.Kills += 1
+				PlayerFired:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end
 			PlayerFired:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 		end
@@ -469,6 +471,8 @@ local function ProcessStreamRayResult(ResultData, BulletData, IsOverlapParams)
 			-- EXTRA ON ZOMBIE KILL
 			if ZombiePartData.Health.CurrentHealth <= 0 then
 				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				CurrentPlayerData.RoundStats.Kills += 1
+				PlayerFired:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end
 			PlayerFired:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 		end

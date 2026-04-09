@@ -16,6 +16,50 @@ local RoundResult = WaveEvents:WaitForChild("RoundResult")
 local WaveManager = {}
 WaveManager.CurrentWave = 0
 
+-- RESET ROUND STATS
+local function ResetRoundStats()
+	for _, Player in pairs(Players:GetPlayers()) do
+		local CurrentPlayerData = PlayerData:Get(Player)
+		if CurrentPlayerData and CurrentPlayerData.Points then
+			CurrentPlayerData.Points.CurrentPoints = 500
+			Player:SetAttribute("CurrentPoints", CurrentPlayerData.Points.CurrentPoints)
+		end
+		if CurrentPlayerData and CurrentPlayerData.RoundStats then
+			CurrentPlayerData.RoundStats.Kills = 0
+			CurrentPlayerData.RoundStats.Deaths = 0
+			CurrentPlayerData.RoundStats.Revives = 0
+			CurrentPlayerData.RoundStats.Knockdowns = 0
+
+			Player:SetAttribute("Kills", 0)
+			Player:SetAttribute("Deaths", 0)
+			Player:SetAttribute("Revives", 0)
+			Player:SetAttribute("Knockdowns", 0)
+		end
+	end
+end
+
+-- CALCULATE MVP
+local function CalculateMVP()
+	local MVPPlayer
+	local HighestScore = -math.huge
+	for _, Player in pairs(Players:GetPlayers()) do
+		local CurrentPlayerData = PlayerData:Get(Player)
+		if not CurrentPlayerData or not CurrentPlayerData.RoundStats then
+			continue
+		end
+		-- CALCULATE EACH SCORE, EACH STAT HAVING ITS OWN WEIGHT
+		local Score = CurrentPlayerData.RoundStats.Kills * 5
+			+ CurrentPlayerData.RoundStats.Revives * 10
+			- CurrentPlayerData.RoundStats.Deaths * 20
+			- CurrentPlayerData.RoundStats.Knockdowns * 5
+		if not MVPPlayer or Score > HighestScore then
+			MVPPlayer = Player
+			HighestScore = Score
+		end
+	end
+	return MVPPlayer
+end
+
 -- CLEANUP AFTER ROUND END
 local function HandleDeadPlayers()
 	-- TELEPORT PLAYERS BACK TO LOBBY
@@ -24,23 +68,20 @@ local function HandleDeadPlayers()
 	ZombieSpawnerFW.StopSpawning()
 	ZombieSpawnerFW.KillAllZombies()
 
-	-- LOOP THROUGH PLAYERS AND RESET A BUNCH OF THEIR STATS
-	for _, Player in pairs(Players:GetPlayers()) do
-		local CurrentPlayerData = PlayerData:Get(Player)
-		CurrentPlayerData.Points.CurrentPoints = 500
-		Player:SetAttribute("CurrentPoints", false)
-	end
+	-- CALCULATE MVP
+	local MVPPlayer = CalculateMVP()
+	print("MVP of the round is: " .. (MVPPlayer and MVPPlayer.Name or "None"))
+
+	-- RESET EACH PLAYER AND THEIR ROUND STATS
+	ResetRoundStats()
 end
 
 -- SOME SETUP BEFORE STARTING FIRST WAVE
 local function SetupWaveStart()
 	WaveManager.CurrentWave = 0
-	-- LOOP THROUGH PLAYERS AND SET A BUNCH OF THEIR STATS
-	for _, Player in pairs(Players:GetPlayers()) do
-		local CurrentPlayerData = PlayerData:Get(Player)
-		CurrentPlayerData.Points.CurrentPoints = 500
-		Player:SetAttribute("CurrentPoints", CurrentPlayerData.Points.CurrentPoints)
-	end
+
+	-- RESET EACH PLAYER AND THEIR ROUND STATS
+	ResetRoundStats()
 end
 
 -- MAIN FUNCTION TO START WAVES

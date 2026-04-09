@@ -30,6 +30,13 @@ PlayerData.DefaultData = {
 		CurrentPoints = 99999,
 	},
 
+	RoundStats = {
+		Kills = 0,
+		Revives = 0,
+		Knockdowns = 0,
+		Deaths = 0,
+	},
+
 	Stamina = {
 		CurrentStamina = 100,
 		MaxStamina = 100,

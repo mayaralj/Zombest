@@ -31,6 +31,10 @@ local function KnockedEffect(Character)
 		return
 	end
 
+	-- UPDATE PLAYER KNOCKDOWN COUNT
+	Data.RoundStats.Knockdowns += 1
+	Player:SetAttribute("Knockdowns", Data.RoundStats.Knockdowns)
+
 	-- DISABLE ATTRIBUTES
 	Player:SetAttribute("IsReviving", false)
 

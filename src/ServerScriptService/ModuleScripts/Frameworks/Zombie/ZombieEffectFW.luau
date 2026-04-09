@@ -62,6 +62,8 @@ function ZombieEffectFW.ZombieBurn(Data, ZombiePart, DT)
 			-- EXTRA ON ZOMBIE KILL
 			if Data.Health.CurrentHealth <= 0 then
 				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				CurrentPlayerData.RoundStats.Kills += 1
+				Player:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end
 			Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 		end

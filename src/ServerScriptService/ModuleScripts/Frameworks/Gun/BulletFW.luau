@@ -156,6 +156,8 @@ function BulletEffects.AoeEffect(ResultData, BulletData, PlayerShooting, IsZombi
 			-- EXTRA ON ZOMBIE KILL
 			if ZombiePartData.Health.CurrentHealth <= 0 and HitPart ~= Part then
 				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				CurrentPlayerData.RoundStats.Kills += 1
+				PlayerShooting:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end
 			PlayerShooting:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 		end
@@ -510,6 +512,8 @@ function BulletEffects.ChainEffect(ResultData, BulletData, PlayerShooting, IsZom
 		-- EXTRA ON ZOMBIE KILL
 		if CurrentZombieData.Health.CurrentHealth <= 0 then
 			CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+			CurrentPlayerData.RoundStats.Kills += 1
+			PlayerShooting:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 		end
 		PlayerShooting:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 	end

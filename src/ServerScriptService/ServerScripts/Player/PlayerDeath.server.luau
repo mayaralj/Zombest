@@ -38,6 +38,10 @@ local function HandleKnockedDeath(Character)
 	if Data and Data.Knockdown then
 		Data.Knockdown.IsKnocked = nil
 	end
+	if Data and Data.RoundStats then
+		Data.RoundStats.Deaths += 1
+		Player:SetAttribute("Deaths", Data.RoundStats.Deaths)
+	end
 
 	-- REMOVE ALL CONNECTIONS
 	PlayerKnockedFW.RemoveKnockedHealthConns(Character)
