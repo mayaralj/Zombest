@@ -901,7 +901,7 @@ GunData.DefaultData = {
 		},
 
 		Burst = {
-			BulletsPerShot = 5,
+			BulletsPerShot = 4,
 			BurstDuration = 0,
 		},
 
@@ -918,7 +918,7 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 150,
-			Damage = 50,
+			Damage = 75,
 			DamageFalloff = 1,
 			FireRate = 2.5,
 			Windup = 0.1,
@@ -929,14 +929,15 @@ GunData.DefaultData = {
 			CurrentAmmo = 60,
 			TotalAmmo = 400,
 			MaxTotalAmmo = 400,
-			ReloadTime = 0.35,
+			ReloadTime = 0.25,
 			ReloadType = "Shotgun",
-			AmmoPerReload = 5,
+			AmmoPerReload = 4,
 		},
 
 		BulletStats = {
-			BulletPhase = 1,
-			BulletSpeed = 225,
+			BulletPhase = 2,
+			BulletPhaseType = "Zombie",
+			BulletSpeed = 350,
 			BulletAge = 0,
 			BulletMaxAge = 10,
 			BulletSize = 1,

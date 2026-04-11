@@ -70,7 +70,6 @@ local function HandleDeadPlayers()
 
 	-- CALCULATE MVP
 	local MVPPlayer = CalculateMVP()
-	print("MVP of the round is: " .. (MVPPlayer and MVPPlayer.Name or "None"))
 
 	-- RESET EACH PLAYER AND THEIR ROUND STATS
 	ResetRoundStats()
@@ -101,7 +100,7 @@ function WaveManager.StartWaves()
 			if Player.Team ~= Teams:FindFirstChild("Lobby") then
 				continue
 			end
-			GunFW.GiveWeapon(Player, "Pistol", true)
+			GunFW.GiveWeapon(Player, "TacticalShotgun", true)
 		end
 		RoundStart.SetPlayersTeams()
 

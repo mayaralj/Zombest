@@ -1299,7 +1299,7 @@ ClientGunData.DefaultData = {
 	TacticalShotgun = {
 		About = {
 			Name = "SPAS Tact",
-			BulletType = "RegularBullet",
+			BulletType = "TactBullet",
 			Casing = "ShotgunCasing",
 			CasingSFX = "rbxassetid://7836856827",
 			Model = "TacticalShotgun",
@@ -1348,7 +1348,7 @@ ClientGunData.DefaultData = {
 		SoundFX = {
 			EquipSFX = "rbxassetid://111520248018511",
 
-			ShootSFX = "rbxassetid://99280976493958",
+			ShootSFX = "rbxassetid://124742215378310",
 
 			WallHitSFX = "rbxassetid://1489924400",
 			ZombieHitSFX = "rbxassetid://118603344630208",
