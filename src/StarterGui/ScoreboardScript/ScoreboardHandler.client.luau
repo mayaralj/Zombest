@@ -146,6 +146,17 @@ local function SetUpRowUpdater(Player)
 	PlayerHolder:FindFirstChild("Name").Text = Player.Name
 	PlayerHolder:FindFirstChild("Image").Image = "rbxthumb://type=AvatarHeadShot&id=" .. Player.UserId .. "&w=180&h=180"
 
+	-- IF PLAYER ROW IS FOR LOCAL PLAYER
+	if Player == LocalPlayer then
+		for _, TextLabel in pairs(PlayerRow:GetDescendants()) do
+			if not TextLabel:IsA("TextLabel") then
+				continue
+			end
+			-- BOLD TEXT LABEL
+			TextLabel.FontFace = Font.new(TextLabel.FontFace.Family, Enum.FontWeight.Bold)
+		end
+	end
+
 	-- UPDATE FUNCTION
 	local function UpdateRow()
 		local Kills = Player:GetAttribute("Kills") or 0
