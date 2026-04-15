@@ -11,6 +11,7 @@ local Events = game:GetService("ReplicatedStorage"):WaitForChild("Events")
 local WaveEvents = Events:WaitForChild("WaveEvents")
 local UpdateWaveEvent = WaveEvents:WaitForChild("UpdateWaveEvent")
 local RoundResult = WaveEvents:WaitForChild("RoundResult")
+local MVPEvent = WaveEvents:WaitForChild("MVPEvent")
 
 -- VARS
 local WaveManager = {}
@@ -70,9 +71,8 @@ local function HandleDeadPlayers()
 
 	-- CALCULATE MVP
 	local MVPPlayer = CalculateMVP()
-
-	-- RESET EACH PLAYER AND THEIR ROUND STATS
-	ResetRoundStats()
+	-- FIRE MVP EVENT
+	MVPEvent:FireAllClients(MVPPlayer, WaveManager.CurrentWave)
 end
 
 -- SOME SETUP BEFORE STARTING FIRST WAVE

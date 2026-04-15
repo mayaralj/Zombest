@@ -5,7 +5,11 @@ local LocalPlayer = Players.LocalPlayer
 -- SERVICES
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
+
+-- EVENTS
+local MVPEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("WaveEvents"):WaitForChild("MVPEvent")
 
 -- GUI
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -13,6 +17,7 @@ local ScoreboardGui = PlayerGui:WaitForChild("ScoreboardGui"):WaitForChild("Scor
 local MVPFrame = ScoreboardGui:WaitForChild("MVPFrame")
 local RoundOverFrame = ScoreboardGui:WaitForChild("RoundOverFrame")
 local MVPPackage = ScoreboardGui:WaitForChild("MVPPackage")
+local WaveOver = RoundOverFrame:WaitForChild("WaveOver")
 
 -- SCORE BOARD GUI
 local ScoreboardFrame = ScoreboardGui:WaitForChild("ScoreboardFrame")
@@ -24,32 +29,53 @@ local PlayerRowTemplate = PlayerRows:WaitForChild("PlayerRowTemplate")
 local IsShowingRoundOver = false
 local MVPAnimateTask = nil
 local MVPPlayer = nil
-local function BeginRoundOverSequence(MVPPlayer)
+local function BeginRoundOverSequence(NewMVPPlayer)
+	MVPPlayer = NewMVPPlayer
 	-- SHOW ROUND OVER FRAME
 	RoundOverFrame.Visible = true
 
-	-- UPDATE MVP NAME
-	local MVPNameLabel = MVPFrame:WaitForChild("MVPName")
-	MVPNameLabel.Text = MVPPlayer.Name
+	-- POSITION LABEL TO LEFT OF MVP PLAYER
+	local MVPPlayerRow: Frame = PlayerRows:FindFirstChild(MVPPlayer.Name)
+	if MVPPlayerRow then
+		local AbsPos = MVPPlayerRow.AbsolutePosition
+		MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
+		-- SHOW MVP FRAME
+		MVPFrame.Visible = true
 
-	-- SHOW MVP FRAME
-	MVPFrame.Visible = true
+		-- CLONE MVP PACKAGE
+		local ClonedMVPPackage = MVPPackage:Clone()
+		for _, Child in pairs(ClonedMVPPackage:GetChildren()) do
+			Child.Parent = MVPPlayerRow
+		end
+		-- DESTROY FOLDER OF PACKAGE
+		ClonedMVPPackage:Destroy()
 
-	-- CLONE MVP PACKAGE
-	local ClonedMVPPackage = MVPPackage:Clone()
-	local UIGradient = nil
-
-	-- ANIMATE MVP FRAME
-	task.spawn(function()
-		if MVPAnimateTask then
-			MVPAnimateTask:Cancel()
+		-- LOCATE UI GRADIENT
+		local UIGradient = MVPPlayerRow:WaitForChild("UIStroke"):WaitForChild("UIGradient")
+		if not UIGradient then
+			return
 		end
 
-		MVPAnimateTask = RunService.Heartbeat:Connect(function(DT)
-			UIGradient.Rotation = (UIGradient.Rotation + 90 * DT) % 180
-		end)
-	end)
+		-- ANIMATE MVP FRAME
+		task.spawn(function()
+			if MVPAnimateTask then
+				MVPAnimateTask:Disconnect()
+			end
 
+			MVPAnimateTask = RunService.Heartbeat:Connect(function(DT)
+				if not UIGradient then
+					MVPAnimateTask:Disconnect()
+					MVPAnimateTask = nil
+					return
+				end
+				UIGradient.Rotation = (UIGradient.Rotation + 90 * DT) % 180
+			end)
+		end)
+	else
+		MVPFrame.Visible = false
+	end
+
+	-- TOGGLE FLAG
 	IsShowingRoundOver = true
 
 	-- ENABLE THE GUI
@@ -65,11 +91,41 @@ local function EndRoundOverSequence()
 
 	-- STOP ANIMATING MVP FRAME
 	if MVPAnimateTask then
-		MVPAnimateTask:Cancel()
+		MVPAnimateTask:Disconnect()
+		MVPAnimateTask = nil
 	end
 
+	-- DESTROY GRADIENT IN MVP PLAYER ROW
+	if MVPPlayer then
+		local MVPPlayerRow: Frame = PlayerRows:FindFirstChild(MVPPlayer.Name)
+		if not MVPPlayerRow then
+			return
+		end
+		local UIStroke = MVPPlayerRow:FindFirstChild("UIStroke")
+		if UIStroke then
+			UIStroke:Destroy()
+		end
+		local UICorner = MVPPlayerRow:FindFirstChild("UICorner")
+		if UICorner then
+			UICorner:Destroy()
+		end
+	end
+
+	-- TOGGLE FLAG
 	IsShowingRoundOver = false
 end
+-- SET ROUND OVER SEQUENCE TO MVP EVENT
+MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
+	BeginRoundOverSequence(Player)
+	if WaveNumber == 1 then
+		WaveOver.Text = "YOU SURVIVED " .. WaveNumber .. " WAVE"
+	else
+		WaveOver.Text = "YOU SURVIVED " .. WaveNumber .. " WAVES"
+	end
+	task.delay(10, function()
+		EndRoundOverSequence()
+	end)
+end)
 
 -- REGULAR SCOREBOARD TOGGLE
 local function ToggleScoreboard()
