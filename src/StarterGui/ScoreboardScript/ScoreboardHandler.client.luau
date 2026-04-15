@@ -107,11 +107,21 @@ end)
 
 -- HELPER TO SET UP PLAYER ROW
 local function SetUpPlayerRow(Player)
+	-- ENSURE PLAYER ROW DOESNT GET EXIST
 	local PlayerRow = PlayerRows:FindFirstChild(Player.Name)
-	if not PlayerRow then
-		PlayerRow = PlayerRowTemplate:Clone()
-		PlayerRow.Name = Player.Name
-		PlayerRow.Parent = PlayerRows
+	if PlayerRow then
+		return
+	end
+	-- CREATE NEW PLAYER ROW
+	PlayerRow = PlayerRowTemplate:Clone()
+	PlayerRow.Name = Player.Name
+	PlayerRow.Parent = PlayerRows
+
+	-- CHECK TO BOLD THE FRAME DEPENDING ON HOW MANY PLAYER ROWS THERE ARE
+	if #PlayerRows:GetChildren() % 2 == 0 then
+		PlayerRow.BackgroundColor3 = Color3.fromRGB(87, 87, 87)
+	else
+		PlayerRow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	end
 end
 local StoredAttributes = {}
