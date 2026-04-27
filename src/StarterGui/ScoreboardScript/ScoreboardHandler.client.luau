@@ -62,14 +62,22 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 				MVPAnimateTask:Disconnect()
 			end
 
-			MVPAnimateTask = RunService.Heartbeat:Connect(function(DT)
-				if not UIGradient then
-					MVPAnimateTask:Disconnect()
-					MVPAnimateTask = nil
-					return
-				end
-				UIGradient.Rotation = (UIGradient.Rotation + 90 * DT) % 180
-			end)
+			-- local Backwards = false
+			-- MVPAnimateTask = RunService.Heartbeat:Connect(function(DT)
+			-- 	if not UIGradient then
+			-- 		MVPAnimateTask:Disconnect()
+			-- 		MVPAnimateTask = nil
+			-- 		return
+			-- 	end
+			-- 	if UIGradient.Rotation >= 180 and (not Backwards or UIGradient.Rotation <= 180) then
+			-- 		UIGradient.Rotation = (UIGradient.Rotation + 30 * DT)
+			-- 		Backwards = false
+			-- 	else
+			-- 		UIGradient.Rotation = (UIGradient.Rotation - 30 * DT)
+			-- 		Backwards = true
+			-- 	end
+			-- 	--UIGradient.Rotation = (UIGradient.Rotation + 30 * DT) % 90
+			-- end)
 		end)
 	else
 		MVPFrame.Visible = false
