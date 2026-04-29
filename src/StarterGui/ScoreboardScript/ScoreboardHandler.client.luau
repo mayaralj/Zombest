@@ -29,6 +29,7 @@ local PlayerRowTemplate = PlayerRows:WaitForChild("PlayerRowTemplate")
 local IsShowingRoundOver = false
 local MVPAnimateTask = nil
 local MVPPlayer = nil
+local FreezeStats = false
 local function BeginRoundOverSequence(NewMVPPlayer)
 	MVPPlayer = NewMVPPlayer
 	-- SHOW ROUND OVER FRAME
@@ -124,6 +125,7 @@ local function EndRoundOverSequence()
 end
 -- SET ROUND OVER SEQUENCE TO MVP EVENT
 MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
+	FreezeStats = true
 	BeginRoundOverSequence(Player)
 	if WaveNumber == 1 then
 		WaveOver.Text = "YOU SURVIVED " .. WaveNumber .. " WAVE"
@@ -131,6 +133,7 @@ MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
 		WaveOver.Text = "YOU SURVIVED " .. WaveNumber .. " WAVES"
 	end
 	task.delay(10, function()
+		FreezeStats = false
 		EndRoundOverSequence()
 	end)
 end)
@@ -233,6 +236,9 @@ local function SetUpRowUpdater(Player)
 
 	-- UPDATE FUNCTION
 	local function UpdateRow()
+		if FreezeStats then
+			return
+		end
 		local Kills = Player:GetAttribute("Kills") or 0
 		local Deaths = Player:GetAttribute("Deaths") or 0
 		local Revives = Player:GetAttribute("Revives") or 0
