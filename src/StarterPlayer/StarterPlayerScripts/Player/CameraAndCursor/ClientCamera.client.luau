@@ -12,12 +12,12 @@ local CharacterUtilities = require(ModuleScripts:WaitForChild("Misc"):WaitForChi
 local ClientPlayerData = require(ClientData:WaitForChild("ClientPlayerData"))
 
 -- PLAYER AND CAMERA
-local Player = game.Players.LocalPlayer
+local LocalPlayer = game.Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
 -- CAMERA DATA FROM CLIENT DATA TABLE
 local function GetCameraData()
-	local PlayerDataTable = ClientPlayerData:Get(Player)
+	local PlayerDataTable = ClientPlayerData:Get(LocalPlayer)
 	if not PlayerDataTable then
 		return
 	end
@@ -52,19 +52,19 @@ local function SetupCamera()
 		return
 	end
 
-	local CurrentPlayerData = ClientPlayerData:Get(Player)
+	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
 	if not CurrentPlayerData then
 		return
 	end
 
-	local RootPart = Player.Character and Player.Character:WaitForChild("HumanoidRootPart")
+	local RootPart = LocalPlayer.Character and LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 	if not RootPart then
 		return
 	end
 
 	-- EXCLUDE PLAYER ACCESSORIES IN THE RAYCAST CHECK
 	local CharacterParts = {}
-	for _, Descendant in ipairs(Player.Character:GetDescendants()) do
+	for _, Descendant in ipairs(LocalPlayer.Character:GetDescendants()) do
 		if Descendant:IsA("BasePart") then
 			table.insert(CharacterParts, Descendant)
 		end
@@ -84,7 +84,7 @@ local function SetupCamera()
 	local LastRayTime = 0
 	CameraSettings.RenderConnection = RunService.RenderStepped:Connect(function(DT)
 		-- KEEP ATTEMPTING TO GET DATA
-		local SprintingFlag = Player:GetAttribute("IsSprinting")
+		local SprintingFlag = LocalPlayer:GetAttribute("IsSprinting")
 		if SprintingFlag then
 			CameraSettings.TargetSprintZoom = 5
 		else
@@ -129,7 +129,7 @@ local function SetupCamera()
 			-- REPEAT RAYCAST
 			for Count = 0, 5 do
 				RayParams.FilterDescendantsInstances =
-					{ Player.Character, unpack(CharacterParts), unpack(ExcludedParts) }
+					{ LocalPlayer.Character, unpack(CharacterParts), unpack(ExcludedParts) }
 				local NewOffset = DetermineOffset(Count, Offset)
 				RayResult = workspace:Raycast(RootPart.Position, NewOffset, RayParams)
 				if RayResult then
@@ -242,4 +242,4 @@ UIS.InputChanged:Connect(function(input)
 end)
 
 -- CHARACTER ADDED
-CharacterUtilities.BindToCharacter(Player, SetupCamera)
+CharacterUtilities.BindToCharacter(LocalPlayer, SetupCamera)

@@ -17,25 +17,38 @@ local MVPEvent = WaveEvents:WaitForChild("MVPEvent")
 local WaveManager = {}
 WaveManager.CurrentWave = 0
 
+local function ResetPoints(Player)
+	local CurrentPlayerData = PlayerData:Get(Player)
+	if CurrentPlayerData and CurrentPlayerData.Points then
+		if CurrentPlayerData.Points.CurrentPoints == 500 then
+			CurrentPlayerData.Points.CurrentPoints = 500.01 -- FORCE UPDATE TO POINTS GUI IF SAME
+		else
+			CurrentPlayerData.Points.CurrentPoints = 500
+		end
+		Player:SetAttribute("CurrentPoints", CurrentPlayerData.Points.CurrentPoints)
+	end
+end
+
+local function ResetPlayerStats(Player)
+	local CurrentPlayerData = PlayerData:Get(Player)
+	ResetPoints(Player)
+	if CurrentPlayerData and CurrentPlayerData.RoundStats then
+		CurrentPlayerData.RoundStats.Kills = 0
+		CurrentPlayerData.RoundStats.Deaths = 0
+		CurrentPlayerData.RoundStats.Revives = 0
+		CurrentPlayerData.RoundStats.Knockdowns = 0
+
+		Player:SetAttribute("Kills", 0)
+		Player:SetAttribute("Deaths", 0)
+		Player:SetAttribute("Revives", 0)
+		Player:SetAttribute("Knockdowns", 0)
+	end
+end
+
 -- RESET ROUND STATS
 local function ResetRoundStats()
 	for _, Player in pairs(Players:GetPlayers()) do
-		local CurrentPlayerData = PlayerData:Get(Player)
-		if CurrentPlayerData and CurrentPlayerData.Points then
-			CurrentPlayerData.Points.CurrentPoints = 500
-			Player:SetAttribute("CurrentPoints", CurrentPlayerData.Points.CurrentPoints)
-		end
-		if CurrentPlayerData and CurrentPlayerData.RoundStats then
-			CurrentPlayerData.RoundStats.Kills = 0
-			CurrentPlayerData.RoundStats.Deaths = 0
-			CurrentPlayerData.RoundStats.Revives = 0
-			CurrentPlayerData.RoundStats.Knockdowns = 0
-
-			Player:SetAttribute("Kills", 0)
-			Player:SetAttribute("Deaths", 0)
-			Player:SetAttribute("Revives", 0)
-			Player:SetAttribute("Knockdowns", 0)
-		end
+		ResetPlayerStats(Player)
 	end
 end
 
@@ -76,34 +89,42 @@ local function HandleDeadPlayers()
 end
 
 -- SOME SETUP BEFORE STARTING FIRST WAVE
-local function SetupWaveStart()
+local function SetupWavesStart()
 	WaveManager.CurrentWave = 0
 
 	-- RESET EACH PLAYER AND THEIR ROUND STATS
 	ResetRoundStats()
 end
 
+local function BeginWaveHelper()
+	WaveManager.CurrentWave += 1
+	UpdateWaveEvent:FireAllClients(WaveManager.CurrentWave)
+
+	-- PLAYER TELEPORTS, GUNS GIVEN, TEAMS SET
+	RoundStart.TeleportPlayersToMap()
+	for _, Player in Players:GetPlayers() do
+		if Player.Team ~= Teams:FindFirstChild("Lobby") then
+			continue
+		end
+		-- DID THIS TO ENSURE POINT RESET ONLY WORKS ON PLAYERS THAT JOIN LATER OR ARE GETTING RESPAWNED
+		if WaveManager.CurrentWave > 1 then
+			ResetPoints(Player)
+		end
+		GunFW.GiveWeapon(Player, "AA12", true)
+	end
+	RoundStart.SetPlayersTeams()
+end
+
 -- MAIN FUNCTION TO START WAVES
 function WaveManager.StartWaves()
 	-- ENSURE WAVE STUFF RESET BEFORE STARTING
-	SetupWaveStart()
+	task.wait(2)
+	SetupWavesStart()
 
 	-- CONTINUOUS LOOP TILL EITHER PLAYERS DEAD OR ZOMBIES DEAD
 	while true do
-		task.wait(2) -- SMALL WAIT BEFORE STARTING WAVE
-		-- INCREMENT WAVE AND FIRE TO UPDATE GUI
-		WaveManager.CurrentWave += 1
-		UpdateWaveEvent:FireAllClients(WaveManager.CurrentWave)
-
-		-- PLAYER TELEPORTS, GUNS GIVEN, TEAMS SET
-		RoundStart.TeleportPlayersToMap()
-		for _, Player in Players:GetPlayers() do
-			if Player.Team ~= Teams:FindFirstChild("Lobby") then
-				continue
-			end
-			GunFW.GiveWeapon(Player, "TacticalShotgun", true)
-		end
-		RoundStart.SetPlayersTeams()
+		-- BEGIN WAVE CHECKS AND SETUP
+		BeginWaveHelper()
 
 		-- BREATHER
 		task.wait(4)
@@ -117,6 +138,8 @@ function WaveManager.StartWaves()
 		if not Result then
 			HandleDeadPlayers()
 			return
+		else
+			task.wait(2) -- SMALL WAIT BEFORE STARTING WAVE
 		end
 	end
 end

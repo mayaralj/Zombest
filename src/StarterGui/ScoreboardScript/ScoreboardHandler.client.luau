@@ -244,6 +244,7 @@ local function SetUpRowUpdater(Player)
 		local Revives = Player:GetAttribute("Revives") or 0
 		local Knockdowns = Player:GetAttribute("Knockdowns") or 0
 		local CurrentPoints = Player:GetAttribute("CurrentPoints") or 0
+		CurrentPoints = math.round(CurrentPoints)
 
 		PlayerRow.Kills.Text = tostring(Kills)
 		PlayerRow.Deaths.Text = tostring(Deaths)

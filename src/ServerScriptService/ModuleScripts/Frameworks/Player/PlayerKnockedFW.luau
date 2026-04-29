@@ -152,7 +152,6 @@ end
 
 -- HANDLE PLAYER REMOVAL TO UPDATE KNOCKED COUNT AND CLEANUP CONNS
 local KnockedAttributeConns = {}
-local ReviveAttributeConns = {}
 local function HandlePlayerRemoving(Player)
 	KnockedAttributeConns[Player]:Disconnect()
 	KnockedAttributeConns[Player] = nil

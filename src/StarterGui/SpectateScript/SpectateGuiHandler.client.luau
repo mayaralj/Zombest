@@ -25,3 +25,13 @@ ToggleSpectateEvent.OnClientEvent:Connect(function(Enable)
 
 	SpectateGui.Enabled = true
 end)
+
+-- ON LEFT ARROW CLICK
+LeftArrow.MouseButton1Click:Connect(function()
+	print("hileft")
+end)
+
+-- ON RIGHT ARROW CLICK
+RightArrow.MouseButton1Click:Connect(function()
+	print("hiright")
+end)
