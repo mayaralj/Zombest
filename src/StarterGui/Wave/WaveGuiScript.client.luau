@@ -26,9 +26,9 @@ UpdateWaveEvent.OnClientEvent:Connect(function(CurrentWave)
 	waveGui.Enabled = true
 
 	-- DONT TWEEN SIZE AND COLOR IF FIRST WAVE
-	-- if CurrentWave <= 1 then
-	-- 	return
-	-- end
+	if CurrentWave <= 1 then
+		return
+	end
 
 	-- TWEEN THE COLOR TO RED FOR A BRIEF MOMENT
 	local ColorTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -46,7 +46,7 @@ UpdateWaveEvent.OnClientEvent:Connect(function(CurrentWave)
 	SizeTween:Play()
 
 	-- WAIT AND TWEEN EVERYTHING BACK
-	task.wait(2)
+	task.wait(3)
 	ColorWaveTween:Destroy()
 	ColorCountTween:Destroy()
 	SizeTween:Destroy()

@@ -90,6 +90,7 @@ function WaveManager.StartWaves()
 
 	-- CONTINUOUS LOOP TILL EITHER PLAYERS DEAD OR ZOMBIES DEAD
 	while true do
+		task.wait(2) -- SMALL WAIT BEFORE STARTING WAVE
 		-- INCREMENT WAVE AND FIRE TO UPDATE GUI
 		WaveManager.CurrentWave += 1
 		UpdateWaveEvent:FireAllClients(WaveManager.CurrentWave)
@@ -105,7 +106,7 @@ function WaveManager.StartWaves()
 		RoundStart.SetPlayersTeams()
 
 		-- BREATHER
-		task.wait(1.5)
+		task.wait(4)
 
 		-- SPAWN DA ZOMBIES
 		local ZombieCount = math.clamp(10 + (WaveManager.CurrentWave - 1) * 5, 10, 400)
@@ -116,8 +117,6 @@ function WaveManager.StartWaves()
 		if not Result then
 			HandleDeadPlayers()
 			return
-		else
-			task.wait(3)
 		end
 	end
 end
