@@ -826,7 +826,8 @@ local function ClosestSpawnPoint()
 	-- LOOP THROUGH SPAWNPOINTS
 	local ClosestDistance
 	local ClosestSpawn = math.huge
-	for i, SpawnPoint in ipairs(SpawnPoints) do
+	local FailedAttempts = 0
+	for _, SpawnPoint in ipairs(SpawnPoints) do
 		-- CHECK DISTANCE TO PLAYER
 		local Character = RandomPlayer.Character
 		if not Character then
@@ -843,7 +844,8 @@ local function ClosestSpawnPoint()
 		if (not ClosestDistance or Distance < ClosestDistance) and Distance > MinDistanceFromPlayer then
 			-- RANDOM CHANCE TO FAIL (ADDS MORE RANDOMNESS TO SPAWNING AND PREVENTS ALL ZOMBIES SPAWNING AT THE SAME POINT)
 			local Random = math.random()
-			if Random < 0.4 and i < 4 then
+			if Random < 0.5 and FailedAttempts < 3 then
+				FailedAttempts += 1
 				continue
 			end
 			ClosestDistance = Distance
