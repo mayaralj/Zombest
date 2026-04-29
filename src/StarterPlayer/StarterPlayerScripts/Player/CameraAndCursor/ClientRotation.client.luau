@@ -153,10 +153,10 @@ local function OnCharacterAdded(CharacterRotating)
 		end
 	end)
 
-	if not RotationPart[PlayerRotating] then
-		RotationPart[PlayerRotating] = GetOrCreateAlignOrientation(RootPart)
+	if RotationPart and RotationPart[PlayerRotating] then
+		RotationPart[PlayerRotating]:Destroy()
 	end
-
+	RotationPart[PlayerRotating] = GetOrCreateAlignOrientation(RootPart)
 	RotationSettings.RenderConnection = RunService.RenderStepped:Connect(function()
 		if RotationSettings.IsDead then
 			return
@@ -183,6 +183,9 @@ local function OnCharacterAdded(CharacterRotating)
 				or GetAngleBetween(NewLookVector, RotationSettings.LastLookVector) > RotationSettings.AngleThreshold
 			then
 				local Align = RotationPart[PlayerRotating]
+				if not Align then
+					return
+				end
 
 				-- DONT ALLOW ROTATION WHILE REVIVING
 				if PlayerRotating:GetAttribute("IsReviving") and PlayerRotating:GetAttribute("RevivingPlayer") then
