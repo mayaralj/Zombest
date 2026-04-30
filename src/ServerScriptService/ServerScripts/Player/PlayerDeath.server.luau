@@ -48,8 +48,8 @@ local function HandleKnockedDeath(Character)
 end
 
 -- KEEP DEAD BODY ON THE GROUND (RAGDOLL ONCLIENT)
-local function DeadCharacterBody(Character)
-	RagdollEvent:FireAllClients(Character)
+local function DeadCharacterBody(Character, Position)
+	RagdollEvent:FireAllClients(Character, Position)
 end
 
 -- CHARACTER ADDED STUFF
@@ -66,7 +66,7 @@ local function OnCharacterAdded(Character)
 	-- IF PLAYER DIES
 	Humanoid.Died:Once(function()
 		HandleKnockedDeath(Character)
-		DeadCharacterBody(Character)
+		DeadCharacterBody(Character, Character.Position)
 	end)
 
 	Character.AncestryChanged:Once(function(_, Parent)

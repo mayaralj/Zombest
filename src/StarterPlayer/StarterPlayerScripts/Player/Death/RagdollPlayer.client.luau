@@ -10,7 +10,7 @@ local RagdollFW = require(Module:WaitForChild("Frameworks"):WaitForChild("Ragdol
 local RagdollEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PlayerEvents"):WaitForChild("RagdollEvent")
 
 -- RAGDOLL PLAYER
-RagdollEvent.OnClientEvent:Connect(function(Character)
+RagdollEvent.OnClientEvent:Connect(function(Character, Position)
 	-- CHARACTER STUFF
 	local Humanoid = Character:FindFirstChild("Humanoid")
 	if not Humanoid then
@@ -34,6 +34,7 @@ RagdollEvent.OnClientEvent:Connect(function(Character)
 		then
 			local Clone = Child:Clone()
 			Clone.Parent = DeadModel
+			Clone.Position = Position
 		end
 	end
 
