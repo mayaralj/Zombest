@@ -139,15 +139,27 @@ MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
 end)
 
 -- REGULAR SCOREBOARD TOGGLE
-local function ToggleScoreboard()
+local function ToggleScoreboard(ForceDisable)
 	if IsShowingRoundOver then
 		return
 	end
 	RoundOverFrame.Visible = false
 	MVPFrame.Visible = false
-	ScoreboardGui.Enabled = not ScoreboardGui.Enabled
+	if ForceDisable then
+		ScoreboardGui.Enabled = false
+	else
+		ScoreboardGui.Enabled = not ScoreboardGui.Enabled
+	end
 end
 UIS.InputBegan:Connect(function(Input, GameProcessed)
+	-- ON ESCAPE KEY FORCE DISABLE SCOREBOARD
+	if Input.KeyCode == Enum.KeyCode.Escape then
+		if IsShowingRoundOver then
+			return
+		else
+			ToggleScoreboard(true)
+		end
+	end
 	if GameProcessed then
 		return
 	end
