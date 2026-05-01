@@ -34,7 +34,9 @@ RagdollEvent.OnClientEvent:Connect(function(Character, Position)
 		then
 			local Clone = Child:Clone()
 			Clone.Parent = DeadModel
-			Clone.Position = Position
+			if Clone:IsA("BasePart") and Position then
+				Clone.Position = Position
+			end
 		end
 	end
 
