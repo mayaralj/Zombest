@@ -110,7 +110,7 @@ local function BeginWaveHelper()
 		if WaveManager.CurrentWave > 1 then
 			ResetPoints(Player)
 		end
-		GunFW.GiveWeapon(Player, "AA12", true)
+		GunFW.GiveWeapon(Player, "RayGun", true)
 	end
 	RoundStart.SetPlayersTeams()
 end

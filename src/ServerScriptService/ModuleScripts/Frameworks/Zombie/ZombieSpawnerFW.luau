@@ -544,9 +544,21 @@ local function ZombieLoop()
 							continue
 						end
 
+						local Spectating = Player:GetAttribute("SpectatingId")
+						local RootToCheck = RootPart
+						if Spectating then
+							local SpectatingPlayer = Players:GetPlayerByUserId(Spectating)
+							local SpectatingCharacter = SpectatingPlayer and SpectatingPlayer.Character
+							local SpectatingRoot = SpectatingCharacter
+								and SpectatingCharacter:FindFirstChild("HumanoidRootPart")
+							if SpectatingRoot then
+								RootToCheck = SpectatingRoot
+							end
+						end
+
 						-- CALCULATE IF CLOSE ENOUGH (AS LONG AS NOT DEAD OR NOT KNOCKED)
 						if Humanoid.Health > 0 and not Player:GetAttribute("IsKnocked") then
-							if (ZombiePart.Position - RootPart.Position).Magnitude > 225 then
+							if (ZombiePart.Position - RootToCheck.Position).Magnitude > 225 then
 								continue
 							end
 						end

@@ -271,9 +271,20 @@ function CleanupZombie(ZombieID, AliveZombies)
 		return
 	end
 
+	local RootToCheck = RootPart
+	local Spectating = LocalPlayer:GetAttribute("SpectatingId")
+	if Spectating then
+		local SpectatingPlayer = Players:GetPlayerByUserId(Spectating)
+		local CharacterSpectating = SpectatingPlayer and SpectatingPlayer.Character
+		local RootPartSpectating = CharacterSpectating and CharacterSpectating:FindFirstChild("HumanoidRootPart")
+		if RootPartSpectating then
+			RootToCheck = RootPartSpectating
+		end
+	end
+
 	-- ENSURE CLOSE ENOUGH
 	local ZombieRoot = CurrentZombieData.ModelStuff.HRP
-	local DistanceCheck = ZombieRoot and ((ZombieRoot.Position - RootPart.Position).Magnitude < 175)
+	local DistanceCheck = ZombieRoot and ((ZombieRoot.Position - RootToCheck.Position).Magnitude < 175)
 
 	-- CHECK AMOUNT OF ZOMBIES TO DETERMINE RAGDOLL CHANCES
 	if DistanceCheck then
@@ -298,7 +309,7 @@ ZombieDelete.OnClientEvent:Connect(function(ZombieID, AliveZombies)
 end)
 
 -- HELPER TO MOVE CLIENT ZOMBIE TO SERVER
-local function LerpClientToServer(Data, ServerZombieID, DT)
+local function LerpClientToServer(Data, DT)
 	-- GET CFRAME
 	local CurrentCFrame = Data.ModelStuff.HRP.CFrame
 	local TargetCFrame = Data.Position.TargetCF
@@ -389,9 +400,22 @@ RunService.Heartbeat:Connect(function(DT)
 			continue
 		end
 
-		-- DISTANCE AND DIRECTION TO PLAYER
-		local Distance = (TargetPos - PlayerPos).Magnitude
-		local Direction = (TargetPos - PlayerPos).Unit
+		-- DISTANCE FROM PLAYER OR PLAYER SPECTATING TO ZOMBIE
+		local Spectating = LocalPlayer:GetAttribute("SpectatingId")
+		local Distance
+		if Spectating then
+			local PlayerSpectating = Players:GetPlayerByUserId(Spectating)
+			local CharacterSpectating = PlayerSpectating and PlayerSpectating.Character
+			local RootPartSpectating = CharacterSpectating and CharacterSpectating:FindFirstChild("HumanoidRootPart")
+			if RootPartSpectating then
+				Distance = (TargetPos - RootPartSpectating.Position).Magnitude
+			else
+				Distance = (TargetPos - RootPart.Position).Magnitude
+			end
+		else
+			Distance = (TargetPos - RootPart.Position).Magnitude
+		end
+
 		-- UPDATE INTERVAL
 		local UpdateInterval = GetUpdateInterval(Distance)
 
@@ -426,8 +450,7 @@ RunService.Heartbeat:Connect(function(DT)
 		end
 
 		-- LERP
-		local NewCFrame = LerpClientToServer(Data, ServerZombieID, FrameDT)
-		--RootPart.CFrame = NewCFrame
+		local NewCFrame = LerpClientToServer(Data, FrameDT)
 		table.insert(BulkParts, RootPart)
 		table.insert(BulkCFrames, NewCFrame)
 	end

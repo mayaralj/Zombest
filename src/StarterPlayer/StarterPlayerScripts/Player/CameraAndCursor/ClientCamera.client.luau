@@ -46,11 +46,32 @@ local function DetermineOffset(Count, Offset)
 end
 
 -- APPLY CAMERA MOVEMENT
+local TeamConn
+local TeleportConn
 local function SetupCamera()
 	local CameraSettings = GetCameraData()
 	if not CameraSettings then
 		return
 	end
+
+	-- RESET CAMERA BACK TO LOCAL PLAYER
+	CameraSettings.PlayerViewing = LocalPlayer
+	if TeamConn then
+		TeamConn:Disconnect()
+	end
+	TeamConn = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
+		CameraSettings.PlayerViewing = LocalPlayer
+	end)
+	-- ON TELEPORTING DO THE SAME
+	if TeleportConn then
+		TeleportConn:Disconnect()
+	end
+	TeleportConn = LocalPlayer:GetAttributeChangedSignal("Teleporting"):Connect(function()
+		local IsTeleporting = LocalPlayer:GetAttribute("Teleporting")
+		if IsTeleporting then
+			CameraSettings.PlayerViewing = LocalPlayer
+		end
+	end)
 
 	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
 	if not CurrentPlayerData then
@@ -64,11 +85,6 @@ local function SetupCamera()
 
 	-- EXCLUDE PLAYER ACCESSORIES IN THE RAYCAST CHECK
 	local CharacterParts = {}
-	for _, Descendant in ipairs(LocalPlayer.Character:GetDescendants()) do
-		if Descendant:IsA("BasePart") then
-			table.insert(CharacterParts, Descendant)
-		end
-	end
 
 	if CameraSettings.RenderConnection then
 		CameraSettings.RenderConnection:Disconnect()
@@ -82,9 +98,18 @@ local function SetupCamera()
 	local OriginalTransparency = {}
 	local ExcludedParts = {}
 	local LastRayTime = 0
+	local LastPlayer = CameraSettings.PlayerViewing
 	CameraSettings.RenderConnection = RunService.RenderStepped:Connect(function(DT)
+		local Player = CameraSettings.PlayerViewing
+		if not Player then
+			return
+		end
+		local PlayerRootPart = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+		if not PlayerRootPart then
+			return
+		end
 		-- KEEP ATTEMPTING TO GET DATA
-		local SprintingFlag = LocalPlayer:GetAttribute("IsSprinting")
+		local SprintingFlag = Player:GetAttribute("IsSprinting")
 		if SprintingFlag then
 			CameraSettings.TargetSprintZoom = 5
 		else
@@ -117,7 +142,18 @@ local function SetupCamera()
 		local Offset = Vector3.new(OffSetX, Height, OffSetZ)
 
 		-- TARGET CAMERA CFRAME
-		local TargetCFrame = CFrame.lookAt(RootPart.Position + Offset, RootPart.Position)
+		local TargetCFrame = CFrame.lookAt(PlayerRootPart.Position + Offset, PlayerRootPart.Position)
+
+		-- UPDATE CHARACTER PARTS TO EXCLUDE IF VIEWING NEW PLAYER
+		if LastPlayer ~= Player then
+			LastPlayer = Player
+			table.clear(CharacterParts)
+			for _, Descendant in ipairs(Player.Character:GetDescendants()) do
+				if Descendant:IsA("BasePart") then
+					table.insert(CharacterParts, Descendant)
+				end
+			end
+		end
 
 		local RayResult
 		if tick() - LastRayTime >= 0.1 then
@@ -129,9 +165,9 @@ local function SetupCamera()
 			-- REPEAT RAYCAST
 			for Count = 0, 5 do
 				RayParams.FilterDescendantsInstances =
-					{ LocalPlayer.Character, unpack(CharacterParts), unpack(ExcludedParts) }
+					{ Player.Character, unpack(CharacterParts), unpack(ExcludedParts) }
 				local NewOffset = DetermineOffset(Count, Offset)
-				RayResult = workspace:Raycast(RootPart.Position, NewOffset, RayParams)
+				RayResult = workspace:Raycast(PlayerRootPart.Position, NewOffset, RayParams)
 				if RayResult then
 					-- INSTANCE
 					local RayInstance = RayResult.Instance
@@ -174,6 +210,8 @@ local function SetupCamera()
 
 		-- TWEEN CFRAME TO TARGET
 		Camera.CFrame = TargetCFrame
+		-- FOCUS CAMERA
+		Camera.Focus = PlayerRootPart.CFrame
 	end)
 end
 

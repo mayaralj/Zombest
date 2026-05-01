@@ -141,6 +141,9 @@ local function HandleStreamBullet(PlayerFired, PlayerFiredClientGunData, ServerD
 	if not Connections then
 		return
 	end
+	if not Connections[PlayerFired] then
+		Connections[PlayerFired] = {}
+	end
 	if Connections[PlayerFired]["KnockedStreamBullet"] then
 		Connections[PlayerFired]["KnockedStreamBullet"]:Disconnect()
 		Connections[PlayerFired]["KnockedStreamBullet"] = nil

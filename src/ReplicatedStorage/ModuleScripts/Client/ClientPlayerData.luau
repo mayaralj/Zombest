@@ -14,6 +14,7 @@ local ClientPlayerData = {}
 ClientPlayerData.DefaultData = {
 	-- CAMERA SETTINGS
 	CameraSettings = {
+		PlayerViewing = nil,
 		CameraType = Enum.CameraType.Scriptable,
 		CameraAngle = 0,
 		Rotating = false,

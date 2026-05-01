@@ -130,6 +130,14 @@ function RoundStart.TeleportPlayersToMap()
 		local SpawnPart = Spawns[i]
 		local Success = false
 
+		-- SET TP ATTRIBUTE ON PLAYER
+		Player:SetAttribute("Teleporting", true)
+		task.delay(1.5, function()
+			if Player:GetAttribute("Teleporting") then
+				Player:SetAttribute("Teleporting", false)
+			end
+		end)
+
 		for Attempt = 1, 10 do
 			local Character = Player.Character
 			if Character and SpawnPart and Character.PrimaryPart then

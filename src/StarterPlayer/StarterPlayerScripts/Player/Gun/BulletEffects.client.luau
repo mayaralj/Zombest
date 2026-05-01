@@ -102,11 +102,6 @@ BurnEffect.OnClientEvent:Connect(function(ZombieID, NewBurnTime, NewBurnDamage)
 		if not LocalPlayer.Character then
 			return
 		end
-		if
-			(Zombie.Torso.Position - LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude > 250
-		then
-			return
-		end
 
 		-- END OUTLINE
 		if BurnData.Outline then
