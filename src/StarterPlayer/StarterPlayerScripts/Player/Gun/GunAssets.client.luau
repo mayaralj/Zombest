@@ -21,6 +21,43 @@ local GunAssetsEvents = Events:WaitForChild("GunAssetsEvents")
 local ZombieHitVFX = GunAssetsEvents:WaitForChild("ZombieHitVFX")
 local WallFX = GunAssetsEvents:WaitForChild("WallFX")
 
+-- HELPER TO PLAY ASSETS
+local function PlayAssets(AssetsFunction, PlayerRequired, EquippedGun)
+	local DefaultData
+	local Count = 0
+	repeat
+		DefaultData = ClientGunDataModule:Get(PlayerRequired)
+		Count += 1
+		if not DefaultData then
+			warn("No default data for player, waiting: " .. PlayerRequired.Name)
+			task.wait(0.1)
+		end
+	until DefaultData or Count == 10
+	if not DefaultData then
+		return
+	end
+
+	-- PLAY ASSETS
+	local SuccessfulAssets
+	local Cancelled = false
+	pcall(function()
+		Count = 0
+		repeat
+			if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
+				Cancelled = true
+				return
+			end
+			SuccessfulAssets = AssetsFunction(LocalPlayer, DefaultData, EquippedGun, PlayerRequired)
+
+			Count += 1
+			if not SuccessfulAssets then
+				warn("Unsucessful assets load")
+				task.wait(0.1)
+			end
+		until SuccessfulAssets or Count == 100 or Cancelled
+	end)
+end
+
 -- EQUIP ASSETS
 local function EquipAnimation(PlayerEquipped, EquippedGun)
 	if not PlayerEquipped or not EquippedGun then
@@ -31,34 +68,7 @@ local function EquipAnimation(PlayerEquipped, EquippedGun)
 	if not EquipAssets then
 		return
 	end
-
-	-- REPEAT TILL DATA HAS BEEN LOADED
-	local Count = 0
-	local DefaultData
-	repeat
-		DefaultData = ClientGunDataModule:Get(PlayerEquipped)
-		Count += 1
-		task.wait(0.1)
-	until DefaultData or Count == 10
-	-- PLAYER EQUIPPED DATA
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local RepeatCount = 0
-		repeat
-			if PlayerEquipped:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = EquipAssets.Equip(LocalPlayer, DefaultData, EquippedGun, PlayerEquipped)
-
-			RepeatCount += 1
-			task.wait()
-		until SuccessfulAssets or RepeatCount == 100
-	end)
+	PlayAssets(EquipAssets.Equip, PlayerEquipped, EquippedGun)
 end
 
 -- IDLE ASSETS
@@ -72,33 +82,7 @@ local function IdleAnimation(PlayerEquipped, EquippedGun)
 		return
 	end
 
-	-- REPEAT TILL DATA HAS BEEN LOADED
-	local Count = 0
-	local DefaultData
-	repeat
-		DefaultData = ClientGunDataModule:Get(PlayerEquipped)
-		Count += 1
-		task.wait(0.1)
-	until DefaultData or Count == 10
-	-- PLAYER EQUIPPED DATA
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local RepeatCount = 0
-		repeat
-			if PlayerEquipped:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = IdleAssets.Idle(LocalPlayer, DefaultData, EquippedGun, PlayerEquipped)
-
-			RepeatCount += 1
-			task.wait()
-		until SuccessfulAssets or RepeatCount == 100
-	end)
+	PlayAssets(IdleAssets.Idle, PlayerEquipped, EquippedGun)
 end
 
 -- MOVEMENT ASSETS
@@ -111,26 +95,7 @@ local function MovementAnimation(PlayerRequired, EquippedGun)
 	if not MovementAssets then
 		return
 	end
-
-	local DefaultData = ClientGunDataModule:Get(PlayerRequired)
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local RepeatCount = 0
-		repeat
-			if PlayerRequired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = MovementAssets.Movement(LocalPlayer, DefaultData, EquippedGun, PlayerRequired)
-
-			RepeatCount += 1
-			task.wait()
-		until SuccessfulAssets or RepeatCount == 100
-	end)
+	PlayAssets(MovementAssets.Movement, PlayerRequired, EquippedGun)
 end
 
 -- SHOOT ASSETS
@@ -142,30 +107,11 @@ local function ShootAnimation(PlayerFired, EquippedGun)
 	if not ShootAssets then
 		return
 	end
-
-	local DefaultData = ClientGunDataModule:Get(PlayerFired)
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local Count = 0
-		repeat
-			if PlayerFired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = ShootAssets.Shoot(LocalPlayer, DefaultData, EquippedGun, PlayerFired)
-
-			Count += 1
-			task.wait()
-		until SuccessfulAssets or Count == 100
-	end)
+	PlayAssets(ShootAssets.Shoot, PlayerFired, EquippedGun)
 end
 
 -- RELOAD ASSETS
-local function ReloadAnimation(PlayerReloading, EquippedGun, Action)
+local function ReloadAnimation(PlayerReloading, EquippedGun)
 	if not PlayerReloading or not EquippedGun then
 		return
 	end
@@ -173,26 +119,7 @@ local function ReloadAnimation(PlayerReloading, EquippedGun, Action)
 	if not ReloadAssets then
 		return
 	end
-
-	local DefaultData = ClientGunDataModule:Get(PlayerReloading)
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local Count = 0
-		repeat
-			if PlayerReloading:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = ReloadAssets.Reload(LocalPlayer, DefaultData, EquippedGun, PlayerReloading)
-
-			Count += 1
-			task.wait()
-		until SuccessfulAssets or Count == 100
-	end)
+	PlayAssets(ReloadAssets.Reload, PlayerReloading, EquippedGun)
 end
 
 -- CHARGE ASSETS
@@ -204,26 +131,7 @@ local function ChargeAnimation(PlayerCharging, EquippedGun)
 	if not ChargeAssets then
 		return
 	end
-
-	local DefaultData = ClientGunDataModule:Get(PlayerCharging)
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local Count = 0
-		repeat
-			if PlayerCharging:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = ChargeAssets.Charge(LocalPlayer, DefaultData, EquippedGun, PlayerCharging)
-
-			Count += 1
-			task.wait()
-		until SuccessfulAssets or Count == 100
-	end)
+	PlayAssets(ChargeAssets.Charge, PlayerCharging, EquippedGun)
 end
 
 -- DASH ANIMATION
@@ -235,26 +143,7 @@ local function DashAnimation(PlayerDashing, EquippedGun)
 	if not DashAssets then
 		return
 	end
-
-	local DefaultData = ClientGunDataModule:Get(PlayerDashing)
-	if not DefaultData then
-		return
-	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local Count = 0
-		repeat
-			if PlayerDashing:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = DashAssets.Dash(LocalPlayer, DefaultData, EquippedGun, PlayerDashing)
-
-			Count += 1
-			task.wait()
-		until SuccessfulAssets or Count == 100
-	end)
+	PlayAssets(DashAssets.Dash, PlayerDashing, EquippedGun)
 end
 
 -- GUN UI
@@ -271,21 +160,7 @@ local function GunUI(PlayerFired, EquippedGun)
 	if not GunAssets then
 		return
 	end
-
-	-- PLAY ASSETS
-	local SuccessfulAssets
-	pcall(function()
-		local Count = 0
-		repeat
-			if PlayerFired:GetAttribute("IsEquippingGun") ~= EquippedGun then
-				return
-			end
-			SuccessfulAssets = GunAssets.UI(LocalPlayer, EquippedGun)
-
-			Count += 1
-			task.wait()
-		until SuccessfulAssets or Count == 100
-	end)
+	PlayAssets(GunAssets.GunUI, PlayerFired, EquippedGun)
 end
 
 -- WALL FX
@@ -327,13 +202,7 @@ ZombieHitVFX.OnClientEvent:Connect(function(PlayerFired, ResultData)
 end)
 
 -- BIND FUNCTIONS TO PLAYER CHARACTER
-local function StartGunAnimations(CharacterRequired)
-	-- GET PLAYER
-	local PlayerRequired = Players:GetPlayerFromCharacter(CharacterRequired)
-	if not PlayerRequired then
-		return
-	end
-
+local function StartGunAnimations(PlayerRequired)
 	local Tracks = ClientGunDataModule.Tracks
 	if not Tracks then
 		return
@@ -383,16 +252,14 @@ local function StartGunAnimations(CharacterRequired)
 	end
 
 	-- CLEAR CONNECTIONS
-	if Connections[PlayerRequired] then
-		if Connections[PlayerRequired]["EquippedGun"] then
-			Connections[PlayerRequired]["EquippedGun"]:Disconnect()
-			Connections[PlayerRequired]["EquippedGun"] = nil
-		end
+	if Connections[PlayerRequired]["GeneralEquippedGun"] then
+		Connections[PlayerRequired]["GeneralEquippedGun"]:Disconnect()
+		Connections[PlayerRequired]["GeneralEquippedGun"] = nil
+	end
 
-		if Connections[PlayerRequired]["CleanClientData"] then
-			Connections[PlayerRequired]["CleanClientData"]:Disconnect()
-			Connections[PlayerRequired]["CleanClientData"] = nil
-		end
+	if Connections[PlayerRequired]["CleanClientData"] then
+		Connections[PlayerRequired]["CleanClientData"]:Disconnect()
+		Connections[PlayerRequired]["CleanClientData"] = nil
 	end
 
 	-- LISTEN TO GUN CHANGES
@@ -436,11 +303,28 @@ end
 
 -- RECIEVE SIGNAL TO LOAD DEFAULT ANIMATIONS FOR SPECIFIC CHARACTER
 local function OnPlayerAdded(Player)
-	ClientUtilities.BindToCharacter(Player, StartGunAnimations)
+	local LastCharacter = nil
+	if Player.Character then
+		task.defer(StartGunAnimations, Player)
+		LastCharacter = Player.Character
+	end
+	Player.CharacterAdded:Connect(function()
+		if not Player.Character then
+			return
+		end
+		-- PREVENT DUPLICATE CONNECTIONS
+		if Player.Character == LastCharacter then
+			LastCharacter = Player.Character
+			return
+		end
+		task.defer(StartGunAnimations, Player)
+	end)
 end
 -- FOR ALL PLAYERS
 for _, Player in pairs(Players:GetPlayers()) do
 	OnPlayerAdded(Player)
 end
 -- SETUP NOW
-Players.PlayerAdded:Connect(OnPlayerAdded)
+Players.PlayerAdded:Connect(function(Player)
+	OnPlayerAdded(Player)
+end)
