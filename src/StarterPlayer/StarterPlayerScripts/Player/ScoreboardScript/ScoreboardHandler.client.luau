@@ -13,7 +13,7 @@ local MVPEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("WaveEven
 
 -- GUI
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local ScoreboardGui = PlayerGui:WaitForChild("ScoreboardGui"):WaitForChild("ScoreboardGui")
+local ScoreboardGui = PlayerGui:WaitForChild("ScoreboardGui")
 local MVPFrame = ScoreboardGui:WaitForChild("MVPFrame")
 local RoundOverFrame = ScoreboardGui:WaitForChild("RoundOverFrame")
 local MVPPackage = ScoreboardGui:WaitForChild("MVPPackage")

@@ -77,7 +77,7 @@ end
 -- CLEANUP AFTER ROUND END
 local function HandleDeadPlayers()
 	-- TELEPORT PLAYERS BACK TO LOBBY
-	RoundStart.TeleportPlayersToLobby()
+	-- RoundStart.TeleportPlayersToLobby()
 	-- CLEAR OUT ZOMBIES
 	ZombieSpawnerFW.StopSpawning()
 	ZombieSpawnerFW.KillAllZombies()
