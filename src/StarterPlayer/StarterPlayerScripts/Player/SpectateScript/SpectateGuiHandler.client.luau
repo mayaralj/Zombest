@@ -4,8 +4,8 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- PLAYER GUI
-local SpectateGui = PlayerGui:WaitForChild("SpectateGuiFolder"):WaitForChild("SpectateGui")
-local ToggleSpectateGui = PlayerGui:WaitForChild("SpectateGuiFolder"):WaitForChild("ToggleSpectateGui")
+local SpectateGui = PlayerGui:WaitForChild("SpectateGui")
+local ToggleSpectateGui = PlayerGui:WaitForChild("ToggleSpectateGui")
 local Main = SpectateGui:WaitForChild("Main")
 local Count = SpectateGui:WaitForChild("Count")
 local ToggleSpectateFrame = ToggleSpectateGui:WaitForChild("ToggleSpectateFrame")
@@ -17,32 +17,26 @@ local SpectateCountText = Count:WaitForChild("SpectateCount")
 
 -- SERVICES
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local SpectateEvents = ReplicatedStorage:WaitForChild("Events"):WaitForChild("SpectateEvents")
 local SpectateUpdate = SpectateEvents:WaitForChild("SpectateUpdate")
 
 -- MODULES
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 local ClientPlayerData = require(ModuleScripts:WaitForChild("Client"):WaitForChild("ClientPlayerData"))
+local SpectateScriptFolder = script.Parent
+local SpectateHelper = require(SpectateScriptFolder:WaitForChild("SpectateHelper"))
 
 -- VARS
 local SpectateList = {}
-local CurrentIndex = 1
+local BlackList = {}
 
 -- DISABLE SPECTATE MODE HELPER
-local function ResetSpectate()
-	CurrentIndex = 1
-	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
-	if not CurrentPlayerData then
-		return
-	end
-	CurrentPlayerData.CameraSettings.PlayerViewing = LocalPlayer
-	LocalPlayer:SetAttribute("SpectatingId", nil)
-end
 
 -- IF NO PLAYERS TO SPECTATE, DISABLE SPECTATE MODE
 local function IfNoPlayersToSpectate()
 	SpectateGui.Enabled = false
-	ResetSpectate()
+	SpectateHelper.ResetSpectate()
 end
 
 -- UPDATE SPECTATE LIST
@@ -50,27 +44,30 @@ local function UpdateSpectateList()
 	table.clear(SpectateList)
 	-- LOOP THROUGH PLAYERS TO UPDATE SPECTATE LIST
 	for _, Player in pairs(Players:GetPlayers()) do
+		if not Player.Character or not Player.Character:FindFirstChild("Humanoid") then
+			continue
+		end
 		if Player ~= LocalPlayer and Player.Team and Player.Team.Name == "InRound" then
-			-- INSERT PLAYER IF NEEDED
-			if not table.find(SpectateList, Player) then
+			-- INSERT PLAYER IF NOT BLACKLISTED
+			if not table.find(BlackList, Player) then
 				table.insert(SpectateList, Player)
 			end
 		end
 	end
 	-- ENSURE CURRENT INDEX IS VALID
-	if CurrentIndex > #SpectateList then
-		CurrentIndex = 1
+	if SpectateHelper.CurrentIndex > #SpectateList then
+		SpectateHelper.CurrentIndex = 1
 	end
 end
 
 -- UPDATE SPECTATE COUNT TEXT
 local function UpdateSpectateCountText()
-	SpectateCountText.Text = "SPECTATE (" .. CurrentIndex .. "/" .. #SpectateList .. ")"
+	SpectateCountText.Text = "SPECTATE (" .. SpectateHelper.CurrentIndex .. "/" .. #SpectateList .. ")"
 end
 
 -- UPDATE SPECTATE PLAYER TEXT
 local function UpdateSpectatePlayerText()
-	local CurrentPlayerSpectating = SpectateList[CurrentIndex]
+	local CurrentPlayerSpectating = SpectateList[SpectateHelper.CurrentIndex]
 	if not CurrentPlayerSpectating then
 		warn("No player spectating?")
 		return
@@ -80,53 +77,73 @@ end
 
 -- ON SPECTATING PLAYER DIED
 local SpectatingConnection
-local function OnSpectatingPlayerDied()
+local function OnSpectatingPlayerDied(DiedPlayer)
+	-- iF EXTERNAL CAUSE, ENSURE INDEX MOVES TO NEXT PLAYER IN LIST
+	if SpectateList[SpectateHelper.CurrentIndex] ~= DiedPlayer then
+		return
+	end
+	-- BLACKLIST PLAYER WHO DIED TO PREVENT SPECTATING AGAIN
+	if DiedPlayer then
+		table.insert(BlackList, DiedPlayer)
+		task.delay(3, function()
+			table.remove(BlackList, table.find(BlackList, DiedPlayer))
+		end)
+	end
 	UpdateSpectateList()
 	UpdateSpectateCountText()
 	if #SpectateList == 0 then
 		IfNoPlayersToSpectate()
 		return
 	end
-	CurrentIndex = CurrentIndex + 1
-	if CurrentIndex > #SpectateList then
-		CurrentIndex = 1
+	SpectateHelper.CurrentIndex = SpectateHelper.CurrentIndex + 1
+	if SpectateHelper.CurrentIndex > #SpectateList then
+		SpectateHelper.CurrentIndex = 1
 	end
 	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
 	if not CurrentPlayerData then
 		return
 	end
-	CurrentPlayerData.CameraSettings.PlayerViewing = SpectateList[CurrentIndex]
-	LocalPlayer:SetAttribute("SpectatingId", SpectateList[CurrentIndex].UserId)
+	CurrentPlayerData.CameraSettings.PlayerViewing = SpectateList[SpectateHelper.CurrentIndex]
+	LocalPlayer:SetAttribute("SpectatingId", SpectateList[SpectateHelper.CurrentIndex].UserId)
 	UpdateSpectateCountText()
 
 	-- IF PLAYER SPECTATING DIES, MOVE INDEX
-	local Character = SpectateList[CurrentIndex].Character
+	local Character = SpectateList[SpectateHelper.CurrentIndex].Character
 	local Humanoid = Character and Character:FindFirstChild("Humanoid")
 	if not Humanoid then
+		warn("Missing Char or Humanoid")
 		return
 	end
 	if SpectatingConnection and SpectatingConnection.Disconnect then
 		SpectatingConnection:Disconnect()
 	end
 	SpectatingConnection = Humanoid.Died:Connect(function()
-		OnSpectatingPlayerDied()
+		-- PLAYER THAT DIED
+		DiedPlayer = SpectateList[SpectateHelper.CurrentIndex]
+		OnSpectatingPlayerDied(DiedPlayer)
 	end)
 	UpdateSpectatePlayerText()
 end
 
 -- HANDLE DEAD SPECTATING PLAYER CONNECTION
 local function HandleDeadConnection()
-	-- IF PLAYER SPECTATING DIES, MOVE INDEX
-	local Character = SpectateList[CurrentIndex].Character or SpectateList[CurrentIndex].CharacterAdded:Wait()
-	local Humanoid = Character and Character:FindFirstChild("Humanoid")
-	if not Humanoid then
-		return
-	end
-	if SpectatingConnection and SpectatingConnection.Disconnect then
-		SpectatingConnection:Disconnect()
-	end
-	SpectatingConnection = Humanoid.Died:Connect(function()
-		OnSpectatingPlayerDied()
+	task.spawn(function()
+		-- IF PLAYER SPECTATING DIES, MOVE INDEX
+		local Character = SpectateList[SpectateHelper.CurrentIndex].Character
+			or SpectateList[SpectateHelper.CurrentIndex].CharacterAdded:Wait()
+		local Humanoid = Character and Character:FindFirstChild("Humanoid")
+		if not Humanoid then
+			warn("Missing Char or Humanoid")
+			return
+		end
+		if SpectatingConnection and SpectatingConnection.Disconnect then
+			SpectatingConnection:Disconnect()
+		end
+		SpectatingConnection = Humanoid.Died:Connect(function()
+			-- PLAYER THAT DIED
+			local DiedPlayer = SpectateList[SpectateHelper.CurrentIndex]
+			OnSpectatingPlayerDied(DiedPlayer)
+		end)
 	end)
 end
 
@@ -155,12 +172,12 @@ ToggleSpectateButton.MouseButton1Click:Connect(function()
 	-- ENABLE OR DISABLE SPECTATE MODE
 	if SpectateGui.Enabled then
 		-- IF SPECTATING, STOP SPECTATING
-		ResetSpectate()
+		SpectateHelper.ResetSpectate()
 		SpectateGui.Enabled = false
 	else
 		-- IF NOT SPECTATING, START SPECTATING FIRST PLAYER IN LIST
-		CameraSettings.PlayerViewing = SpectateList[CurrentIndex]
-		LocalPlayer:SetAttribute("SpectatingId", SpectateList[CurrentIndex].UserId)
+		CameraSettings.PlayerViewing = SpectateList[SpectateHelper.CurrentIndex]
+		LocalPlayer:SetAttribute("SpectatingId", SpectateList[SpectateHelper.CurrentIndex].UserId)
 		-- UPDATE SPECTATE PLAYER TEXT
 		UpdateSpectatePlayerText()
 		SpectateGui.Enabled = true
@@ -180,14 +197,14 @@ local function MoveSpectating(Direction)
 	end
 	-- INCREMENT OR DECREMENT INDEX
 	if Direction == "Left" then
-		CurrentIndex = CurrentIndex - 1
-		if CurrentIndex < 1 then
-			CurrentIndex = #SpectateList
+		SpectateHelper.CurrentIndex = SpectateHelper.CurrentIndex - 1
+		if SpectateHelper.CurrentIndex < 1 then
+			SpectateHelper.CurrentIndex = #SpectateList
 		end
 	elseif Direction == "Right" then
-		CurrentIndex = CurrentIndex + 1
-		if CurrentIndex > #SpectateList then
-			CurrentIndex = 1
+		SpectateHelper.CurrentIndex = SpectateHelper.CurrentIndex + 1
+		if SpectateHelper.CurrentIndex > #SpectateList then
+			SpectateHelper.CurrentIndex = 1
 		end
 	end
 
@@ -195,8 +212,8 @@ local function MoveSpectating(Direction)
 	if not CurrentPlayerData then
 		return
 	end
-	CurrentPlayerData.CameraSettings.PlayerViewing = SpectateList[CurrentIndex]
-	LocalPlayer:SetAttribute("SpectatingId", SpectateList[CurrentIndex].UserId)
+	CurrentPlayerData.CameraSettings.PlayerViewing = SpectateList[SpectateHelper.CurrentIndex]
+	LocalPlayer:SetAttribute("SpectatingId", SpectateList[SpectateHelper.CurrentIndex].UserId)
 	UpdateSpectateCountText()
 	UpdateSpectatePlayerText()
 
@@ -230,11 +247,11 @@ LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
 	if LocalPlayer.Team.Name == "InRound" then
 		SpectateGui.Enabled = false
 		ToggleSpectateGui.Enabled = false
-		ResetSpectate()
-	else
+		SpectateHelper.ResetSpectate()
+	elseif LocalPlayer.Team.Name == "Lobby" then
 		SpectateGui.Enabled = false
 		ToggleSpectateGui.Enabled = true
-		CurrentIndex = 1
+		SpectateHelper.CurrentIndex = 1
 		UpdateSpectateList()
 		UpdateSpectateCountText()
 	end
@@ -246,7 +263,7 @@ LocalPlayer:GetAttributeChangedSignal("Teleporting"):Connect(function()
 	if IsTeleporting then
 		SpectateGui.Enabled = false
 		ToggleSpectateGui.Enabled = false
-		ResetSpectate()
+		SpectateHelper.ResetSpectate()
 	end
 end)
 

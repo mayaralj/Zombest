@@ -18,12 +18,22 @@ end
 
 -- FORCE KILL FUNCTIOn (IGNORES KNOCKDOWN)
 function PlayerHealthFW.ForceKill(Player)
-	local Humanoid = Player.Character:FindFirstChild("Humanoid")
+	local Character = Player.Character
+	if not Character then
+		return
+	end
+	local Humanoid = Character:FindFirstChild("Humanoid")
 	if not Humanoid then
 		return
 	end
 	Player:SetAttribute("ForceKill", true)
 	Humanoid.Health = 0
+
+	-- SET DEAD POSITION
+	local RootPart = Character:FindFirstChild("HumanoidRootPart")
+	if RootPart then
+		Player:SetAttribute("DeadPosition", RootPart.Position)
+	end
 
 	task.delay(0.5, function()
 		Player:SetAttribute("ForceKill", false)

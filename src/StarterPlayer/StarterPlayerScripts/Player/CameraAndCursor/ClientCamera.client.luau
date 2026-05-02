@@ -46,32 +46,16 @@ local function DetermineOffset(Count, Offset)
 end
 
 -- APPLY CAMERA MOVEMENT
-local TeamConn
-local TeleportConn
 local function SetupCamera()
 	local CameraSettings = GetCameraData()
 	if not CameraSettings then
 		return
 	end
 
-	-- RESET CAMERA BACK TO LOCAL PLAYER
-	CameraSettings.PlayerViewing = LocalPlayer
-	if TeamConn then
-		TeamConn:Disconnect()
-	end
-	TeamConn = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
+	-- IF NOT ALREADY VIEWING SELF, SET TO VIEW SELF
+	if not CameraSettings.PlayerViewing then
 		CameraSettings.PlayerViewing = LocalPlayer
-	end)
-	-- ON TELEPORTING DO THE SAME
-	if TeleportConn then
-		TeleportConn:Disconnect()
 	end
-	TeleportConn = LocalPlayer:GetAttributeChangedSignal("Teleporting"):Connect(function()
-		local IsTeleporting = LocalPlayer:GetAttribute("Teleporting")
-		if IsTeleporting then
-			CameraSettings.PlayerViewing = LocalPlayer
-		end
-	end)
 
 	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
 	if not CurrentPlayerData then
@@ -102,10 +86,16 @@ local function SetupCamera()
 	CameraSettings.RenderConnection = RunService.RenderStepped:Connect(function(DT)
 		local Player = CameraSettings.PlayerViewing
 		if not Player then
+			CameraSettings.PlayerViewing = LocalPlayer
+			return
+		end
+		if not Player.Character then
+			CameraSettings.PlayerViewing = LocalPlayer
 			return
 		end
 		local PlayerRootPart = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
 		if not PlayerRootPart then
+			CameraSettings.PlayerViewing = LocalPlayer
 			return
 		end
 		-- KEEP ATTEMPTING TO GET DATA

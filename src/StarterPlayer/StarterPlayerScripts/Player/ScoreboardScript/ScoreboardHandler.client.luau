@@ -39,12 +39,15 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 	-- POSITION LABEL TO LEFT OF MVP PLAYER
 	local MVPPlayerRow: Frame = PlayerRows:FindFirstChild(MVPPlayer.Name)
 	if MVPPlayerRow then
-		-- DELAY TO ENSURE EVERYTHING IS LOADED BEFORE POSITIONING VIA ABSOLUTE POSITION
-		task.delay(0.01, function()
+		MVPFrame.Visible = false
+
+		-- DID THIS BECAUSE ABSOLUTEPOSITION IS NOT IMMEDIATELY AVAILABLE
+		local AbsConn
+		AbsConn = MVPPlayerRow:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
 			local AbsPos = MVPPlayerRow.AbsolutePosition
 			MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
-			-- SHOW MVP FRAME
 			MVPFrame.Visible = true
+			AbsConn:Disconnect()
 		end)
 
 		-- CLONE MVP PACKAGE
@@ -60,30 +63,6 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 		if not UIGradient then
 			return
 		end
-
-		-- ANIMATE MVP FRAME
-		-- task.spawn(function()
-		-- 	if MVPAnimateTask then
-		-- 		MVPAnimateTask:Disconnect()
-		-- 	end
-
-		-- 	-- local Backwards = false
-		-- 	-- MVPAnimateTask = RunService.Heartbeat:Connect(function(DT)
-		-- 	-- 	if not UIGradient then
-		-- 	-- 		MVPAnimateTask:Disconnect()
-		-- 	-- 		MVPAnimateTask = nil
-		-- 	-- 		return
-		-- 	-- 	end
-		-- 	-- 	if UIGradient.Rotation >= 180 and (not Backwards or UIGradient.Rotation <= 180) then
-		-- 	-- 		UIGradient.Rotation = (UIGradient.Rotation + 30 * DT)
-		-- 	-- 		Backwards = false
-		-- 	-- 	else
-		-- 	-- 		UIGradient.Rotation = (UIGradient.Rotation - 30 * DT)
-		-- 	-- 		Backwards = true
-		-- 	-- 	end
-		-- 	-- 	--UIGradient.Rotation = (UIGradient.Rotation + 30 * DT) % 90
-		-- 	-- end)
-		-- end)
 	else
 		MVPFrame.Visible = false
 	end

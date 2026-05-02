@@ -66,11 +66,7 @@ local function OnCharacterAdded(Character)
 	-- IF PLAYER DIES
 	Humanoid.Died:Once(function()
 		HandleKnockedDeath(Character)
-		local RootPart = Character:FindFirstChild("HumanoidRootPart")
-		if not RootPart then
-			return
-		end
-		DeadCharacterBody(Character, RootPart.Position)
+		DeadCharacterBody(Character)
 	end)
 
 	Character.AncestryChanged:Once(function(_, Parent)

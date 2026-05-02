@@ -10,7 +10,7 @@ local RagdollFW = require(Module:WaitForChild("Frameworks"):WaitForChild("Ragdol
 local RagdollEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PlayerEvents"):WaitForChild("RagdollEvent")
 
 -- RAGDOLL PLAYER
-RagdollEvent.OnClientEvent:Connect(function(Character, Position)
+RagdollEvent.OnClientEvent:Connect(function(Character)
 	-- CHARACTER STUFF
 	local Humanoid = Character:FindFirstChild("Humanoid")
 	if not Humanoid then
@@ -33,15 +33,12 @@ RagdollEvent.OnClientEvent:Connect(function(Character, Position)
 			or Child:IsA("BodyColors")
 		then
 			local Clone = Child:Clone()
-			if Clone:IsA("BasePart") and Position then
-				Clone.Position = Position
-			end
 			Clone.Parent = DeadModel
 		end
 	end
 
 	-- SET UP HUMANOID
-	local DeadHumanoid = Humanoid:Clone()
+	local DeadHumanoid: Humanoid = Humanoid:Clone()
 	DeadHumanoid.Parent = DeadModel
 
 	-- HUMANOID STATES AND SETTINGS
@@ -57,6 +54,5 @@ RagdollEvent.OnClientEvent:Connect(function(Character, Position)
 	RagdollFW.ActivateRagdoll(DeadModel)
 	Debris:AddItem(DeadModel, 30)
 
-	-- SET CHARACTER PARENT TO NIL (HIDE ORIGINAL CHARACTER)
 	Character.Parent = nil
 end)

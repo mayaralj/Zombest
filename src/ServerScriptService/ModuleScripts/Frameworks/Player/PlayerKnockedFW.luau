@@ -65,7 +65,7 @@ local function KnockedEffect(Character)
 			end
 
 			-- DECREASE HP
-			Humanoid.Health -= 1
+			Humanoid.Health -= 10
 			task.wait(1)
 		end
 	end)
@@ -106,6 +106,13 @@ function PlayerKnockedFW.KnockedState(Character)
 			return
 		end
 
+		if Health <= 1 and Player:GetAttribute("IsKnocked") then
+			local RootPart = Character:FindFirstChild("HumanoidRootPart")
+			if RootPart then
+				Player:SetAttribute("DeadPosition", RootPart.Position)
+			end
+		end
+
 		-- CHECK IF ABOUT TO BE LAST TO GET KNOCKED
 		if
 			Health <= 1
@@ -114,7 +121,9 @@ function PlayerKnockedFW.KnockedState(Character)
 		then
 			-- LOOP THROUGH ALL PLAYERS AND KILL THEM ALL
 			for _, OtherPlayer in pairs(Players:GetPlayers()) do
-				PlayerHealthFW.ForceKill(OtherPlayer)
+				if OtherPlayer.Team and OtherPlayer.Team.Name == "InRound" then
+					PlayerHealthFW.ForceKill(OtherPlayer)
+				end
 			end
 			return
 		end
