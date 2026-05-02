@@ -21,7 +21,6 @@ local WaveOver = RoundOverFrame:WaitForChild("WaveOver")
 
 -- SCORE BOARD GUI
 local ScoreboardFrame = ScoreboardGui:WaitForChild("ScoreboardFrame")
-local Categories = ScoreboardFrame:WaitForChild("Categories")
 local PlayerRows = ScoreboardFrame:WaitForChild("PlayerRows")
 local PlayerRowTemplate = PlayerRows:WaitForChild("PlayerRowTemplate")
 
@@ -35,13 +34,18 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 	-- SHOW ROUND OVER FRAME
 	RoundOverFrame.Visible = true
 
+	ScoreboardGui.Enabled = true
+
 	-- POSITION LABEL TO LEFT OF MVP PLAYER
 	local MVPPlayerRow: Frame = PlayerRows:FindFirstChild(MVPPlayer.Name)
 	if MVPPlayerRow then
-		local AbsPos = MVPPlayerRow.AbsolutePosition
-		MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
-		-- SHOW MVP FRAME
-		MVPFrame.Visible = true
+		-- DELAY TO ENSURE EVERYTHING IS LOADED BEFORE POSITIONING VIA ABSOLUTE POSITION
+		task.delay(0.01, function()
+			local AbsPos = MVPPlayerRow.AbsolutePosition
+			MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
+			-- SHOW MVP FRAME
+			MVPFrame.Visible = true
+		end)
 
 		-- CLONE MVP PACKAGE
 		local ClonedMVPPackage = MVPPackage:Clone()
@@ -90,6 +94,7 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 	-- ENABLE THE GUI
 	ScoreboardGui.Enabled = true
 end
+
 local function EndRoundOverSequence()
 	ScoreboardGui.Enabled = false
 	-- HIDE ROUND OVER FRAME
@@ -123,6 +128,7 @@ local function EndRoundOverSequence()
 	-- TOGGLE FLAG
 	IsShowingRoundOver = false
 end
+
 -- SET ROUND OVER SEQUENCE TO MVP EVENT
 MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
 	FreezeStats = true
@@ -151,6 +157,7 @@ local function ToggleScoreboard(ForceDisable)
 		ScoreboardGui.Enabled = not ScoreboardGui.Enabled
 	end
 end
+
 UIS.InputBegan:Connect(function(Input, GameProcessed)
 	-- ON ESCAPE KEY FORCE DISABLE SCOREBOARD
 	if Input.KeyCode == Enum.KeyCode.Escape then
@@ -171,6 +178,7 @@ UIS.InputBegan:Connect(function(Input, GameProcessed)
 		end
 	end
 end)
+
 UIS.InputEnded:Connect(function(Input, GameProcessed)
 	if GameProcessed then
 		return
@@ -203,6 +211,7 @@ local function SetUpPlayerRow(Player)
 		PlayerRow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	end
 end
+
 local StoredAttributes = {}
 local function DeletePlayerRow(Player)
 	local PlayerRow = PlayerRows:FindFirstChild(Player.Name)
@@ -220,6 +229,7 @@ local function DeletePlayerRow(Player)
 		StoredAttributes[Player] = nil
 	end
 end
+
 local function SetUpRowUpdater(Player)
 	-- ENSURE PLAYER ROW EXISTS
 	local PlayerRow = PlayerRows:FindFirstChild(Player.Name)
