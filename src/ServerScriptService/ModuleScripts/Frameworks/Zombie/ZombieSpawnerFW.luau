@@ -827,6 +827,13 @@ local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
 local function ClosestSpawnPoint()
 	local PlayerCount = #Players:GetPlayers()
 	local RandomPlayer = Players:GetPlayers()[math.random(1, PlayerCount)]
+
+	-- KEEP RETRYING TO GET A NON KNOCKED PLAYER
+	local Count = 0
+	while RandomPlayer:GetAttribute("IsKnocked") and Count < 10 do
+		RandomPlayer = Players:GetPlayers()[math.random(1, PlayerCount)]
+		task.wait()
+	end
 	if not RandomPlayer then
 		warn("Random PLayer not found")
 		return workspace:WaitForChild("ZombieSpawners").GetChildren()[1]
