@@ -832,8 +832,10 @@ local function ClosestSpawnPoint()
 	local Count = 0
 	while RandomPlayer:GetAttribute("IsKnocked") and Count < 10 do
 		RandomPlayer = Players:GetPlayers()[math.random(1, PlayerCount)]
+		Count += 1
 		task.wait()
 	end
+	-- IF NO PLAYER FOUND
 	if not RandomPlayer then
 		warn("Random PLayer not found")
 		return workspace:WaitForChild("ZombieSpawners").GetChildren()[1]
