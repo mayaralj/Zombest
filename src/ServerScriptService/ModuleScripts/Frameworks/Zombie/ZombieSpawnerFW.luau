@@ -518,6 +518,9 @@ local function ZombieLoop()
 			end
 			Data.Position.LastZomPos = ZombiePart.Position
 
+			-- TRACK CLOSEST DISTANCE OUT OF ALL PLAYERS
+			local NearestDistanceToAnyPlayer = math.huge
+
 			-- UPDATE DATA
 			local CooldownData = Data.Cooldowns
 			CooldownData.SendToClientCD += DT
@@ -535,15 +538,24 @@ local function ZombieLoop()
 					-- ONLY CHECK FOR DISTANCE IF CHARACTER EXISTS
 					local Character = Player.Character
 					if Character then
+						-- ROOT PART
 						local RootPart = Character:FindFirstChild("HumanoidRootPart")
 						if not RootPart then
 							continue
 						end
+
+						-- UPDATE CLOSEST DISTANCE
+						if (ZombiePart.Position - RootPart.Position).Magnitude < NearestDistanceToAnyPlayer then
+							NearestDistanceToAnyPlayer = (ZombiePart.Position - RootPart.Position).Magnitude
+						end
+
+						-- HUMANOID
 						local Humanoid = Character:FindFirstChild("Humanoid")
 						if not Humanoid then
 							continue
 						end
 
+						-- IF SPECTATING SOMEONE THEN CHECK DISTANCE FROM THEM INSTEAD
 						local Spectating = Player:GetAttribute("SpectatingId")
 						local RootToCheck = RootPart
 						if Spectating then
@@ -573,6 +585,13 @@ local function ZombieLoop()
 						RY = math.floor(YLook * 1000),
 					})
 				end
+			end
+
+			-- SPEED UP ZOMBIE IF FAR FROM ALL PLAYERS
+			if NearestDistanceToAnyPlayer > 200 then
+				Data.Stats.WalkSpeed = Data.Stats.MaxSpeed * 3
+			else
+				Data.Stats.WalkSpeed = Data.Stats.MaxSpeed
 			end
 
 			-- GET TARGET AND TARGET COMPONENTS

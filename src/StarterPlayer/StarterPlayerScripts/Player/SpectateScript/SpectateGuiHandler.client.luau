@@ -149,6 +149,10 @@ end
 
 -- ON TOGGLE SPECTATE BUTTON CLICK
 ToggleSpectateButton.MouseButton1Click:Connect(function()
+	-- DO NOT ALLOW SPECTATING IF TELEPORTING OR NOT IN LOBBY TEAM
+	if LocalPlayer:GetAttribute("Teleporting") or not LocalPlayer.Team or LocalPlayer.Team.Name ~= "Lobby" then
+		return
+	end
 	local CurrentPlayerData = ClientPlayerData:Get(LocalPlayer)
 	if not CurrentPlayerData then
 		return
@@ -189,6 +193,10 @@ end)
 
 -- HELPER TO HANDLE SPECTATING IN EITHER LEFT OR RIGHT
 local function MoveSpectating(Direction)
+	-- DO NOT ALLOW SPECTATING IF TELEPORTING OR NOT IN LOBBY TEAM
+	if LocalPlayer:GetAttribute("Teleporting") or not LocalPlayer.Team or LocalPlayer.Team.Name ~= "Lobby" then
+		return
+	end
 	-- UPDATE SPECTATE LIST
 	UpdateSpectateList()
 	if #SpectateList == 0 then
