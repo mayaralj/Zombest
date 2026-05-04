@@ -3,14 +3,14 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- GET THE WAVE GUI
-local playerGui = LocalPlayer:WaitForChild("PlayerGui")
-local waveGui = playerGui:WaitForChild("WaveGuiFolder"):WaitForChild("WaveGui")
-local Frame = waveGui:WaitForChild("Frame")
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local WaveGui = PlayerGui:WaitForChild("WaveGui")
+local Frame = WaveGui:WaitForChild("Frame")
 local WaveText = Frame:WaitForChild("WaveText")
 local WaveCount = Frame:WaitForChild("WaveCount")
 
 -- GET ROUND TIMER GUI
-local RoundTimerGui = playerGui:WaitForChild("RoundTimer"):WaitForChild("RoundTimerGui")
+local RoundTimerGui = PlayerGui:WaitForChild("RoundTimerGui")
 
 -- EVENTS
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,7 +23,7 @@ local UpdateWaveEvent = WaveEvents:WaitForChild("UpdateWaveEvent")
 UpdateWaveEvent.OnClientEvent:Connect(function(CurrentWave)
 	RoundTimerGui.Enabled = false
 	WaveCount.Text = CurrentWave
-	waveGui.Enabled = true
+	WaveGui.Enabled = true
 
 	-- DONT TWEEN SIZE AND COLOR IF FIRST WAVE
 	if CurrentWave <= 1 then

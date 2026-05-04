@@ -9,14 +9,13 @@ local RoundEvents = Events:WaitForChild("RoundEvents")
 local UpdateTimerEvent = RoundEvents:WaitForChild("UpdateTimerEvent")
 
 -- GUI STUFF
-local RoundTimerGui =
-	Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("RoundTimer"):WaitForChild("RoundTimerGui")
+local RoundTimerGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("RoundTimerGui")
 local Frame = RoundTimerGui:WaitForChild("Frame")
 local RoundText = Frame:WaitForChild("RoundText")
 local TimerText = Frame:WaitForChild("TimerText")
 
 -- GET WAVE GUI STUFF
-local WaveGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("WaveGuiFolder"):WaitForChild("WaveGui")
+local WaveGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("WaveGui")
 
 UpdateTimerEvent.OnClientEvent:Connect(function(EndTime)
 	-- DISABLE WAVE GUI FIRST SO IT DOESNT COLLIDE

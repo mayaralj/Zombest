@@ -825,16 +825,15 @@ end
 -- FUNCTION TO PICK PLAYER AND PICK CLOSEST SPAWN POINT
 local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
 local function ClosestSpawnPoint()
-	local PlayerCount = #Players:GetPlayers()
-	local RandomPlayer = Players:GetPlayers()[math.random(1, PlayerCount)]
-
-	-- KEEP RETRYING TO GET A NON KNOCKED PLAYER
-	local Count = 0
-	while RandomPlayer:GetAttribute("IsKnocked") and Count < 10 do
-		RandomPlayer = Players:GetPlayers()[math.random(1, PlayerCount)]
-		Count += 1
-		task.wait()
+	-- LIST OF VALID PLAYERS
+	local ValidPlayers = {}
+	for _, Player in ipairs(Players:GetPlayers()) do
+		if Player.Team and Player.Team.Name ~= "Lobby" and not Player:GetAttribute("IsKnocked") then
+			table.insert(ValidPlayers, Player)
+		end
 	end
+
+	local RandomPlayer = ValidPlayers[math.random(1, #ValidPlayers)]
 	-- IF NO PLAYER FOUND
 	if not RandomPlayer then
 		warn("Random PLayer not found")

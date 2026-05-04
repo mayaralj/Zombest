@@ -31,25 +31,10 @@ local MVPPlayer = nil
 local FreezeStats = false
 local function BeginRoundOverSequence(NewMVPPlayer)
 	MVPPlayer = NewMVPPlayer
-	-- SHOW ROUND OVER FRAME
-	RoundOverFrame.Visible = true
-
-	ScoreboardGui.Enabled = true
 
 	-- POSITION LABEL TO LEFT OF MVP PLAYER
 	local MVPPlayerRow: Frame = PlayerRows:FindFirstChild(MVPPlayer.Name)
 	if MVPPlayerRow then
-		MVPFrame.Visible = false
-
-		-- DID THIS BECAUSE ABSOLUTEPOSITION IS NOT IMMEDIATELY AVAILABLE
-		local AbsConn
-		AbsConn = MVPPlayerRow:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-			local AbsPos = MVPPlayerRow.AbsolutePosition
-			MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
-			MVPFrame.Visible = true
-			AbsConn:Disconnect()
-		end)
-
 		-- CLONE MVP PACKAGE
 		local ClonedMVPPackage = MVPPackage:Clone()
 		for _, Child in pairs(ClonedMVPPackage:GetChildren()) do
@@ -58,11 +43,10 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 		-- DESTROY FOLDER OF PACKAGE
 		ClonedMVPPackage:Destroy()
 
-		-- LOCATE UI GRADIENT
-		local UIGradient = MVPPlayerRow:WaitForChild("UIStroke"):WaitForChild("UIGradient")
-		if not UIGradient then
-			return
-		end
+		-- POSITION MVP TEXT
+		local AbsPos = MVPPlayerRow.AbsolutePosition
+		MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
+		MVPFrame.Visible = true
 	else
 		MVPFrame.Visible = false
 	end
@@ -70,12 +54,15 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 	-- TOGGLE FLAG
 	IsShowingRoundOver = true
 
-	-- ENABLE THE GUI
-	ScoreboardGui.Enabled = true
+	-- SHOW ROUND OVER FRAME
+	RoundOverFrame.Visible = true
+
+	-- MAKE SCOREBOARD VISIBLE
+	ScoreboardFrame.Visible = true
 end
 
 local function EndRoundOverSequence()
-	ScoreboardGui.Enabled = false
+	ScoreboardFrame.Visible = false
 	-- HIDE ROUND OVER FRAME
 	RoundOverFrame.Visible = false
 
@@ -108,6 +95,29 @@ local function EndRoundOverSequence()
 	IsShowingRoundOver = false
 end
 
+-- UPDATE FUNCTION
+local function UpdateRow(Player)
+	if FreezeStats then
+		return
+	end
+	local PlayerRow = PlayerRows:FindFirstChild(Player.Name)
+	if not PlayerRow then
+		return
+	end
+	local Kills = Player:GetAttribute("Kills") or 0
+	local Deaths = Player:GetAttribute("Deaths") or 0
+	local Revives = Player:GetAttribute("Revives") or 0
+	local Knockdowns = Player:GetAttribute("Knockdowns") or 0
+	local CurrentPoints = Player:GetAttribute("CurrentPoints") or 0
+	CurrentPoints = math.round(CurrentPoints)
+
+	PlayerRow.Kills.Text = tostring(Kills)
+	PlayerRow.Deaths.Text = tostring(Deaths)
+	PlayerRow.Revives.Text = tostring(Revives)
+	PlayerRow.Knockdowns.Text = tostring(Knockdowns)
+	PlayerRow.Points.Text = tostring(CurrentPoints)
+end
+
 -- SET ROUND OVER SEQUENCE TO MVP EVENT
 MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
 	FreezeStats = true
@@ -119,21 +129,22 @@ MVPEvent.OnClientEvent:Connect(function(Player, WaveNumber)
 	end
 	task.delay(10, function()
 		FreezeStats = false
+		UpdateRow(Player)
 		EndRoundOverSequence()
 	end)
 end)
 
 -- REGULAR SCOREBOARD TOGGLE
-local function ToggleScoreboard(ForceDisable)
+local function ToggleScoreboard(On, ForceDisable)
 	if IsShowingRoundOver then
 		return
 	end
 	RoundOverFrame.Visible = false
 	MVPFrame.Visible = false
 	if ForceDisable then
-		ScoreboardGui.Enabled = false
+		ScoreboardFrame.Visible = false
 	else
-		ScoreboardGui.Enabled = not ScoreboardGui.Enabled
+		ScoreboardFrame.Visible = On
 	end
 end
 
@@ -143,7 +154,7 @@ UIS.InputBegan:Connect(function(Input, GameProcessed)
 		if IsShowingRoundOver then
 			return
 		else
-			ToggleScoreboard(true)
+			ToggleScoreboard(false, true)
 		end
 	end
 	if GameProcessed then
@@ -153,7 +164,7 @@ UIS.InputBegan:Connect(function(Input, GameProcessed)
 		if IsShowingRoundOver then
 			return
 		else
-			ToggleScoreboard()
+			ToggleScoreboard(true)
 		end
 	end
 end)
@@ -166,7 +177,7 @@ UIS.InputEnded:Connect(function(Input, GameProcessed)
 		if IsShowingRoundOver then
 			return
 		else
-			ToggleScoreboard()
+			ToggleScoreboard(false)
 		end
 	end
 end)
@@ -195,6 +206,7 @@ local StoredAttributes = {}
 local function DeletePlayerRow(Player)
 	local PlayerRow = PlayerRows:FindFirstChild(Player.Name)
 	if PlayerRow then
+		PlayerRow.Visible = false
 		PlayerRow:Destroy()
 	end
 
