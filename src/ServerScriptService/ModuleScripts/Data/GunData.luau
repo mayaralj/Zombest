@@ -1119,7 +1119,7 @@ GunData.DefaultData = {
 		GunStats = {
 			Range = 175,
 			Damage = 100,
-			FireRate = 1.1,
+			FireRate = 1.3,
 			Windup = 0.45,
 		},
 
@@ -1199,10 +1199,10 @@ GunData.DefaultData = {
 		},
 
 		Ammo = {
-			MaxAmmo = 20,
-			CurrentAmmo = 20,
-			TotalAmmo = 500,
-			MaxTotalAmmo = 500,
+			MaxAmmo = 15,
+			CurrentAmmo = 15,
+			TotalAmmo = 400,
+			MaxTotalAmmo = 400,
 			ReloadTime = 2.5,
 		},
 
