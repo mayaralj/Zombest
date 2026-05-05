@@ -91,6 +91,8 @@ end
 -- SOME SETUP BEFORE STARTING FIRST WAVE
 local function SetupWavesStart()
 	WaveManager.CurrentWave = 0
+	RoundStart.InRoundCounter = 0
+	RoundStart.InRoundLookup = {}
 
 	-- RESET EACH PLAYER AND THEIR ROUND STATS
 	ResetRoundStats()

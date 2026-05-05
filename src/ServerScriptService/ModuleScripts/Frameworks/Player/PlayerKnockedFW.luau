@@ -65,7 +65,7 @@ local function KnockedEffect(Character)
 			end
 
 			-- DECREASE HP
-			Humanoid.Health -= 10
+			Humanoid.Health -= 1
 			task.wait(1)
 		end
 	end)

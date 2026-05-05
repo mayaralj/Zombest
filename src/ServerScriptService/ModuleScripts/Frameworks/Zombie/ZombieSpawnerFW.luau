@@ -585,11 +585,29 @@ local function ZombieLoop()
 						RY = math.floor(YLook * 1000),
 					})
 				end
+			else
+				-- STILL UPDATE CLOSEST DISTANCE
+				for _, Player in Players:GetPlayers() do
+					-- ONLY CHECK FOR DISTANCE IF CHARACTER EXISTS
+					local Character = Player.Character
+					if Character then
+						-- ROOT PART
+						local RootPart = Character:FindFirstChild("HumanoidRootPart")
+						if not RootPart then
+							continue
+						end
+
+						-- UPDATE CLOSEST DISTANCE
+						if (ZombiePart.Position - RootPart.Position).Magnitude < NearestDistanceToAnyPlayer then
+							NearestDistanceToAnyPlayer = (ZombiePart.Position - RootPart.Position).Magnitude
+						end
+					end
+				end
 			end
 
 			-- SPEED UP ZOMBIE IF FAR FROM ALL PLAYERS
-			if NearestDistanceToAnyPlayer > 200 then
-				Data.Stats.WalkSpeed = Data.Stats.MaxSpeed * 3
+			if NearestDistanceToAnyPlayer > 300 then
+				Data.Stats.WalkSpeed = Data.Stats.MaxSpeed * 2
 			else
 				Data.Stats.WalkSpeed = Data.Stats.MaxSpeed
 			end
@@ -906,7 +924,7 @@ function ZombieSpawnerFW.SpawnZombies(Count)
 		warn(AliveZombies, "Zombies are still currently alive")
 	end
 
-	local AllowedZombies = math.floor(Count / 4)
+	local AllowedZombies = math.floor(Count / 5)
 	local Spawned = 0
 
 	-- START LOOPS

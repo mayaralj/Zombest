@@ -20,8 +20,8 @@ ZombieData.DefaultData = {
 			},
 
 			Stats = {
-				WalkSpeed = 16,
-				MaxSpeed = 16,
+				WalkSpeed = 16.5,
+				MaxSpeed = 16.5,
 			},
 
 			Collision = {

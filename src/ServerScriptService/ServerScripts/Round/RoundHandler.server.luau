@@ -93,6 +93,6 @@ while #Players:GetPlayers() == 0 do
 	task.wait(1)
 end
 while true do
-	RoundStart.StartTimer(5)
+	RoundStart.StartTimer(20)
 	WaveManager.StartWaves()
 end

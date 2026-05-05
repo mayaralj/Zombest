@@ -55,7 +55,7 @@ RoundStart.InRoundLookup = {}
 RoundStart.InRoundCounter = 0
 
 -- SAME CHECKS FOR PLAYER REMOVING TO HANDLE DC
-Players.PlayerRemoving:Once(function(RemovingPlayer)
+Players.PlayerRemoving:Connect(function(RemovingPlayer)
 	if RoundStart.InRoundLookup[RemovingPlayer] then
 		RoundStart.InRoundCounter -= 1
 		RoundStart.InRoundLookup[RemovingPlayer] = nil
