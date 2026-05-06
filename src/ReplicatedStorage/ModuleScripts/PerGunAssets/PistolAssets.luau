@@ -557,6 +557,9 @@ function PistolAssets.Shoot(PlayerViewing, DefaultData, EquippedGun, PlayerFired
 		if not CharacterEquippedGun then
 			return
 		end
+		if not CharacterEquippedGun.PrimaryPart then
+			return
+		end
 		local ArmWeld = CharacterEquippedGun.PrimaryPart:FindFirstChild("Weld")
 		if not ArmWeld then
 			return

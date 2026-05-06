@@ -113,6 +113,8 @@ local function BeginWaveHelper()
 			ResetPoints(Player)
 		end
 		GunFW.GiveWeapon(Player, "Pistol", true)
+		task.wait(2)
+		GunFW.GiveWeapon(Player, "RayGun", true)
 	end
 	RoundStart.SetPlayersTeams()
 end

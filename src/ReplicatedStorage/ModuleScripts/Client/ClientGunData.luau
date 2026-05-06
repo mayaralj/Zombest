@@ -2098,7 +2098,7 @@ end
 -- KNOCKED DATA
 function ClientGunData:CreateKnockedData(Player)
 	local KnockedGuns = { "Pistol", "RayGun" }
-	local CurrentGun = Player:GetAttribute("EquippedGun")
+	local CurrentGun = Player:GetAttribute("IsEquippingGun")
 
 	local DataCopy
 	if table.find(KnockedGuns, CurrentGun) then
@@ -2115,10 +2115,12 @@ end
 -- GET PLAYER'S WEAPON DATA
 function ClientGunData:Get(Player)
 	if Player:GetAttribute("IsKnocked") then
-		if ClientGunData.KnockedGunData[Player] then
+		local KnockedData = ClientGunData.KnockedGunData[Player]
+		if KnockedData and KnockedData.About.Model == Player:GetAttribute("IsEquippingGun") then
 			return ClientGunData.KnockedGunData[Player]
 		end
-		local KnockedData = ClientGunData:CreateKnockedData(Player)
+
+		KnockedData = ClientGunData:CreateKnockedData(Player)
 		if not KnockedData then
 			return
 		end

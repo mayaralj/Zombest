@@ -518,6 +518,7 @@ function GunFW.GiveWeapon(Player, WeaponName, CreateData)
 				-- GIVE PISTOL IF NOT ALREADY EQUIPPED A KNOCKED GUN
 				GunFW.GiveWeapon(Player, "Pistol")
 			else
+				GunData.KnockedGunData[Player] = nil
 				-- GIVE BACK THEIR WEAPON
 				for i, WeaponStoredName in WeaponSlotData do
 					if i == Player:GetAttribute("CurrentGunIndex") then
