@@ -6,6 +6,7 @@ local TweenService = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
+local RootPart = Character:WaitForChild("HumanoidRootPart")
 
 -- MODULES
 local Frameworks = ReplicatedStorage:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
@@ -107,7 +108,7 @@ local function UpdateReviveVisibility(Prompt, DT)
 end
 
 -- SHOW UI ON PROMPT SHOWN
-Connections["PromptShown"] = ProximityPromptService.PromptShown:Connect(function(Prompt)
+Connections["PromptShown"] = ProximityPromptService.PromptShown:Connect(function(Prompt: ProximityPrompt)
 	-- DONT SHOW IF KNOCKED OR DEAD
 	if Player:GetAttribute("IsKnocked") or Humanoid.Health <= 0 then
 		PromptGui.Enabled = false
@@ -170,6 +171,20 @@ Connections["PromptHeartbeat"] = RunService.Heartbeat:Connect(function(DT)
 
 	if not CurrentPrompt then
 		return
+	end
+
+	-- RAYCAST FROM PLAYER TO PART CONTAINING PROMPT TO CHECK IF VISIBLE
+	local Direction = (CurrentPrompt.Parent.Position - RootPart.Position).Unit
+	local Distance = (CurrentPrompt.Parent.Position - RootPart.Position).Magnitude
+	local RaycastParams = RaycastParams.new()
+	RaycastParams.FilterDescendantsInstances = { workspace:FindFirstChild("PhaseParts") }
+	RaycastParams.FilterType = Enum.RaycastFilterType.Include
+	local RaycastResult = workspace:Raycast(RootPart.Position, Direction * Distance, RaycastParams)
+	if RaycastResult then
+		PromptGui.Enabled = false
+		return
+	else
+		PromptGui.Enabled = true
 	end
 
 	-- REVIVE UPDATE
