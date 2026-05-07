@@ -5,6 +5,7 @@ local PlayerData = require(ServerScriptService.ModuleScripts.Data.PlayerData)
 local RoundStart = require(script.Parent.RoundStart)
 local GunFW = require(ServerScriptService.ModuleScripts.Frameworks.Gun.GunFW)
 local ZombieSpawnerFW = require(ServerScriptService.ModuleScripts.Frameworks.Zombie.ZombieSpawnerFW)
+local WaveLeaderboard = require(ServerScriptService.ModuleScripts.Misc.WaveLeaderboard)
 
 -- EVENTS
 local Events = game:GetService("ReplicatedStorage"):WaitForChild("Events")
@@ -52,20 +53,25 @@ local function ResetRoundStats()
 	end
 end
 
+-- FUNCTION TO CALCULATE SCORE
+local function CalculateScore(Player)
+	local CurrentPlayerData = PlayerData:Get(Player)
+	if not CurrentPlayerData or not CurrentPlayerData.RoundStats then
+		return 0
+	end
+	local Score = CurrentPlayerData.RoundStats.Kills * 5
+		+ CurrentPlayerData.RoundStats.Revives * 10
+		- CurrentPlayerData.RoundStats.Deaths * 20
+		- CurrentPlayerData.RoundStats.Knockdowns * 5
+	return Score
+end
+
 -- CALCULATE MVP
 local function CalculateMVP()
 	local MVPPlayer
 	local HighestScore = -math.huge
 	for _, Player in pairs(Players:GetPlayers()) do
-		local CurrentPlayerData = PlayerData:Get(Player)
-		if not CurrentPlayerData or not CurrentPlayerData.RoundStats then
-			continue
-		end
-		-- CALCULATE EACH SCORE, EACH STAT HAVING ITS OWN WEIGHT
-		local Score = CurrentPlayerData.RoundStats.Kills * 5
-			+ CurrentPlayerData.RoundStats.Revives * 10
-			- CurrentPlayerData.RoundStats.Deaths * 20
-			- CurrentPlayerData.RoundStats.Knockdowns * 5
+		local Score = CalculateScore(Player)
 		if not MVPPlayer or Score > HighestScore then
 			MVPPlayer = Player
 			HighestScore = Score
@@ -86,6 +92,18 @@ local function HandleDeadPlayers()
 	local MVPPlayer = CalculateMVP()
 	-- FIRE MVP EVENT
 	MVPEvent:FireAllClients(MVPPlayer, WaveManager.CurrentWave)
+
+	-- CHECK FOR LEADERBOARD UPDATE
+	local PlayerList = {}
+	for _, Player in pairs(Players:GetPlayers()) do
+		local Score = CalculateScore(Player)
+		-- ENSURE PLAYER ISNT A FRAUD GETTING ON LEADERBOARD WITH LOW SCORE
+		if Score < 500 and WaveManager.CurrentWave > 10 then
+			continue
+		end
+		table.insert(PlayerList, Player)
+	end
+	WaveLeaderboard.CheckForUpdate(WaveManager.CurrentWave, PlayerList)
 end
 
 -- SOME SETUP BEFORE STARTING FIRST WAVE
@@ -113,8 +131,6 @@ local function BeginWaveHelper()
 			ResetPoints(Player)
 		end
 		GunFW.GiveWeapon(Player, "Pistol", true)
-		task.wait(2)
-		GunFW.GiveWeapon(Player, "RayGun", true)
 	end
 	RoundStart.SetPlayersTeams()
 end

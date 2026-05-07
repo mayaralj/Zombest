@@ -17,6 +17,7 @@ local ZombieSpawnerFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("
 local RoundStart = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("RoundStart"))
 local GunFW = require(Frameworks:WaitForChild("Gun"):WaitForChild("GunFW"))
 local Utilities = require(Misc:WaitForChild("Utilities"))
+local WaveLeaderboard = require(ModuleScripts:WaitForChild("Misc"):WaitForChild("WaveLeaderboard"))
 
 -- KEEP SHUFFLING THE GIVE GUN PARTS AROUND MAP
 task.spawn(function()
@@ -88,11 +89,19 @@ task.spawn(function()
 	end
 end)
 
+-- UPDATE LEADERBOARD EVERY 30 SECONDS
+task.spawn(function()
+	while true do
+		WaveLeaderboard.UpdateLeaderboard()
+		task.wait(30)
+	end
+end)
+
 -- CURRENT MAP
 while #Players:GetPlayers() == 0 do
 	task.wait(1)
 end
 while true do
-	RoundStart.StartTimer(5)
+	RoundStart.StartTimer(20)
 	WaveManager.StartWaves()
 end
