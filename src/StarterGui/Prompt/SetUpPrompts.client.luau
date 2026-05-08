@@ -35,7 +35,7 @@ local function UpdateGunPrompt(PartContainingPrompt, Prompt)
 	if not Cost then
 		return
 	end
-	Cost = Cost.Value -- get the value of the int value
+	Cost = Cost.Value
 
 	-- UPDATE TEXT
 	if Player:GetAttribute("IsEquippingGun") and Player:GetAttribute("IsEquippingGun") == PartContainingPrompt.Name then
@@ -56,6 +56,29 @@ local function UpdateGunPrompt(PartContainingPrompt, Prompt)
 		PromptText.Text = "Press E To Refill Ammo (" .. HalfCost .. ")"
 	else
 		PromptText.Text = Prompt.ActionText .. " (" .. Cost .. ")"
+	end
+end
+
+-- UPDATE MYSTERY BOX PROMPT
+local function UpdateMysteryBoxPrompt(PartContainingPrompt, Prompt)
+	-- UPDATE TEXT
+	PromptText.Text = "Press E To Get Shafted (2500)"
+end
+
+-- UPDATE MYSTERY GIVE GUN PROMPT
+local function UpdateMysteryGiveGunPrompt(Prompt)
+	-- UPDATE TEXT
+	local GunToGive = Prompt:GetAttribute("GunToGive")
+	if not GunToGive then
+		return
+	end
+	-- IF SAME GUN AS CURRENTLY EQUIPPING, THEN SHOW REFILL OPTION
+	local PlayerGun = Player:GetAttribute("IsEquippingGun")
+	if PlayerGun and PlayerGun == GunToGive then
+		PromptText.Text = "Press E To Refill Ammo"
+		return
+	else
+		PromptText.Text = "Press E To Equip " .. GunToGive
 	end
 end
 
@@ -115,6 +138,15 @@ Connections["PromptShown"] = ProximityPromptService.PromptShown:Connect(function
 		return
 	end
 
+	-- ONLY PLAYER THAT BOUGHT MYSTERY BOX SHOULD SEE OPTION TO GRAB GUN
+	if Prompt.Name == "MysteryGiveGun" then
+		local PlayerToEnablePrompt = Prompt:GetAttribute("Player")
+		if not PlayerToEnablePrompt or PlayerToEnablePrompt ~= Player.Name then
+			Prompt.Enabled = false
+			return
+		end
+	end
+
 	-- UPDATE CURRENT PROMPT
 	CurrentPrompt = Prompt
 
@@ -139,7 +171,7 @@ for _, Part in GiveGunParts:GetChildren() do
 		continue
 	end
 
-	PromptFunction.GiveGun(Part, Prompt, PromptText)
+	PromptFunction.GiveGun(Part, Prompt)
 end
 
 -- GIVE FUTURE PARTS THAT GET ADDED
@@ -149,8 +181,18 @@ Connections["ChildAdded"] = GiveGunParts.ChildAdded:Connect(function(Part)
 		return
 	end
 
-	PromptFunction.GiveGun(Part, Prompt, PromptText)
+	PromptFunction.GiveGun(Part, Prompt)
 end)
+
+-- SETUP MYSTERY BOX PROMPT
+for _, Part in workspace:WaitForChild("MysteryBox"):GetDescendants() do
+	local Prompt = Part:FindFirstChild("MysteryPrompt")
+	if not Prompt then
+		continue
+	end
+
+	PromptFunction.MysteryBox(Prompt)
+end
 
 -- CLEANUP ONHUMANOID DIED
 Humanoid.Died:Connect(function()
@@ -196,6 +238,18 @@ Connections["PromptHeartbeat"] = RunService.Heartbeat:Connect(function(DT)
 	-- GUN PROMPT UPDATE
 	if CurrentPrompt.Parent.Parent == GiveGunParts then
 		UpdateGunPrompt(CurrentPrompt.Parent, CurrentPrompt)
+		return
+	end
+
+	-- MYSTERY GIVE GUN PROMPT UPDATE
+	if CurrentPrompt.Name == "MysteryGiveGun" then
+		UpdateMysteryGiveGunPrompt(CurrentPrompt)
+		return
+	end
+
+	-- MYSTERY BOX PROMPT UPDATE
+	if CurrentPrompt.Name == "MysteryPrompt" then
+		UpdateMysteryBoxPrompt(CurrentPrompt.Parent, CurrentPrompt)
 		return
 	end
 end)

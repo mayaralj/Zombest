@@ -7,9 +7,10 @@ local Debris = game:GetService("Debris")
 -- EVENTS
 local PromptEvents = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PromptEvents")
 local GiveGunPrompt = PromptEvents:WaitForChild("GiveGunPrompt")
+local MysteryPrompt = PromptEvents:WaitForChild("MysteryPrompt")
 
 -- GIVE GUN FROM PROMPT
-function PromptFunction.GiveGun(Part, Prompt, PromptText)
+function PromptFunction.GiveGun(Part, Prompt)
 	-- ON TRIGGER FIRE EVENT TO SERVER
 	Prompt.Triggered:Connect(function(Player)
 		-- GUI
@@ -57,6 +58,21 @@ function PromptFunction.GiveGun(Part, Prompt, PromptText)
 		local CurrentGun = Player:GetAttribute("IsEquippingGun")
 		GiveGunPrompt:FireServer(Part)
 		task.wait(0.05)
+	end)
+end
+
+-- MYSTERY BOX PROMPT
+function PromptFunction.MysteryBox(Prompt)
+	Prompt.Triggered:Connect(function(Player)
+		-- GUI
+		local PlayerGui = Player:WaitForChild("PlayerGui")
+		local PromptGui = PlayerGui:WaitForChild("Prompt"):WaitForChild("PromptGui")
+		-- SINK IF PROMPT GUI NOT ENABLED (SIGHT IS BLOCKED)
+		if not PromptGui.Enabled then
+			return
+		end
+
+		MysteryPrompt:FireServer(Prompt)
 	end)
 end
 
