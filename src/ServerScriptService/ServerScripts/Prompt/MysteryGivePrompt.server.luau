@@ -23,6 +23,9 @@ local Top = MysteryBoxModel:WaitForChild("Top")
 local NeonBase = MysteryBoxModel:WaitForChild("NeonBase")
 local MysteryBoxGuns = MysteryBox:WaitForChild("MysteryBoxGuns")
 local MysteryBoxLight = MysteryBoxModel:WaitForChild("Base"):WaitForChild("MysteryBoxLight")
+local SpawnLocations = MysteryBox:WaitForChild("SpawnLocations")
+local MysteryBoxVFX = ReplicatedStorage:WaitForChild("MysteryBoxVFX")
+local TPVFX = MysteryBoxVFX:WaitForChild("TPVFX")
 
 -- COST
 local Cost = 2500
@@ -121,6 +124,23 @@ local function DisplayGun(GunModel)
 	GunModel:PivotTo(CFrame.new(TargetCF.Position) * CurrentPivot.Rotation * PivotToBoundingOffset:Inverse())
 end
 
+-- HELPER TO TELEPORT MYSTERY BOX MODEL TO ONE OF THE SPAWN LOCATIONS ITS NOT CURRENTLY AT
+local CurrentLocation = nil
+local function TeleportMysteryBox()
+	local Locations = SpawnLocations:GetChildren()
+	if #Locations == 0 then
+		return
+	end
+
+	local Location = Locations[math.random(1, #Locations)]
+	while CurrentLocation and Location == CurrentLocation do
+		Location = Locations[math.random(1, #Locations)]
+	end
+
+	MysteryBoxModel:PivotTo(Location:GetPivot())
+	CurrentLocation = Location
+end
+
 -- ON SERVER EVENT FOR GIVE GUN
 local IsOpening = false
 MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
@@ -172,9 +192,9 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	Player:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 
 	-- ANIMATE MYSTERY BOX
-	local CFValue = Instance.new("CFrameValue")
-	CFValue.Value = Top:GetPivot()
-	CFValue.Changed:Connect(function(NewCF)
+	local OpenTopCFValue = Instance.new("CFrameValue")
+	OpenTopCFValue.Value = Top:GetPivot()
+	OpenTopCFValue.Changed:Connect(function(NewCF)
 		Top:PivotTo(NewCF)
 	end)
 
@@ -182,9 +202,10 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	local OriginalTop = Top:GetPivot()
 	local OpenTweenInfo = TweenInfo.new(0.75, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
 	local Goal = Top:GetPivot() * CFrame.new(0, 2, 2) * CFrame.Angles(math.rad(90), 0, 0)
-	local OpenTween = TweenService:Create(CFValue, OpenTweenInfo, { Value = Goal })
+	local OpenTween = TweenService:Create(OpenTopCFValue, OpenTweenInfo, { Value = Goal })
 	OpenTween.Completed:Connect(function()
 		OpenTween:Destroy()
+		OpenTopCFValue:Destroy()
 	end)
 	OpenTween:Play()
 
@@ -253,12 +274,13 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	DisplayGun(GunToGive)
 
 	-- IF ZEHAHA
+	local OriginalBrightness
 	if FinalGun == "Zehaha" then
 		-- RESET ZEHAHA RATE
-		ZehahaRate = 10
+		ZehahaRate = 90
 
 		-- TWEEN BRIGHTNESS
-		local OriginalBrightness = MysteryBoxLight.Brightness
+		OriginalBrightness = MysteryBoxLight.Brightness
 		-- TWEEN BRIGHTNESS TO OFF
 		local ZehahaTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
 		local ZehahaTween = TweenService:Create(MysteryBoxLight, ZehahaTweenInfo, { Brightness = 0 })
@@ -289,8 +311,54 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		end)
 		ZehahaRiseTween:Play()
 
-		-- WAIT FOR A BIT
-		task.wait(5)
+		task.wait(3)
+
+		local OriginalBoxCF = MysteryBoxModel:GetPivot()
+		local WiggleAngle = math.rad(12)
+		local WiggleDuration = 0.2
+
+		-- TWEEN THE Y
+		local RiseValue = Instance.new("NumberValue")
+		RiseValue.Value = 0
+		local BoxRiseTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+		local BoxRiseTween = TweenService:Create(RiseValue, BoxRiseTweenInfo, { Value = 8 })
+		BoxRiseTween:Play()
+		BoxRiseTween.Completed:Once(function()
+			RiseValue:Destroy()
+			BoxRiseTween:Destroy()
+			BoxRiseTween = nil
+		end)
+
+		-- WIGGLE + RISE APPLIED TOGETHER IN ONE LOOP
+		local StartTime = tick()
+		while BoxRiseTween do
+			local Elapsed = tick() - StartTime
+			local WiggleOffset = CFrame.Angles(0, 0, math.sin(Elapsed / WiggleDuration * math.pi) * WiggleAngle)
+			MysteryBoxModel:PivotTo(OriginalBoxCF * CFrame.new(0, RiseValue.Value, 0) * WiggleOffset)
+			task.wait()
+		end
+
+		-- TELEPORT MYSTERY BOX FAR AWAY
+		local DummyPart = Instance.new("Part")
+		DummyPart.Size = Vector3.new(1, 1, 1)
+		DummyPart.Transparency = 1
+		DummyPart.Anchored = true
+		DummyPart.CanCollide = false
+		DummyPart.CFrame = MysteryBoxModel:GetPivot() * CFrame.new(0, -4, 0)
+		DummyPart.Parent = workspace:FindFirstChild("ActiveVFX")
+		MysteryBoxModel:PivotTo(CFrame.new(0, -500, 0))
+
+		-- PLAY TELEPORT VFX
+		local TPVFXClone = TPVFX:Clone()
+		TPVFXClone.Parent = workspace:FindFirstChild("ActiveVFX")
+		TPVFXClone.Parent = DummyPart
+		for _, Emitter in pairs(TPVFXClone:GetDescendants()) do
+			if Emitter:IsA("ParticleEmitter") then
+				Emitter:Emit(Emitter.Rate)
+			end
+		end
+
+		task.wait(1)
 
 		-- RETURN ZEHAHA
 		GunToGive:PivotTo(OriginalCFrame)
@@ -317,6 +385,16 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		local PlayerGotGun = false
 		PromptTriggeredConnection = GiveGunPrompt.Triggered:Connect(function(TriggeringPlayer)
 			if TriggeringPlayer ~= Player then
+				return
+			end
+			-- CHECK FOR PLAYER STATES
+			local IsRunning = Player:GetAttribute("IsRunning")
+			local IsDashing = Player:GetAttribute("IsDashing")
+			local IsShooting = Player:GetAttribute("IsShooting")
+			local IsReloading = Player:GetAttribute("IsReloading")
+			local IsCharging = Player:GetAttribute("IsCharging")
+			local IsEquipping = Player:GetAttribute("IsEquipping")
+			if IsRunning or IsDashing or IsShooting or IsReloading or IsCharging or IsEquipping then
 				return
 			end
 			PlayerGotGun = true
@@ -377,16 +455,36 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	end
 
 	-- TWEEN BACK THE TOP
+	local CloseTopCFValue = Instance.new("CFrameValue")
+	CloseTopCFValue.Value = Top:GetPivot()
+	CloseTopCFValue.Changed:Connect(function(NewCF)
+		Top:PivotTo(NewCF)
+	end)
 	local CloseTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
-	local CloseTween = TweenService:Create(CFValue, CloseTweenInfo, { Value = OriginalTop })
+	Goal = Top:GetPivot() * CFrame.new(0, -2, 2) * CFrame.Angles(math.rad(-90), 0, 0)
+	local CloseTween = TweenService:Create(CloseTopCFValue, CloseTweenInfo, { Value = Goal })
 	CloseTween.Completed:Connect(function()
 		-- DESTROY CF VALUE NOW
-		CFValue:Destroy()
+		CloseTopCFValue:Destroy()
 		CloseTween:Destroy()
 	end)
 	CloseTween:Play()
+
+	-- ENSURE LIGHT IS BACK ON
+	if OriginalBrightness then
+		MysteryBoxLight.Brightness = OriginalBrightness
+	end
+
+	if FinalGun == "Zehaha" then
+		-- WAIT TILL TOP FULLY CLOSES BEFORE TELEPORTING MYSTERY BOX
+		CloseTween.Completed:Wait()
+		TeleportMysteryBox()
+	end
 
 	task.wait(OpenCD)
 	IsOpening = false
 	Prompt.Enabled = true
 end)
+
+-- TELEPORT MYSTERY BOX ON SERVER START
+TeleportMysteryBox()

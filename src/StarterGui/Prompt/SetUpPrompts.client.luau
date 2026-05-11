@@ -67,6 +67,17 @@ end
 
 -- UPDATE MYSTERY GIVE GUN PROMPT
 local function UpdateMysteryGiveGunPrompt(Prompt)
+	-- CHECK FOR PLAYER STATES
+	local IsRunning = Player:GetAttribute("IsRunning")
+	local IsDashing = Player:GetAttribute("IsDashing")
+	local IsShooting = Player:GetAttribute("IsShooting")
+	local IsReloading = Player:GetAttribute("IsReloading")
+	local IsCharging = Player:GetAttribute("IsCharging")
+	local IsEquipping = Player:GetAttribute("IsEquipping")
+	if IsRunning or IsDashing or IsShooting or IsReloading or IsCharging or IsEquipping then
+		PromptGui.Enabled = false
+		return
+	end
 	-- UPDATE TEXT
 	local GunToGive = Prompt:GetAttribute("GunToGive")
 	if not GunToGive then
@@ -80,6 +91,7 @@ local function UpdateMysteryGiveGunPrompt(Prompt)
 	else
 		PromptText.Text = "Press E To Equip " .. GunToGive
 	end
+	PromptGui.Enabled = true
 end
 
 -- UPDATE REVIVE PROMPT VISIBILITY
