@@ -7,7 +7,7 @@ local TweenService = game:GetService("TweenService")
 local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 
 -- MODULES
-local PlayerData = require(ModuleScripts:FindFirstChild("Data"):FindFirstChild("PlayerData"))
+local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
 local GunFW = require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("Gun"):WaitForChild("GunFW"))
 local Frameworks = ModuleScripts:WaitForChild("Frameworks")
 local PlayerHealthFW = require(Frameworks:WaitForChild("Player"):WaitForChild("PlayerHealthFW"))
@@ -128,30 +128,42 @@ local function DisplayGun(GunModel)
 end
 
 -- HELPER TO TELEPORT MYSTERY BOX MODEL TO ONE OF THE SPAWN LOCATIONS ITS NOT CURRENTLY AT
-local CurrentLocation = nil
-local LocationsCFrame = {}
+local FirstSwap = true
+local LocationsLookup = {}
 local function TeleportMysteryBox()
-	local OldMysteryBoxCF = MysteryBoxModel:GetPivot()
-	local Locations = SpawnLocations:GetChildren()
-	if #Locations == 0 then
-		return
+	local Locations = {}
+	for _, Location in pairs(SpawnLocations:GetChildren()) do
+		-- EXCLUDE MYSTERY BOX
+		if Location == MysteryBoxModel then
+			continue
+		end
+		table.insert(Locations, Location)
 	end
 
+	-- PICK A RANDOM LOCATION
 	local Location = Locations[math.random(1, #Locations)]
-	while CurrentLocation and Location == CurrentLocation do
-		Location = Locations[math.random(1, #Locations)]
-	end
-	local SpawnPart = Location:FindFirstChild("Spawn")
-	MysteryBoxModel:PivotTo(SpawnPart:GetPivot())
 
-	if not CurrentLocation then
+	-- TELEPORT MYSTERY BOX MODEL TO NEW LOCATION
+	MysteryBoxModel:PivotTo(LocationsLookup[Location].SpawnPivot)
+
+	if FirstSwap then
+		-- DESTROY THE FIRST LOCATION
 		Location:Destroy()
+		LocationsLookup[MysteryBoxModel] = LocationsLookup[Location]
+		LocationsLookup[Location] = nil
+		MysteryBoxModel.Parent = SpawnLocations
+
+		-- TURN OFF FIRST SWAP
+		FirstSwap = false
 	else
 		-- SWAP LOCATIONS BETWEEN NO MYSTERY BOX MODEL AND MYSTERY BOX
-		Location:PivotTo(LocationsCFrame[CurrentLocation])
-	end
+		Location:PivotTo(LocationsLookup[MysteryBoxModel].ModelPivot)
 
-	CurrentLocation = Location
+		-- UPDATE LOCATIONS LOOKUP
+		local Temp = LocationsLookup[MysteryBoxModel]
+		LocationsLookup[MysteryBoxModel] = LocationsLookup[Location]
+		LocationsLookup[Location] = Temp
+	end
 end
 
 -- ON SERVER EVENT FOR GIVE GUN
@@ -249,11 +261,11 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		local Roll = math.random(1, 100)
 		if Roll <= Rates.Legendary.Rarity then
 			FinalGun = Rates.Legendary.Weapons[math.random(1, #Rates.Legendary.Weapons)]
-		elseif Roll <= Rates.Epic.Rarity then
+		elseif Roll <= Rates.Epic.Rarity + Rates.Legendary.Rarity then
 			FinalGun = Rates.Epic.Weapons[math.random(1, #Rates.Epic.Weapons)]
-		elseif Roll <= Rates.Rare.Rarity then
+		elseif Roll <= Rates.Rare.Rarity + Rates.Epic.Rarity + Rates.Legendary.Rarity then
 			FinalGun = Rates.Rare.Weapons[math.random(1, #Rates.Rare.Weapons)]
-		elseif Roll <= Rates.Uncommon.Rarity then
+		elseif Roll <= Rates.Uncommon.Rarity + Rates.Rare.Rarity + Rates.Epic.Rarity + Rates.Legendary.Rarity then
 			FinalGun = Rates.Uncommon.Weapons[math.random(1, #Rates.Uncommon.Weapons)]
 		else
 			FinalGun = Rates.Common.Weapons[math.random(1, #Rates.Common.Weapons)]
@@ -394,9 +406,8 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		ChargeSFXClone.Parent = DummyPart
 		ChargeSFXClone:Play()
 
-		-- PLAY TELEPORT VFX
+		-- TELEPORT VFX
 		local TPVFXClone = TPVFX:Clone()
-		TPVFXClone.Parent = workspace:FindFirstChild("ActiveVFX")
 		TPVFXClone.Parent = DummyPart
 		for _, Emitter in pairs(TPVFXClone:GetDescendants()) do
 			if Emitter:IsA("ParticleEmitter") then
@@ -528,8 +539,8 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	end
 
 	if FinalGun == "TeddyBear" then
-		-- WAIT TILL TOP FULLY CLOSES BEFORE TELEPORTING MYSTERY BOX
-		CloseTween.Completed:Wait()
+		-- WAIT A LITTLE BEFORE RESPAWNING MYSTERY BOX
+		task.wait(2)
 		TeleportMysteryBox()
 	end
 
@@ -540,7 +551,11 @@ end)
 
 -- LOOP THROUGH SPAWN LOCATIONS AND STORE THEIR CF IN A TABLE FOR EASY ACCESS LATER
 for _, Location in pairs(SpawnLocations:GetChildren()) do
-	LocationsCFrame[Location] = Location:GetPivot()
+	local Spawn = Location:FindFirstChild("Spawn")
+	LocationsLookup[Location] = {
+		SpawnPivot = Spawn:GetPivot(),
+		ModelPivot = Location:GetPivot(),
+	}
 end
 
 -- TELEPORT MYSTERY BOX ON SERVER START
