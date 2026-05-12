@@ -19,7 +19,6 @@ local Events = ReplicatedStorage:WaitForChild("Events")
 local ZombieEvents = Events:WaitForChild("ZombieEvents")
 
 -- MODULES
-local WaveManager = require(ServerScriptService.ModuleScripts.Misc.WaveManager)
 local ZombieAIFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieAIFW"))
 local RagdollFW = require(
 	ReplicatedStorage:WaitForChild("ModuleScripts")
@@ -46,6 +45,9 @@ local AliveZombies = 0
 local ZombiesCurrentSpawning = false
 local ZombieIndex = {}
 local ZombieArray = {}
+
+-- OUTSIDE INFO
+local CurrentWave = 0
 
 -- SETTINGS
 local VERY_CLOSE = 40
@@ -236,9 +238,6 @@ function ZombieSpawnerFW.SpawnZombie(SpawnPart)
 	if not CurrentZombieData then
 		return
 	end
-
-	-- CURRENT WAVE
-	local CurrentWave = WaveManager.GetCurrentWave()
 
 	-- RANDOMIZE HP
 	local LowerHealth = CurrentZombieData.Health.MaxHealth - 10
@@ -926,11 +925,16 @@ function ZombieSpawnerFW.StopSpawning()
 		task.cancel(CurrentSpawnTask)
 	end
 end
-function ZombieSpawnerFW.SpawnZombies(Count)
+function ZombieSpawnerFW.SpawnZombies(Count, Wave)
+	-- UPDATE CURRENT WAVE
+	CurrentWave = Wave
+
+	-- CHECK IF ZOMBIES CURRENTLY SPAWNING
 	if AliveZombies > 0 then
 		warn(AliveZombies, "Zombies are still currently alive")
 	end
 
+	-- ALLOWED ZOMBIE COUNT
 	local AllowedZombies = math.floor(Count / 5)
 	local Spawned = 0
 

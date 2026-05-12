@@ -18,11 +18,6 @@ local MVPEvent = WaveEvents:WaitForChild("MVPEvent")
 local WaveManager = {}
 WaveManager.CurrentWave = 0
 
--- GETTER FOR CURRENT WAVE
-function WaveManager.GetCurrentWave()
-	return WaveManager.CurrentWave
-end
-
 local function ResetPoints(Player)
 	local CurrentPlayerData = PlayerData:Get(Player)
 	if CurrentPlayerData and CurrentPlayerData.Points then
@@ -156,7 +151,7 @@ function WaveManager.StartWaves()
 
 		-- SPAWN DA ZOMBIES
 		local ZombieCount = math.clamp(10 + (WaveManager.CurrentWave - 1) * 5, 10, 400)
-		ZombieSpawnerFW.SpawnZombies(ZombieCount)
+		ZombieSpawnerFW.SpawnZombies(ZombieCount, WaveManager.CurrentWave)
 
 		-- WAIT TILL RESULT OF ROUND IS DECIDED
 		local Result = RoundResult.Event:Wait()
