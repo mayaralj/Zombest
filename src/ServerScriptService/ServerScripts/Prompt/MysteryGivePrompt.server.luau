@@ -25,17 +25,19 @@ local MysteryBoxGuns = MysteryBox:WaitForChild("MysteryBoxGuns")
 local MysteryBoxLight = MysteryBoxModel:WaitForChild("Base"):WaitForChild("MysteryBoxLight")
 local SpawnLocations = MysteryBox:WaitForChild("SpawnLocations")
 local MysteryBoxVFX = ReplicatedStorage:WaitForChild("MysteryBoxVFX")
+local MysteryBoxSFX = ReplicatedStorage:WaitForChild("MysteryBoxSFX")
 local TPVFX = MysteryBoxVFX:WaitForChild("TPVFX")
+local Concrete = MysteryBoxModel:WaitForChild("Concrete")
 
 -- COST
 local Cost = 2500
 -- CD
 local OpenCD = 2
 -- TOTAL ROLLS TO DISPLAY
-local TotalRolls = 20
+local TotalRolls = 25
 
 -- RATES
-local ZehahaRate = 90
+local TeddyBearRate = 90
 local Rates = {
 	Common = {
 		Rarity = 50,
@@ -109,7 +111,6 @@ local function GetModelCenter(Model)
 	return CF
 end
 
--- DISPLAY GUN HELPER
 local function DisplayGun(GunModel)
 	local CurrentPivot = GunModel:GetPivot()
 	local BoundingCF = GetModelCenter(GunModel)
@@ -120,13 +121,17 @@ local function DisplayGun(GunModel)
 	-- TARGET POSITION ABOVE NEON BASE
 	local TargetCF = NeonBase:GetPivot() * CFrame.new(0, 4, 0)
 
-	-- APPLY CENTERING OFFSET + PRESERVE THE GUN'S OWN ROTATION
-	GunModel:PivotTo(CFrame.new(TargetCF.Position) * CurrentPivot.Rotation * PivotToBoundingOffset:Inverse())
+	-- NEONBASE ROTATION * GUN'S OWN ROTATION = follows box orientation + keeps gun's own facing
+	local CombinedRotation = NeonBase:GetPivot().Rotation * CurrentPivot.Rotation
+
+	GunModel:PivotTo(CFrame.new(TargetCF.Position) * CombinedRotation * PivotToBoundingOffset:Inverse())
 end
 
 -- HELPER TO TELEPORT MYSTERY BOX MODEL TO ONE OF THE SPAWN LOCATIONS ITS NOT CURRENTLY AT
 local CurrentLocation = nil
+local LocationsCFrame = {}
 local function TeleportMysteryBox()
+	local OldMysteryBoxCF = MysteryBoxModel:GetPivot()
 	local Locations = SpawnLocations:GetChildren()
 	if #Locations == 0 then
 		return
@@ -136,8 +141,16 @@ local function TeleportMysteryBox()
 	while CurrentLocation and Location == CurrentLocation do
 		Location = Locations[math.random(1, #Locations)]
 	end
+	local SpawnPart = Location:FindFirstChild("Spawn")
+	MysteryBoxModel:PivotTo(SpawnPart:GetPivot())
 
-	MysteryBoxModel:PivotTo(Location:GetPivot())
+	if not CurrentLocation then
+		Location:Destroy()
+	else
+		-- SWAP LOCATIONS BETWEEN NO MYSTERY BOX MODEL AND MYSTERY BOX
+		Location:PivotTo(LocationsCFrame[CurrentLocation])
+	end
+
 	CurrentLocation = Location
 end
 
@@ -198,6 +211,14 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		Top:PivotTo(NewCF)
 	end)
 
+	-- PLAY OPENING SFX
+	local RollSFXClone = MysteryBoxSFX:WaitForChild("Roll"):Clone()
+	RollSFXClone.Parent = NeonBase
+	RollSFXClone:Play()
+	RollSFXClone.Ended:Once(function()
+		RollSFXClone:Destroy()
+	end)
+
 	-- TWEEN POSITION BACK AND ROTATE IT
 	local OriginalTop = Top:GetPivot()
 	local OpenTweenInfo = TweenInfo.new(0.75, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
@@ -219,10 +240,10 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	-- ROLLS
 	local FinalGun
 
-	-- ROLL FOR ZEHAHA
-	local ZehahaRoll = math.random(1, 100)
-	if ZehahaRoll <= ZehahaRate then
-		FinalGun = "Zehaha"
+	-- ROLL FOR TEDDY BEAR
+	local TeddyBearRoll = math.random(1, 100)
+	if TeddyBearRoll <= TeddyBearRate then
+		FinalGun = "TeddyBear"
 	else
 		-- ROLL FOR GUN
 		local Roll = math.random(1, 100)
@@ -242,8 +263,8 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	-- WAIT TILL TOP FULLY OPENS BEFORE DISPLAYING GUNS
 	OpenTween.Completed:Wait()
 
-	local StartingWait = 0.075
-	local MaxWait = 0.5
+	local StartingWait = 0.1
+	local MaxWait = 0.4
 
 	local LastGun
 	for i = 1, TotalRolls do
@@ -251,9 +272,9 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		local t = i / TotalRolls
 		local WaitTime = StartingWait + (MaxWait - StartingWait) * (t * t * t * t)
 
-		-- PICK A RANDOM GUN, ENSURE NOT SAME AS LAST, NOT ZEHAHA, AND NOT THE FINAL GUN ON THE LAST ROLL
+		-- PICK A RANDOM GUN, ENSURE NOT SAME AS LAST, NOT TEDDY BEAR, AND NOT THE FINAL GUN ON THE LAST ROLL
 		local RandomGun = MysteryBoxGuns:GetChildren()[math.random(1, #MysteryBoxGuns:GetChildren())]
-		while RandomGun.Name == "Zehaha" or RandomGun == LastGun or (i == TotalRolls and RandomGun == FinalGun) do
+		while RandomGun.Name == "TeddyBear" or RandomGun == LastGun or (i == TotalRolls and RandomGun == FinalGun) do
 			RandomGun = MysteryBoxGuns:GetChildren()[math.random(1, #MysteryBoxGuns:GetChildren())]
 		end
 
@@ -273,18 +294,18 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	local OriginalCFrame = GunToGive:GetPivot()
 	DisplayGun(GunToGive)
 
-	-- IF ZEHAHA
+	-- IF TEDDY BEAR
 	local OriginalBrightness
-	if FinalGun == "Zehaha" then
-		-- RESET ZEHAHA RATE
-		ZehahaRate = 90
+	if FinalGun == "TeddyBear" then
+		-- RESET TEDDY BEAR RATE
+		TeddyBearRate = 90
 
 		-- TWEEN BRIGHTNESS
 		OriginalBrightness = MysteryBoxLight.Brightness
 		-- TWEEN BRIGHTNESS TO OFF
-		local ZehahaTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
-		local ZehahaTween = TweenService:Create(MysteryBoxLight, ZehahaTweenInfo, { Brightness = 0 })
-		ZehahaTween:Play()
+		local BrightnessTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
+		local BrightnessTween = TweenService:Create(MysteryBoxLight, BrightnessTweenInfo, { Brightness = 0 })
+		BrightnessTween:Play()
 
 		-- DISABLE PARTICLE EMITTERS
 		for _, Descendant in pairs(NeonBase:GetDescendants()) do
@@ -293,25 +314,33 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 			end
 		end
 
-		task.wait(1)
+		-- PLAY SFX
+		local ByeByeSFXClone = MysteryBoxSFX:WaitForChild("ByeBye"):Clone()
+		ByeByeSFXClone.Parent = workspace:FindFirstChild("ActiveSFX")
+		ByeByeSFXClone:Play()
+		ByeByeSFXClone.Ended:Once(function()
+			ByeByeSFXClone:Destroy()
+		end)
 
-		local ZehahaCFValue = Instance.new("CFrameValue")
-		ZehahaCFValue.Value = GunToGive:GetPivot()
-		ZehahaCFValue.Changed:Connect(function(NewCF)
+		task.wait(2)
+
+		local TeddyBearCFValue = Instance.new("CFrameValue")
+		TeddyBearCFValue.Value = GunToGive:GetPivot()
+		TeddyBearCFValue.Changed:Connect(function(NewCF)
 			GunToGive:PivotTo(NewCF)
 		end)
-		-- MOVE ZEHAHA UPWARDS
-		local ZehahaRiseTweenInfo = TweenInfo.new(5, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
+		-- MOVE TEDDY BEAR UPWARDS
+		local TeddyBearRiseTweenInfo = TweenInfo.new(5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
 		local StartCF = GunToGive:GetPivot()
-		local ZehahaRiseTween =
-			TweenService:Create(ZehahaCFValue, ZehahaRiseTweenInfo, { Value = StartCF * CFrame.new(0, 100, 0) })
-		ZehahaRiseTween.Completed:Once(function()
-			ZehahaCFValue:Destroy()
-			ZehahaRiseTween:Destroy()
+		local TeddyBearRiseTween =
+			TweenService:Create(TeddyBearCFValue, TeddyBearRiseTweenInfo, { Value = StartCF * CFrame.new(0, 50, 0) })
+		TeddyBearRiseTween.Completed:Once(function()
+			TeddyBearCFValue:Destroy()
+			TeddyBearRiseTween:Destroy()
 		end)
-		ZehahaRiseTween:Play()
+		TeddyBearRiseTween:Play()
 
-		task.wait(3)
+		task.wait(4.5)
 
 		local OriginalBoxCF = MysteryBoxModel:GetPivot()
 		local WiggleAngle = math.rad(12)
@@ -320,7 +349,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		-- TWEEN THE Y
 		local RiseValue = Instance.new("NumberValue")
 		RiseValue.Value = 0
-		local BoxRiseTweenInfo = TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+		local BoxRiseTweenInfo = TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 		local BoxRiseTween = TweenService:Create(RiseValue, BoxRiseTweenInfo, { Value = 8 })
 		BoxRiseTween:Play()
 		BoxRiseTween.Completed:Once(function()
@@ -328,6 +357,10 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 			BoxRiseTween:Destroy()
 			BoxRiseTween = nil
 		end)
+		task.wait(0.1)
+
+		-- UNPARENT CONCRETE FROM MYSTERY BOX MODEL
+		Concrete.Parent = MysteryBox
 
 		-- WIGGLE + RISE APPLIED TOGETHER IN ONE LOOP
 		local StartTime = tick()
@@ -338,6 +371,9 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 			task.wait()
 		end
 
+		-- RESET MYSTERY BOX ORIENTATION
+		MysteryBoxModel:PivotTo(OriginalBoxCF * CFrame.new(0, RiseValue.Value, 0))
+
 		-- TELEPORT MYSTERY BOX FAR AWAY
 		local DummyPart = Instance.new("Part")
 		DummyPart.Size = Vector3.new(1, 1, 1)
@@ -346,7 +382,17 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		DummyPart.CanCollide = false
 		DummyPart.CFrame = MysteryBoxModel:GetPivot() * CFrame.new(0, -4, 0)
 		DummyPart.Parent = workspace:FindFirstChild("ActiveVFX")
+
+		-- PARENT CONCRETE BACK
+		Concrete.Parent = MysteryBoxModel
+		Concrete:PivotTo(Concrete:GetPivot() * CFrame.new(0, 8, 0))
+		-- HIDE MYSTER BOX MODEL
 		MysteryBoxModel:PivotTo(CFrame.new(0, -500, 0))
+
+		-- TELEPORT SFX
+		local ChargeSFXClone = MysteryBoxSFX:WaitForChild("Charge"):Clone()
+		ChargeSFXClone.Parent = DummyPart
+		ChargeSFXClone:Play()
 
 		-- PLAY TELEPORT VFX
 		local TPVFXClone = TPVFX:Clone()
@@ -358,13 +404,19 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 			end
 		end
 
-		task.wait(1)
-
-		-- RETURN ZEHAHA
+		-- RETURN TEDDY BEAR
 		GunToGive:PivotTo(OriginalCFrame)
+
+		-- SOME WAITS FOR CLEANUP
+		task.wait(1)
+		task.delay(1, function()
+			DummyPart:Destroy()
+			TPVFXClone:Destroy()
+			ChargeSFXClone:Destroy()
+		end)
 	else
-		-- INCREASE ZEHAHA RATE FOR NEXT ROLL
-		ZehahaRate += 10
+		-- INCREASE TEDDY BEAR RATE FOR NEXT ROLL
+		TeddyBearRate += 10
 		-- CREATE PROMPT
 		local GiveGunPrompt = Instance.new("ProximityPrompt")
 		GiveGunPrompt.Name = "MysteryGiveGun"
@@ -475,7 +527,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		MysteryBoxLight.Brightness = OriginalBrightness
 	end
 
-	if FinalGun == "Zehaha" then
+	if FinalGun == "TeddyBear" then
 		-- WAIT TILL TOP FULLY CLOSES BEFORE TELEPORTING MYSTERY BOX
 		CloseTween.Completed:Wait()
 		TeleportMysteryBox()
@@ -485,6 +537,11 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	IsOpening = false
 	Prompt.Enabled = true
 end)
+
+-- LOOP THROUGH SPAWN LOCATIONS AND STORE THEIR CF IN A TABLE FOR EASY ACCESS LATER
+for _, Location in pairs(SpawnLocations:GetChildren()) do
+	LocationsCFrame[Location] = Location:GetPivot()
+end
 
 -- TELEPORT MYSTERY BOX ON SERVER START
 TeleportMysteryBox()
