@@ -1,5 +1,7 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local TweenService = game:GetService("TweenService")
 local Teams = game:GetService("Teams")
 local PlayerData = require(ServerScriptService.ModuleScripts.Data.PlayerData)
 local RoundStart = require(script.Parent.RoundStart)
@@ -13,6 +15,11 @@ local WaveEvents = Events:WaitForChild("WaveEvents")
 local UpdateWaveEvent = WaveEvents:WaitForChild("UpdateWaveEvent")
 local RoundResult = WaveEvents:WaitForChild("RoundResult")
 local MVPEvent = WaveEvents:WaitForChild("MVPEvent")
+
+-- FOLDERS
+local RoundSFX = ReplicatedStorage:WaitForChild("RoundSFX")
+local RoundEndSFX = RoundSFX:WaitForChild("RoundEnd")
+local WaveStartSFX = RoundSFX:WaitForChild("WaveStart")
 
 -- VARS
 local WaveManager = {}
@@ -80,6 +87,27 @@ local function CalculateMVP()
 	return MVPPlayer
 end
 
+local ClonedRoundEndSFX = nil
+local function PlayRoundEndSFX()
+	if not ClonedRoundEndSFX then
+		local RoundEndSound = RoundEndSFX:Clone()
+		ClonedRoundEndSFX = RoundEndSound
+		RoundEndSound.Parent = workspace:WaitForChild("ActiveSFX")
+		ClonedRoundEndSFX = RoundEndSound
+	end
+	ClonedRoundEndSFX:Play()
+	task.delay(8, function()
+		local OriginalVolume = ClonedRoundEndSFX.Volume
+		local SoundTweenInfo = TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		local SoundTween = TweenService:Create(ClonedRoundEndSFX, SoundTweenInfo, { Volume = 0 })
+		SoundTween:Play()
+		SoundTween.Completed:Wait()
+		ClonedRoundEndSFX:Stop()
+		SoundTween:Destroy()
+		ClonedRoundEndSFX.Volume = OriginalVolume
+	end)
+end
+
 -- CLEANUP AFTER ROUND END
 local function HandleDeadPlayers()
 	-- TELEPORT PLAYERS BACK TO LOBBY
@@ -87,6 +115,9 @@ local function HandleDeadPlayers()
 	-- CLEAR OUT ZOMBIES
 	ZombieSpawnerFW.StopSpawning()
 	ZombieSpawnerFW.KillAllZombies()
+
+	-- PLAY ROUND END SFX
+	PlayRoundEndSFX()
 
 	-- CALCULATE MVP
 	local MVPPlayer = CalculateMVP()
@@ -116,7 +147,32 @@ local function SetupWavesStart()
 	ResetRoundStats()
 end
 
+local ClonedWaveStartSFX = nil
+local function PlayWaveStartSFX()
+	if not ClonedWaveStartSFX then
+		local WaveStartSound = WaveStartSFX:Clone()
+		ClonedWaveStartSFX = WaveStartSound
+		WaveStartSound.Parent = workspace:WaitForChild("ActiveSFX")
+	end
+	ClonedWaveStartSFX:Play()
+	task.delay(7, function()
+		local OriginalVolume = ClonedWaveStartSFX.Volume
+		-- TWEEN VOLUME DOWN
+		local SoundTweenInfo = TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		local SoundTween = TweenService:Create(ClonedWaveStartSFX, SoundTweenInfo, { Volume = 0 })
+		SoundTween:Play()
+		SoundTween.Completed:Wait()
+		ClonedWaveStartSFX:Stop()
+		SoundTween:Destroy()
+		-- RESET BACK TO ORIGINAL
+		ClonedWaveStartSFX.Volume = OriginalVolume
+	end)
+end
+
 local function BeginWaveHelper()
+	-- PLAY WAVE START SFX
+	PlayWaveStartSFX()
+
 	WaveManager.CurrentWave += 1
 	UpdateWaveEvent:FireAllClients(WaveManager.CurrentWave)
 

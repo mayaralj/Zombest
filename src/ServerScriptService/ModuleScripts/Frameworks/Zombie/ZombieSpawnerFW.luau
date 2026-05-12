@@ -867,6 +867,7 @@ end
 
 -- FUNCTION TO PICK PLAYER AND PICK CLOSEST SPAWN POINT
 local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
+local LastSpawnPoint = nil
 local function ClosestSpawnPoint()
 	-- LIST OF VALID PLAYERS
 	local ValidPlayers = {}
@@ -884,13 +885,16 @@ local function ClosestSpawnPoint()
 	end
 
 	-- SETTINGS
-	local MinDistanceFromPlayer = 50
+	local MinDistanceFromPlayer = 125
 
 	-- LOOP THROUGH SPAWNPOINTS
 	local ClosestDistance
 	local ClosestSpawn = math.huge
 	local FailedAttempts = 0
 	for _, SpawnPoint in ipairs(SpawnPoints) do
+		if LastSpawnPoint and SpawnPoint == LastSpawnPoint then
+			continue
+		end
 		-- CHECK DISTANCE TO PLAYER
 		local Character = RandomPlayer.Character
 		if not Character then
@@ -915,6 +919,7 @@ local function ClosestSpawnPoint()
 			ClosestSpawn = SpawnPoint
 		end
 	end
+	LastSpawnPoint = ClosestSpawn
 	return ClosestSpawn
 end
 
