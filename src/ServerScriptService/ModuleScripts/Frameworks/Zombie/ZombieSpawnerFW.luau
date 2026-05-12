@@ -19,6 +19,7 @@ local Events = ReplicatedStorage:WaitForChild("Events")
 local ZombieEvents = Events:WaitForChild("ZombieEvents")
 
 -- MODULES
+local WaveManager = require(ServerScriptService.ModuleScripts.Misc.WaveManager)
 local ZombieAIFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieAIFW"))
 local RagdollFW = require(
 	ReplicatedStorage:WaitForChild("ModuleScripts")
@@ -236,18 +237,24 @@ function ZombieSpawnerFW.SpawnZombie(SpawnPart)
 		return
 	end
 
+	-- CURRENT WAVE
+	local CurrentWave = WaveManager.GetCurrentWave()
+
 	-- RANDOMIZE HP
-	CurrentZombieData.Health.MaxHealth =
-		math.random(CurrentZombieData.Health.MaxHealth - 10, CurrentZombieData.Health.MaxHealth + 40)
+	local LowerHealth = CurrentZombieData.Health.MaxHealth - 10
+	local UpperHealth = math.min(CurrentZombieData.Health.MaxHealth + (CurrentWave * 2), 300)
+	CurrentZombieData.Health.MaxHealth = math.random(LowerHealth, UpperHealth)
 
 	-- RANDOMIZE SPEED
-	CurrentZombieData.Stats.MaxSpeed =
-		math.random(CurrentZombieData.Stats.MaxSpeed - 2.5, CurrentZombieData.Stats.MaxSpeed + 2.5)
+	local LowerSpeed = CurrentZombieData.Stats.MaxSpeed - 2.5
+	local UpperSpeed = math.min(CurrentZombieData.Stats.MaxSpeed + 2.5 + (CurrentWave / 100), 20)
+	CurrentZombieData.Stats.MaxSpeed = math.random(LowerSpeed, UpperSpeed)
 	CurrentZombieData.Stats.WalkSpeed = CurrentZombieData.Stats.MaxSpeed
 
 	-- RANDOMIZE DAMAGE
-	CurrentZombieData.Damage.DamagePerHit =
-		math.random(CurrentZombieData.Damage.DamagePerHit - 10, CurrentZombieData.Damage.DamagePerHit + 10)
+	local LowerDamage = CurrentZombieData.Damage.DamagePerHit - 10
+	local UpperDamage = math.min(CurrentZombieData.Damage.DamagePerHit + (CurrentWave / 10), 55)
+	CurrentZombieData.Damage.DamagePerHit = math.random(LowerDamage, UpperDamage)
 
 	-- GROUND POS
 	CurrentZombieData.Position.GroundPos = ZombiePart.Position.Y

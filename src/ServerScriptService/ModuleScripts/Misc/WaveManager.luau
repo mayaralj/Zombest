@@ -18,6 +18,11 @@ local MVPEvent = WaveEvents:WaitForChild("MVPEvent")
 local WaveManager = {}
 WaveManager.CurrentWave = 0
 
+-- GETTER FOR CURRENT WAVE
+function WaveManager.GetCurrentWave()
+	return WaveManager.CurrentWave
+end
+
 local function ResetPoints(Player)
 	local CurrentPlayerData = PlayerData:Get(Player)
 	if CurrentPlayerData and CurrentPlayerData.Points then
