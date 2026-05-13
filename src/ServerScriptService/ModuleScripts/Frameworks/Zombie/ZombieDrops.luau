@@ -64,7 +64,8 @@ end
 local function AnimatePart(Model)
 	task.spawn(function()
 		local StartTime = tick()
-		local Duration = 10
+		local Duration = 30
+		local BlinkTime = 20
 		local InitialY = Model:GetPivot().Y
 		local RotationY = 0
 
@@ -73,10 +74,30 @@ local function AnimatePart(Model)
 			local NewY = InitialY + math.sin(Elapsed * 2)
 			RotationY = (RotationY + 1) % 360
 
+			-- BLINK THE MODEL IN LAST 10 SECONDS
+			if Elapsed > BlinkTime then
+				local Alpha = (Elapsed - BlinkTime) / (Duration - BlinkTime)
+				local BlinkRate = 20
+				local Transparency = math.floor(Alpha * BlinkRate) % 2 == 0 and 0 or 1
+				for _, Part in Model:GetDescendants() do
+					if Part:IsA("BasePart") and Part ~= Model.PrimaryPart then
+						Part.Transparency = Transparency
+					end
+					if Part:IsA("ParticleEmitter") then
+						Part.Transparency = NumberSequence.new(Transparency)
+					end
+				end
+			end
+
 			Model:PivotTo(
 				CFrame.new(Model:GetPivot().X, NewY, Model:GetPivot().Z) * CFrame.Angles(0, math.rad(RotationY), 0)
 			)
 			task.wait()
+		end
+
+		-- DESTROY IF MODEL HASNT BEEN TOUCHED
+		if Model and Model.PrimaryPart and not Model.PrimaryPart:GetAttribute("Touched") then
+			Model:Destroy()
 		end
 	end)
 end
@@ -120,6 +141,7 @@ function ZombieDrops.BonusPoints(Zombie)
 			return
 		end
 		Flag = true
+		Model.PrimaryPart:SetAttribute("Touched", true)
 
 		PlayDropSFX:FireAllClients("BonusPoints")
 		for _, Player in pairs(Players:GetPlayers()) do
@@ -176,6 +198,7 @@ function ZombieDrops.InstaKill(Zombie)
 			return
 		end
 		Flag = true
+		Model.PrimaryPart:SetAttribute("Touched", true)
 
 		PlayDropSFX:FireAllClients("InstaKill")
 		for _, Player in pairs(Players:GetPlayers()) do
@@ -221,6 +244,7 @@ function ZombieDrops.DoublePoints(Zombie)
 			return
 		end
 		Flag = true
+		Model.PrimaryPart:SetAttribute("Touched", true)
 
 		PlayDropSFX:FireAllClients("DoublePoints")
 		for _, Player in pairs(Players:GetPlayers()) do
@@ -265,6 +289,7 @@ function ZombieDrops.MaxAmmo(Zombie)
 			return
 		end
 		Flag = true
+		Model.PrimaryPart:SetAttribute("Touched", true)
 
 		PlayDropSFX:FireAllClients("MaxAmmo")
 		for _, Player in pairs(Players:GetPlayers()) do
@@ -296,6 +321,7 @@ function ZombieDrops.DropItem(Zombie, WaveCount)
 	-- CHANCE TO DROP, DECREASED THE HIGHER THE WAVE DUE TO MORE ZOMBIES
 	local DropChance = 0.1 - (WaveCount * 0.005)
 	DropChance = math.max(DropChance, 0.05)
+	DropChance = 1
 	if math.random(1, 100) / 100 > DropChance then
 		return
 	end
