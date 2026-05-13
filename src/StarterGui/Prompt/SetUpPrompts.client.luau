@@ -53,16 +53,17 @@ local function UpdateGunPrompt(PartContainingPrompt, Prompt)
 
 		-- HALF COST
 		local HalfCost = Cost / 2
-		PromptText.Text = "Press E To Refill Ammo (" .. HalfCost .. ")"
+		PromptText.Text = "Press E To Refill Ammo [" .. HalfCost .. "]"
 	else
-		PromptText.Text = Prompt.ActionText .. " (" .. Cost .. ")"
+		PromptText.Text = Prompt.ActionText .. " [" .. Cost .. "]"
 	end
 end
 
 -- UPDATE MYSTERY BOX PROMPT
-local function UpdateMysteryBoxPrompt(PartContainingPrompt, Prompt)
+local MysteryBoxCost = workspace:WaitForChild("MysteryBox"):WaitForChild("Cost").Value
+local function UpdateMysteryBoxPrompt()
 	-- UPDATE TEXT
-	PromptText.Text = "Press E To Get Shafted (2500)"
+	PromptText.Text = "Press E for Mystery Box [" .. MysteryBoxCost .. "]"
 end
 
 -- UPDATE MYSTERY GIVE GUN PROMPT
@@ -261,7 +262,7 @@ Connections["PromptHeartbeat"] = RunService.Heartbeat:Connect(function(DT)
 
 	-- MYSTERY BOX PROMPT UPDATE
 	if CurrentPrompt.Name == "MysteryPrompt" then
-		UpdateMysteryBoxPrompt(CurrentPrompt.Parent, CurrentPrompt)
+		UpdateMysteryBoxPrompt()
 		return
 	end
 end)

@@ -30,14 +30,14 @@ local TPVFX = MysteryBoxVFX:WaitForChild("TPVFX")
 local Concrete = MysteryBoxModel:WaitForChild("Concrete")
 
 -- COST
-local Cost = 2500
+local Cost = MysteryBox:WaitForChild("Cost").Value
 -- CD
 local OpenCD = 2
 -- TOTAL ROLLS TO DISPLAY
 local TotalRolls = 25
 
 -- RATES
-local TeddyBearRate = 90
+local TeddyBearRate = 10
 local Rates = {
 	Common = {
 		Rarity = 50,
@@ -310,7 +310,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	local OriginalBrightness
 	if FinalGun == "TeddyBear" then
 		-- RESET TEDDY BEAR RATE
-		TeddyBearRate = 90
+		TeddyBearRate = 10
 
 		-- TWEEN BRIGHTNESS
 		OriginalBrightness = MysteryBoxLight.Brightness
