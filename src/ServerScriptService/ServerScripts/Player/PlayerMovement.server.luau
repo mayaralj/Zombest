@@ -173,7 +173,7 @@ RunService.Heartbeat:Connect(function(DT)
 				Humanoid.WalkSpeed = Walk
 				Player:SetAttribute("IsSprinting", false)
 				Data.Stamina.TimeSinceSprinted = Data.Stamina.TimeSinceSprinted or tick()
-				PlayerStaminaFW.RegenStamina(Player, 20 * DT)
+				PlayerStaminaFW.RegenStamina(Player, 15 * DT)
 			end
 		else
 			Player:SetAttribute("IsSprinting", false)
@@ -182,7 +182,7 @@ RunService.Heartbeat:Connect(function(DT)
 			if not Data.Knockdown.IsKnocked then
 				Humanoid.WalkSpeed = Walk
 			end
-			PlayerStaminaFW.RegenStamina(Player, 20 * DT)
+			PlayerStaminaFW.RegenStamina(Player, 15 * DT)
 		end
 	end
 end)
