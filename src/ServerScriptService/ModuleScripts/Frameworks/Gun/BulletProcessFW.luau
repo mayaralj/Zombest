@@ -62,6 +62,9 @@ local function ProcessBulletRayResult(ResultData, BulletData, IsOverlapParams)
 
 		-- DAMAGE ZOMBIE
 		ZombiePartData.Health.CurrentHealth -= BulletData.Damage
+		if PlayerFired:GetAttribute("InstaKill") then
+			ZombiePartData.Health.CurrentHealth = 0
+		end
 
 		-- IF A REFLECTED BULLET HITS ZOMBIE
 		if BulletData.CurrentReflections > 0 then
@@ -97,10 +100,18 @@ local function ProcessBulletRayResult(ResultData, BulletData, IsOverlapParams)
 		-- UPDATE CURRENT PLAYER POINTS
 		if CurrentPlayerData then
 			-- RANDOMIZED AMOUNT OF POINTS
-			CurrentPlayerData.Points.CurrentPoints += math.random(8, 12)
+			local PointsEarned = math.random(8, 12)
+			if PlayerFired:GetAttribute("DoublePoints") then
+				PointsEarned *= 2
+			end
+			CurrentPlayerData.Points.CurrentPoints += PointsEarned
 			-- EXTRA ON ZOMBIE KILL
 			if ZombiePartData.Health.CurrentHealth <= 0 then
-				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				local KillPoints = math.random(40, 60)
+				if PlayerFired:GetAttribute("DoublePoints") then
+					KillPoints *= 2
+				end
+				CurrentPlayerData.Points.CurrentPoints += KillPoints
 				CurrentPlayerData.RoundStats.Kills += 1
 				PlayerFired:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end
@@ -436,6 +447,9 @@ local function ProcessStreamRayResult(ResultData, BulletData, IsOverlapParams)
 
 		-- DEAL DAMAGE
 		ZombiePartData.Health.CurrentHealth -= BulletData.Damage
+		if PlayerFired:GetAttribute("InstaKill") then
+			ZombiePartData.Health.CurrentHealth = 0
+		end
 		-- BODY FORCE
 		if ResultData.Normal then
 			ZombieForceFW.ApplyBodyForceToZombie(HitPart, BodyForce, BulletData.Direction)
@@ -467,10 +481,19 @@ local function ProcessStreamRayResult(ResultData, BulletData, IsOverlapParams)
 		-- UPDATE CURRENT PLAYER POINTS
 		if CurrentPlayerData then
 			-- RANDOMIZED AMOUNT OF POINTS
-			CurrentPlayerData.Points.CurrentPoints += math.random(8, 12)
+			local PointsEarned = math.random(8, 12)
+			if PlayerFired:GetAttribute("DoublePoints") then
+				PointsEarned *= 2
+			end
+			CurrentPlayerData.Points.CurrentPoints += PointsEarned
+
 			-- EXTRA ON ZOMBIE KILL
 			if ZombiePartData.Health.CurrentHealth <= 0 then
-				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				local KillPoints = math.random(40, 60)
+				if PlayerFired:GetAttribute("DoublePoints") then
+					KillPoints *= 2
+				end
+				CurrentPlayerData.Points.CurrentPoints += KillPoints
 				CurrentPlayerData.RoundStats.Kills += 1
 				PlayerFired:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end

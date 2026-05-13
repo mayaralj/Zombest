@@ -19,6 +19,7 @@ local Events = ReplicatedStorage:WaitForChild("Events")
 local ZombieEvents = Events:WaitForChild("ZombieEvents")
 
 -- MODULES
+local ZombieDrops = require(script.Parent.ZombieDrops)
 local ZombieAIFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieAIFW"))
 local RagdollFW = require(
 	ReplicatedStorage:WaitForChild("ModuleScripts")
@@ -208,6 +209,9 @@ local function SetupZombieDeathHandler(Zombie)
 	if StuckTogether[Zombie] then
 		StuckTogether[Zombie] = nil
 	end
+
+	-- CHECK IF THIS ZOMBIE DROPS AN ITEM
+	local DropItem = ZombieDrops.DropItem(Zombie, CurrentWave)
 
 	-- FIRE TO DELETE CLIENT ZOMBIE
 	ZombieDelete:FireAllClients(CurrentID)

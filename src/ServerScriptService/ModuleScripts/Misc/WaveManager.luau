@@ -108,6 +108,16 @@ local function PlayRoundEndSFX()
 	end)
 end
 
+-- HELPER TO LOOP AND REMOVE ALL PLAYER DROP ATTRIBUTES
+local function ClearPlayerDropAttributes()
+	for _, Player in pairs(Players:GetPlayers()) do
+		Player:SetAttribute("InstaKill", false)
+		Player:SetAttribute("DoublePoints", false)
+		Player:SetAttribute("MaxAmmo", false)
+		Player:SetAttribute("BonusPoints", false)
+	end
+end
+
 -- CLEANUP AFTER ROUND END
 local function HandleDeadPlayers()
 	-- TELEPORT PLAYERS BACK TO LOBBY
@@ -115,6 +125,9 @@ local function HandleDeadPlayers()
 	-- CLEAR OUT ZOMBIES
 	ZombieSpawnerFW.StopSpawning()
 	ZombieSpawnerFW.KillAllZombies()
+
+	-- CLEAR DROP ATTRIBUTES
+	ClearPlayerDropAttributes()
 
 	-- PLAY ROUND END SFX
 	PlayRoundEndSFX()

@@ -143,6 +143,9 @@ function BulletEffects.AoeEffect(ResultData, BulletData, PlayerShooting, IsZombi
 
 		-- APPLY DAMAGE
 		ZombiePartData.Health.CurrentHealth -= Damage
+		if PlayerShooting:GetAttribute("InstaKill") then
+			ZombiePartData.Health.CurrentHealth = 0
+		end
 		-- ENSURE ATTRIBUTES ARE SET FOR CLIENT RAGDOLL AND IMPULSE
 		if ZombiePartData.Health.CurrentHealth <= 0 then
 			Part:SetAttribute("DeadByWeapon", BulletData.EquippedGun)
@@ -152,10 +155,18 @@ function BulletEffects.AoeEffect(ResultData, BulletData, PlayerShooting, IsZombi
 		-- UPDATE CURRENT PLAYER POINTS
 		if CurrentPlayerData then
 			-- RANDOMIZED AMOUNT OF POINTS
-			CurrentPlayerData.Points.CurrentPoints += math.random(3, 6)
+			local PointsEarned = math.random(5, 10)
+			if PlayerShooting:GetAttribute("DoublePoints") then
+				PointsEarned *= 2
+			end
+			CurrentPlayerData.Points.CurrentPoints += PointsEarned
 			-- EXTRA ON ZOMBIE KILL
 			if ZombiePartData.Health.CurrentHealth <= 0 and HitPart ~= Part then
-				CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+				local KillPoints = math.random(40, 60)
+				if PlayerShooting:GetAttribute("DoublePoints") then
+					KillPoints *= 2
+				end
+				CurrentPlayerData.Points.CurrentPoints += KillPoints
 				CurrentPlayerData.RoundStats.Kills += 1
 				PlayerShooting:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 			end
@@ -504,14 +515,25 @@ function BulletEffects.ChainEffect(ResultData, BulletData, PlayerShooting, IsZom
 
 	-- DAMAGE
 	CurrentZombieData.Health.CurrentHealth -= EffectData.Damage
+	if PlayerShooting:GetAttribute("InstaKill") then
+		CurrentZombieData.Health.CurrentHealth = 0
+	end
 
 	-- UPDATE CURRENT PLAYER POINTS
 	if CurrentPlayerData then
 		-- RANDOMIZED AMOUNT OF POINTS
-		CurrentPlayerData.Points.CurrentPoints += math.random(5, 10)
+		local PointsEarned = math.random(5, 10)
+		if PlayerShooting:GetAttribute("DoublePoints") then
+			PointsEarned *= 2
+		end
+		CurrentPlayerData.Points.CurrentPoints += PointsEarned
 		-- EXTRA ON ZOMBIE KILL
 		if CurrentZombieData.Health.CurrentHealth <= 0 then
-			CurrentPlayerData.Points.CurrentPoints += math.random(40, 60)
+			local KillPoints = math.random(40, 60)
+			if PlayerShooting:GetAttribute("DoublePoints") then
+				KillPoints *= 2
+			end
+			CurrentPlayerData.Points.CurrentPoints += KillPoints
 			CurrentPlayerData.RoundStats.Kills += 1
 			PlayerShooting:SetAttribute("Kills", CurrentPlayerData.RoundStats.Kills)
 		end

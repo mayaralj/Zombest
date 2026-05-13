@@ -449,10 +449,39 @@ function GunFW.RefillAmmo(Player)
 	CurrentGunData.Ammo.TotalAmmo = CurrentGunData.Ammo.MaxTotalAmmo
 
 	-- UPDATE ATTRIBUTES
-	Player:SetAttribute("CurrentAmmo", CurrentGunData.Ammo.CurrentAmmo)
-	Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo)
+	if CurrentGunData.Ammo.AmmoPerReload then
+		Player:SetAttribute("CurrentAmmo", CurrentGunData.Ammo.CurrentAmmo / CurrentGunData.Ammo.AmmoPerReload)
+		Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo / CurrentGunData.Ammo.AmmoPerReload)
+	else
+		Player:SetAttribute("CurrentAmmo", CurrentGunData.Ammo.CurrentAmmo)
+		Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo)
+	end
 
 	return true -- if success
+end
+
+-- GIVE MAX AMMO TO BOTH PLAYER GUNS
+function GunFW.MaxAmmo(Player)
+	local CurrentPlayerData = PlayerData:Get(Player)
+	if not CurrentPlayerData then
+		return
+	end
+
+	for _, WeaponName in ipairs(CurrentPlayerData.WeaponSlots) do
+		local CurrentGunData = GunData:Get(Player, WeaponName)
+		if not CurrentGunData then
+			return
+		end
+		CurrentGunData.Ammo.CurrentAmmo = CurrentGunData.Ammo.MaxAmmo
+		CurrentGunData.Ammo.TotalAmmo = CurrentGunData.Ammo.MaxTotalAmmo
+		if CurrentGunData.Ammo.AmmoPerReload then
+			Player:SetAttribute("CurrentAmmo", CurrentGunData.Ammo.CurrentAmmo / CurrentGunData.Ammo.AmmoPerReload)
+			Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo / CurrentGunData.Ammo.AmmoPerReload)
+		else
+			Player:SetAttribute("CurrentAmmo", CurrentGunData.Ammo.CurrentAmmo)
+			Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo)
+		end
+	end
 end
 
 -- GIVE PLAYER A WEAPON WITH CORRECT MODIFICATIONS AND STATS
