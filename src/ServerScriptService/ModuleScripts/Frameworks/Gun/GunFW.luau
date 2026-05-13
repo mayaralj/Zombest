@@ -435,6 +435,14 @@ function GunFW.RefillAmmo(Player)
 	if not CurrentGunData then
 		return
 	end
+	if
+		not CurrentGunData.Ammo
+		or not CurrentGunData.Ammo.CurrentAmmo
+		or not CurrentGunData.Ammo.MaxAmmo
+		or not CurrentGunData.Ammo.TotalAmmo
+	then
+		return
+	end
 
 	-- IF ALREADY AT MAX AMMO
 	if
@@ -457,7 +465,7 @@ function GunFW.RefillAmmo(Player)
 		Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo)
 	end
 
-	return true -- if success
+	return true
 end
 
 -- GIVE MAX AMMO TO BOTH PLAYER GUNS
@@ -470,7 +478,15 @@ function GunFW.MaxAmmo(Player)
 	for _, WeaponName in ipairs(CurrentPlayerData.WeaponSlots) do
 		local CurrentGunData = GunData:Get(Player, WeaponName)
 		if not CurrentGunData then
-			return
+			continue
+		end
+		if
+			not CurrentGunData.Ammo
+			or not CurrentGunData.Ammo.CurrentAmmo
+			or not CurrentGunData.Ammo.MaxAmmo
+			or not CurrentGunData.Ammo.TotalAmmo
+		then
+			continue
 		end
 		CurrentGunData.Ammo.CurrentAmmo = CurrentGunData.Ammo.MaxAmmo
 		CurrentGunData.Ammo.TotalAmmo = CurrentGunData.Ammo.MaxTotalAmmo

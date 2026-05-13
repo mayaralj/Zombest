@@ -40,13 +40,13 @@ UpdateWaveEvent.OnClientEvent:Connect(function(CurrentWave)
 	-- TWEEN FRAME SIZE KEEPING IT CENTERED
 	local OriginalSize = Frame.Size
 	local TargetSize =
-		UDim2.new(OriginalSize.X.Scale * 1.5, OriginalSize.X.Offset, OriginalSize.Y.Scale * 1.5, OriginalSize.Y.Offset)
+		UDim2.new(OriginalSize.X.Scale * 2, OriginalSize.X.Offset, OriginalSize.Y.Scale * 2, OriginalSize.Y.Offset)
 	local SizeTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	local SizeTween = TweenService:Create(Frame, SizeTweenInfo, { Size = TargetSize })
 	SizeTween:Play()
 
 	-- WAIT AND TWEEN EVERYTHING BACK
-	task.wait(3)
+	task.wait(5)
 	ColorWaveTween:Destroy()
 	ColorCountTween:Destroy()
 	SizeTween:Destroy()
