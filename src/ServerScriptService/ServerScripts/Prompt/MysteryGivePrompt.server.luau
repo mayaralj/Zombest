@@ -9,8 +9,6 @@ local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 -- MODULES
 local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
 local GunFW = require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("Gun"):WaitForChild("GunFW"))
-local Frameworks = ModuleScripts:WaitForChild("Frameworks")
-local PlayerHealthFW = require(Frameworks:WaitForChild("Player"):WaitForChild("PlayerHealthFW"))
 
 -- EVENTS
 local PromptEvents = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PromptEvents")
@@ -37,10 +35,10 @@ local OpenCD = 2
 local TotalRolls = 25
 
 -- RATES
-local TeddyBearRate = 10
+local TeddyBearRate = 0
 local Rates = {
 	Common = {
-		Rarity = 50,
+		Rarity = 43,
 		Weapons = {
 			"Rifle",
 			"SemiPistol",
@@ -48,7 +46,7 @@ local Rates = {
 		},
 	},
 	Uncommon = {
-		Rarity = 24,
+		Rarity = 30,
 		Weapons = {
 			"AK47",
 			"AR",
@@ -58,9 +56,8 @@ local Rates = {
 		},
 	},
 	Rare = {
-		Rarity = 10,
+		Rarity = 20,
 		Weapons = {
-			"RicochetSniper",
 			"BurstAR",
 			"SuppressedAR",
 			"Uzi",
@@ -71,12 +68,13 @@ local Rates = {
 		Weapons = {
 			"AA12",
 			"TacticalShotgun",
+			"RicochetSniper",
 			"Minigun",
 			"PhaseSniper",
 		},
 	},
 	Legendary = {
-		Rarity = 1,
+		Rarity = 2,
 		Weapons = {
 			"RayGun",
 			"Scorchrift",
@@ -224,15 +222,10 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	end)
 
 	-- PLAY OPENING SFX
-	local RollSFXClone = MysteryBoxSFX:WaitForChild("Roll"):Clone()
-	RollSFXClone.Parent = NeonBase
-	RollSFXClone:Play()
-	RollSFXClone.Ended:Once(function()
-		RollSFXClone:Destroy()
-	end)
+	local RollSFX = NeonBase:FindFirstChild("RollSFX")
+	RollSFX:Play()
 
 	-- TWEEN POSITION BACK AND ROTATE IT
-	local OriginalTop = Top:GetPivot()
 	local OpenTweenInfo = TweenInfo.new(0.75, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
 	local Goal = Top:GetPivot() * CFrame.new(0, 2, 2) * CFrame.Angles(math.rad(90), 0, 0)
 	local OpenTween = TweenService:Create(OpenTopCFValue, OpenTweenInfo, { Value = Goal })
@@ -310,7 +303,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	local OriginalBrightness
 	if FinalGun == "TeddyBear" then
 		-- RESET TEDDY BEAR RATE
-		TeddyBearRate = 10
+		TeddyBearRate = 0
 
 		-- TWEEN BRIGHTNESS
 		OriginalBrightness = MysteryBoxLight.Brightness
@@ -439,8 +432,10 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		GiveGunPrompt.HoldDuration = 0
 		GiveGunPrompt.Parent = MysteryBoxModel:FindFirstChild("Base")
 
+		-- GET DEFAULT DATA FOR THIS GUN
+		local GameName = GunToGive:FindFirstChild("GameName").Value
 		-- SET PROMPT ATTRIBUTES
-		GiveGunPrompt:SetAttribute("GunToGive", GunToGive.Name)
+		GiveGunPrompt:SetAttribute("GunToGive", GameName)
 		GiveGunPrompt:SetAttribute("Player", Player.Name)
 
 		-- ON PROMPT TRIGGERED
@@ -507,6 +502,10 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 				PromptTriggeredConnection = nil
 			end
 			GiveGunPrompt:Destroy()
+
+			-- PLAY CLOSING SFX
+			local CloseSFX = NeonBase:FindFirstChild("CloseSFX")
+			CloseSFX:Play()
 		end
 
 		-- DISABLE PARTICLE EMITTERS
@@ -540,7 +539,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 
 	if FinalGun == "TeddyBear" then
 		-- WAIT A LITTLE BEFORE RESPAWNING MYSTERY BOX
-		task.wait(2)
+		task.wait(5)
 		TeleportMysteryBox()
 	end
 

@@ -85,8 +85,8 @@ local function UpdateMysteryGiveGunPrompt(Prompt)
 		return
 	end
 	-- IF SAME GUN AS CURRENTLY EQUIPPING, THEN SHOW REFILL OPTION
-	local PlayerGun = Player:GetAttribute("IsEquippingGun")
-	if PlayerGun and PlayerGun == GunToGive then
+	local CurrentGunData = ClientGunData:Get(Player)
+	if CurrentGunData and CurrentGunData.About.Name == GunToGive then
 		PromptText.Text = "Press E To Refill Ammo"
 		return
 	else

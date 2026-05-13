@@ -8,8 +8,6 @@ local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 -- MODULES
 local PlayerData = require(ModuleScripts:FindFirstChild("Data"):FindFirstChild("PlayerData"))
 local GunFW = require(ModuleScripts:WaitForChild("Frameworks"):WaitForChild("Gun"):WaitForChild("GunFW"))
-local Frameworks = ModuleScripts:WaitForChild("Frameworks")
-local PlayerHealthFW = require(Frameworks:WaitForChild("Player"):WaitForChild("PlayerHealthFW"))
 
 -- EVENTS
 local PromptEvents = ReplicatedStorage:WaitForChild("Events"):WaitForChild("PromptEvents")
