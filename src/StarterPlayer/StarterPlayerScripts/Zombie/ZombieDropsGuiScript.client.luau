@@ -31,7 +31,9 @@ LocalPlayer:GetAttributeChangedSignal("InstaKill"):Connect(function()
 		Clone.Visible = true
 	else
 		local Clone = MainFrame:FindFirstChild("InstaKill")
-		Clone:Destroy()
+		if Clone then
+			Clone:Destroy()
+		end
 	end
 end)
 
@@ -48,7 +50,9 @@ LocalPlayer:GetAttributeChangedSignal("DoublePoints"):Connect(function()
 		Clone.Visible = true
 	else
 		local Clone = MainFrame:FindFirstChild("DoublePoints")
-		Clone:Destroy()
+		if Clone then
+			Clone:Destroy()
+		end
 	end
 end)
 
@@ -65,7 +69,9 @@ LocalPlayer:GetAttributeChangedSignal("MaxAmmo"):Connect(function()
 		Clone.Visible = true
 	else
 		local Clone = MainFrame:FindFirstChild("MaxAmmo")
-		Clone:Destroy()
+		if Clone then
+			Clone:Destroy()
+		end
 	end
 end)
 
@@ -82,6 +88,8 @@ LocalPlayer:GetAttributeChangedSignal("BonusPoints"):Connect(function()
 		Clone.Visible = true
 	else
 		local Clone = MainFrame:FindFirstChild("BonusPoints")
-		Clone:Destroy()
+		if Clone then
+			Clone:Destroy()
+		end
 	end
 end)
