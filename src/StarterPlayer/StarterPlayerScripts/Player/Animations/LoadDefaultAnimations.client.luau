@@ -381,9 +381,15 @@ local function SetupCharacterAnimations(CharacterToAnimate)
 			end)
 
 		-- WALK TRACK MARKER SIGNALS
+		local LastPlayedWalking = tick()
+		local LastPlayedRunning = tick()
 		Connections[PlayerToAnimate]["WalkLeft"] = Tracks[PlayerToAnimate]["WalkTrack"]
 			:GetMarkerReachedSignal("LeftStep")
 			:Connect(function()
+				if tick() - LastPlayedRunning < 0.1 then
+					return
+				end
+				LastPlayedRunning = tick()
 				RockModule.PlayDustVFX(CharacterToAnimate, Tracks[PlayerToAnimate]["DustVFX"], "Left", 1)
 				if Tracks[PlayerToAnimate] and Tracks[PlayerToAnimate]["WalkSFX"] then
 					local ClonedTrack = Tracks[PlayerToAnimate]["WalkSFX"]:Clone()
@@ -395,6 +401,10 @@ local function SetupCharacterAnimations(CharacterToAnimate)
 		Connections[PlayerToAnimate]["WalkRight"] = Tracks[PlayerToAnimate]["WalkTrack"]
 			:GetMarkerReachedSignal("RightStep")
 			:Connect(function()
+				if tick() - LastPlayedRunning < 0.1 then
+					return
+				end
+				LastPlayedRunning = tick()
 				RockModule.PlayDustVFX(CharacterToAnimate, Tracks[PlayerToAnimate]["DustVFX"], "Right", 1)
 				if Tracks[PlayerToAnimate] and Tracks[PlayerToAnimate]["WalkSFX"] then
 					local ClonedTrack = Tracks[PlayerToAnimate]["WalkSFX"]:Clone()
@@ -406,6 +416,10 @@ local function SetupCharacterAnimations(CharacterToAnimate)
 		Connections[PlayerToAnimate]["RunLeft"] = Tracks[PlayerToAnimate]["RunTrack"]
 			:GetMarkerReachedSignal("LeftStep")
 			:Connect(function()
+				if tick() - LastPlayedRunning < 0.1 then
+					return
+				end
+				LastPlayedRunning = tick()
 				RockModule.PlayDustVFX(CharacterToAnimate, Tracks[PlayerToAnimate]["DustVFX"], "Left", 1)
 				if Tracks[PlayerToAnimate] and Tracks[PlayerToAnimate]["RunSFX"] then
 					local ClonedTrack = Tracks[PlayerToAnimate]["RunSFX"]:Clone()
@@ -417,6 +431,10 @@ local function SetupCharacterAnimations(CharacterToAnimate)
 		Connections[PlayerToAnimate]["RunRight"] = Tracks[PlayerToAnimate]["RunTrack"]
 			:GetMarkerReachedSignal("RightStep")
 			:Connect(function()
+				if tick() - LastPlayedRunning < 0.1 then
+					return
+				end
+				LastPlayedRunning = tick()
 				RockModule.PlayDustVFX(CharacterToAnimate, Tracks[PlayerToAnimate]["DustVFX"], "Right", 1)
 				if Tracks[PlayerToAnimate] and Tracks[PlayerToAnimate]["RunSFX"] then
 					local ClonedTrack = Tracks[PlayerToAnimate]["RunSFX"]:Clone()

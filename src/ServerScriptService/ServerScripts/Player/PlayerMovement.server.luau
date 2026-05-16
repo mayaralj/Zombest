@@ -134,11 +134,6 @@ RunService.Heartbeat:Connect(function(DT)
 			continue
 		end
 
-		-- 0.1 SECOND COOLDOWN FOR SPRINTING AND STAMINA
-		--Data.Sprint.WaitToSprint = (Data.Sprint.WaitToSprint or 0) + DT
-		--if Data.Sprint.WaitToSprint < 0.1 then continue end
-		--Data.Sprint.WaitToSprint = 0
-
 		-- GET ATTRIBUTE
 		local WantsToSprint = Player:GetAttribute("WantsToSprint")
 		local HasStamina = (Data.Stamina.CurrentStamina or 0) > 0
@@ -162,20 +157,31 @@ RunService.Heartbeat:Connect(function(DT)
 			Sprint = Sprint * 0.9
 		end
 
+		-- COOLDOWN FOR SPRINTING
+		if not Player:GetAttribute("IsSprinting") then
+			Data.Sprint.WaitToSprint = (Data.Sprint.WaitToSprint or 0) + DT
+		end
+
 		-- APPLY SPEEDS AND STAMINA
 		if WantsToSprint and not Player:GetAttribute("IsKnocked") then
-			if HasStamina then
+			if HasStamina and Data.Sprint.WaitToSprint >= 0.25 then
 				Humanoid.WalkSpeed = Sprint
 				Player:SetAttribute("IsSprinting", true)
 				PlayerStaminaFW.DecreaseStamina(Player, 15 * DT)
 				Data.Stamina.TimeSinceSprinted = nil
 			else
+				if Player:GetAttribute("IsSprinting") then
+					Data.Sprint.WaitToSprint = 0
+				end
 				Humanoid.WalkSpeed = Walk
 				Player:SetAttribute("IsSprinting", false)
 				Data.Stamina.TimeSinceSprinted = Data.Stamina.TimeSinceSprinted or tick()
 				PlayerStaminaFW.RegenStamina(Player, 15 * DT)
 			end
 		else
+			if Player:GetAttribute("IsSprinting") then
+				Data.Sprint.WaitToSprint = 0
+			end
 			Player:SetAttribute("IsSprinting", false)
 			Data.Stamina.TimeSinceSprinted = Data.Stamina.TimeSinceSprinted or tick()
 

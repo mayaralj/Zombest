@@ -55,7 +55,7 @@ end)
 -- WHILE LOOP TO APPLY CYCLE
 while true do
 	--MinutesAfterMidnight = (MinutesAfterMidnight + 1) % 1440
-	Lighting:SetMinutesAfterMidnight(MinutesAfterMidnight)
+	--Lighting:SetMinutesAfterMidnight(MinutesAfterMidnight)
 
 	-- KEEP IT SMOOTH WHEN NEEDS TO RAPID CHANGE
 	if IsChanging then
