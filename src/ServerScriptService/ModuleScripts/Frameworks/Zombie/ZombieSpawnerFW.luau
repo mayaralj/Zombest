@@ -895,7 +895,7 @@ local function ClosestSpawnPoint()
 	local ClosestDistance
 	local ClosestSpawn = math.huge
 	local FailedAttempts = 0
-	for _, SpawnPoint in ipairs(SpawnPoints) do
+	for i, SpawnPoint in ipairs(SpawnPoints) do
 		if LastSpawnPoint and SpawnPoint == LastSpawnPoint then
 			continue
 		end
@@ -922,6 +922,9 @@ local function ClosestSpawnPoint()
 			ClosestDistance = Distance
 			ClosestSpawn = SpawnPoint
 		end
+	end
+	if not ClosestSpawn or ClosestSpawn == math.huge then
+		ClosestSpawn = SpawnPoints[math.random(1, #SpawnPoints)]
 	end
 	LastSpawnPoint = ClosestSpawn
 	return ClosestSpawn
