@@ -797,6 +797,22 @@ local function ZombieLoop()
 				local Waypoints = Data.Path.CurrentPath:GetWaypoints()
 				local CurrentWaypoint = Waypoints[Data.Path.CurrentWaypointIndex]
 
+				-- DISPLAY WAYPOINTS FOR TESTING
+				local DisplayWaypoints = true
+				if DisplayWaypoints then
+					for _, Waypoint in ipairs(Waypoints) do
+						local Part = Instance.new("Part")
+						Part.Size = Vector3.new(0.5, 0.5, 0.5)
+						Part.Color = Color3.new(0, 0.431373, 1)
+						Part.Transparency = 0.5
+						Part.Anchored = true
+						Part.CanCollide = false
+						Part.CFrame = CFrame.new(Waypoint.Position)
+						Part.Parent = workspace
+						DebrisService:AddItem(Part, 0.5)
+					end
+				end
+
 				if CurrentWaypoint then
 					-- 2D (3d causing issues)
 					local WaypointPos2D = Vector2.new(CurrentWaypoint.Position.X, CurrentWaypoint.Position.Z)
@@ -807,7 +823,7 @@ local function ZombieLoop()
 					local DirectionToWaypoint = (CurrentWaypoint.Position - ZombiePart.Position).Unit
 
 					-- CHECK TO INCREASE WAYPOINT INDEX
-					if WaypointDistance <= 4 then
+					if WaypointDistance <= 2 then
 						Data.Path.CurrentWaypointIndex += 1
 
 						-- CHECK IF NO WAYPOINTS LEFT

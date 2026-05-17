@@ -71,7 +71,7 @@ function SpatialGridFW.CreateGrid()
 	CellPart = {}
 
 	for _, Part in workspace:GetDescendants() do
-		if not Part:IsA("BasePart") or not Part:HasTag("PhaseTag") or not Part.CanCollide then
+		if not Part:IsA("BasePart") or not Part:HasTag("PhaseTag") then
 			continue
 		end
 
@@ -182,17 +182,17 @@ local function GetClosestPointOnPart(Part, WorldPoint)
 	local WorldClosest = Part.CFrame:PointToWorldSpace(LocalPoint)
 
 	---- VISUALIZE
-	--local sphere = Instance.new("Part")
-	--sphere.Shape = Enum.PartType.Ball
-	--sphere.Anchored = true
-	--sphere.CanCollide = false
-	--sphere.Size = Vector3.new(1, 1, 1)
-	--sphere.Position = WorldClosest
-	--sphere.Color = Color3.new(0.133333, 0.219608, 1)
-	--sphere.Transparency = 0.5
-	--sphere.Name = "ClosestPointVisual"
-	--sphere.Parent = workspace:WaitForChild("GridVisuals")
-	--game:GetService("Debris"):AddItem(sphere, 0.25)
+	-- local sphere = Instance.new("Part")
+	-- sphere.Shape = Enum.PartType.Ball
+	-- sphere.Anchored = true
+	-- sphere.CanCollide = false
+	-- sphere.Size = Vector3.new(1, 1, 1)
+	-- sphere.Position = WorldClosest
+	-- sphere.Color = Color3.new(0.133333, 0.219608, 1)
+	-- sphere.Transparency = 0.5
+	-- sphere.Name = "ClosestPointVisual"
+	-- sphere.Parent = workspace:WaitForChild("GridVisuals")
+	-- game:GetService("Debris"):AddItem(sphere, 0.25)
 
 	return WorldClosest
 end

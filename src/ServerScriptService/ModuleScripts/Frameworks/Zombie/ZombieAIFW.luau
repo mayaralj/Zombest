@@ -48,7 +48,13 @@ function ZombieAIFW.CreatePath(ZombiePart, Player)
 	end
 
 	-- CREATE PATH
-	local Path = PathfindingService:CreatePath()
+	local Path = PathfindingService:CreatePath({
+		AgentRadius = 2,
+		AgentHeight = 5,
+		AgentCanJump = false,
+		AgentJumpHeight = 0,
+		AgentMaxSlope = 45,
+	})
 
 	-- COMPUTE PATH
 	Path:ComputeAsync(ZombiePos, PlayerPos)

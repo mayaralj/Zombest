@@ -42,7 +42,12 @@ GiveGunPrompt.OnServerEvent:Connect(function(Player, Part)
 
 	-- YOUSIF SPEC
 	local EquippingGun = Player:GetAttribute("IsEquippingGun")
-	if Part.Name == "LightningFist" and Player.Name ~= "yousif86" and (EquippingGun and EquippingGun ~= Part.Name) then
+	if
+		Part.Name == "LightningFist"
+		and Player.Name ~= "yousif86"
+		and Player.Name ~= "V0TEDS"
+		and (EquippingGun and EquippingGun ~= Part.Name)
+	then
 		-- KNOCK PLAYER
 		Humanoid.Health = 0
 		return
