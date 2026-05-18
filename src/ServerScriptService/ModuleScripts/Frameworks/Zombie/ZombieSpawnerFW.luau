@@ -798,7 +798,7 @@ local function ZombieLoop()
 				local CurrentWaypoint = Waypoints[Data.Path.CurrentWaypointIndex]
 
 				-- DISPLAY WAYPOINTS FOR TESTING
-				local DisplayWaypoints = true
+				local DisplayWaypoints = false
 				if DisplayWaypoints then
 					for _, Waypoint in ipairs(Waypoints) do
 						local Part = Instance.new("Part")
@@ -907,7 +907,7 @@ local function ClosestSpawnPoint()
 	end
 
 	-- SETTINGS
-	local MinDistanceFromPlayer = 125
+	local MinDistanceFromPlayer = 75
 
 	-- LOOP THROUGH SPAWNPOINTS
 	local ClosestDistance

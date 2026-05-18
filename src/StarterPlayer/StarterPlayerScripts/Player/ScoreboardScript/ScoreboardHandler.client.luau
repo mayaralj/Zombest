@@ -47,6 +47,9 @@ local function BeginRoundOverSequence(NewMVPPlayer)
 		local AbsPos = MVPPlayerRow.AbsolutePosition
 		MVPFrame.Position = UDim2.fromOffset(AbsPos.X - MVPFrame.AbsoluteSize.X - 8, AbsPos.Y)
 		MVPFrame.Visible = true
+
+		-- MAKE THE PLAYER ROW BORDER SIZE 0
+		MVPPlayerRow.BorderSizePixel = 0
 	else
 		MVPFrame.Visible = false
 	end
@@ -89,6 +92,9 @@ local function EndRoundOverSequence()
 		if UICorner then
 			UICorner:Destroy()
 		end
+
+		-- MAKE THE PLAYER ROW BORDER SIZE 1
+		MVPPlayerRow.BorderSizePixel = 1
 	end
 
 	-- TOGGLE FLAG

@@ -402,6 +402,8 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		-- TELEPORT VFX
 		local TPVFXClone = TPVFX:Clone()
 		TPVFXClone.Parent = DummyPart
+
+		-- EMIT ALL PARTICLE EMITTERS
 		for _, Emitter in pairs(TPVFXClone:GetDescendants()) do
 			if Emitter:IsA("ParticleEmitter") then
 				Emitter:Emit(Emitter.Rate)
