@@ -106,6 +106,7 @@ end)
 
 -- SPAWN ZOMBIE
 local ZombieIDSpawned = {}
+local FullySpawned = {}
 ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, StartCFrame)
 	-- DONT REPLICATE TWICE
 	if ZombieIDSpawned[ZombieID] then
@@ -127,7 +128,6 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 
 	-- NAME AND OCCUPY ID
 	ZombieClone.Name = "ClientZombie" .. ZombieID
-	ZombieIDSpawned[ZombieID] = true
 
 	-- CREATE AND GET DATA
 	ClientZombieData:CreateData(ZombieClone, ZombieType, ZombieSubType)
@@ -135,6 +135,7 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 	if not GetZombieData then
 		return
 	end
+	ZombieIDSpawned[ZombieID] = true
 
 	-- SPAWN CLIENT ZOMBIE IN
 	ZombieClone:PivotTo(StartCFrame)
@@ -194,6 +195,9 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 	-- UPDATE DATA
 	GetZombieData.Position.TargetCF = StartCFrame
 	GetZombieData.ModelStuff.ServerZombie = ZombieID
+
+	-- MARK AS FULLY SPAWNED
+	FullySpawned[ZombieID] = true
 end)
 
 -- CLEAN UP ANIMATIONS
@@ -268,29 +272,31 @@ local function PlayZombieSFX(ZombieClone, Data, DeathSFX)
 end
 
 -- DELETE CLIENT ZOMBIE AND ITS DATA
-function CleanupZombie(ZombieID, AliveZombies)
-	-- ENSURE THIS ZOMBIE HAS SPAWNED
+local CleanupQueue = {}
+function CleanupZombie(ZombieID)
+	-- CLEAR UP SPAWN TABLES
 	ZombieIDSpawned[ZombieID] = nil
+	FullySpawned[ZombieID] = nil
 
 	-- SWAP INDEXES BETWEEN CURRENT AND LAST ZOMBIE
 	local CurrentIndex = ClientZombieData.ZombieIndex[ZombieID]
 	if not CurrentIndex then
+		warn("No index for zombie ID: " .. ZombieID)
 		return
 	end
 
 	local CurrentZombie = ClientZombieData.ZombieArray[CurrentIndex]
 	if not CurrentZombie then
+		warn("Zombie at index " .. CurrentIndex .. " does not exist for zombie ID: " .. ZombieID)
 		return
 	end
 
 	local CurrentZombieData = ClientZombieData:Get(CurrentZombie)
 	if not CurrentZombieData then
+		warn("No data for zombie ID: " .. ZombieID)
 		CurrentZombie:Destroy()
 		return
 	end
-
-	-- PLAY ZOMBIE SFX
-	PlayZombieSFX(CurrentZombie, CurrentZombieData, true)
 
 	-- SWAP DATA
 	ClientZombieData.ZombieIndex[ZombieID] = nil
@@ -318,19 +324,27 @@ function CleanupZombie(ZombieID, AliveZombies)
 
 	-- REMOVE CLIENT DATA
 	DestroyAllAnimations(CurrentZombieData.ModelStuff.Model)
-	ClientZombieData:Remove(CurrentZombie)
 
 	-- ENSURE PLAYER IS CLOSE ENOUGH TO SHOW RAGDOLL
 	local Character = LocalPlayer.Character
 	if not Character then
 		CurrentZombie:Destroy()
+		ClientZombieData:Remove(CurrentZombie)
+		warn("No character found for zombie ID: " .. ZombieID)
 		return
 	end
 	local RootPart = Character:FindFirstChild("HumanoidRootPart")
 	if not RootPart then
 		CurrentZombie:Destroy()
+		ClientZombieData:Remove(CurrentZombie)
+		warn("No root part found for zombie ID: " .. ZombieID)
 		return
 	end
+
+	-- PLAY ZOMBIE SFX
+	task.spawn(function()
+		PlayZombieSFX(CurrentZombie, CurrentZombieData, true)
+	end)
 
 	local RootToCheck = RootPart
 	local Spectating = LocalPlayer:GetAttribute("SpectatingId")
@@ -362,11 +376,27 @@ function CleanupZombie(ZombieID, AliveZombies)
 	else
 		CurrentZombieData.ModelStuff.Model:Destroy()
 	end
+
+	-- CLEANUP DATA
+	ClientZombieData:Remove(CurrentZombie)
+end
+
+-- PLACE ZOMBIE IN CLEANUP QUEUE AND WAIT FOR TURN TO CLEANUP
+local function InitiateCleanup(ZombieID)
+	table.insert(CleanupQueue, ZombieID)
+	while CleanupQueue[1] ~= ZombieID do
+		task.wait()
+	end
+	while not FullySpawned[ZombieID] do
+		task.wait()
+	end
+	pcall(CleanupZombie, ZombieID)
+	table.remove(CleanupQueue, 1)
 end
 
 -- ON CLIENT EVENT TO CLEANUP CLIENT ZOMBIE
-ZombieDelete.OnClientEvent:Connect(function(ZombieID, AliveZombies)
-	CleanupZombie(ZombieID, AliveZombies)
+ZombieDelete.OnClientEvent:Connect(function(ZombieID)
+	InitiateCleanup(ZombieID)
 end)
 
 -- HELPER TO MOVE CLIENT ZOMBIE TO SERVER
@@ -382,7 +412,6 @@ local function LerpClientToServer(Data, DT)
 	return LerpedCFrame
 end
 
--- UPDATE CLIENT ZOMBIE
 UpdateClientZombie.OnClientEvent:Connect(function(Buffer)
 	local Count = buffer.len(Buffer) / 10
 
@@ -443,7 +472,6 @@ RunService.Heartbeat:Connect(function(DT)
 		if not Data then
 			continue
 		end
-
 		-- ID
 		local ServerZombieID = Data.ModelStuff.ServerZombie
 
