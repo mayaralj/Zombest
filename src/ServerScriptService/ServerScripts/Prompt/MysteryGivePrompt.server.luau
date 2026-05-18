@@ -351,6 +351,9 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		local WiggleAngle = math.rad(12)
 		local WiggleDuration = 0.2
 
+		-- UNPARENT CONCRETE FROM MYSTERY BOX MODEL
+		Concrete.Parent = MysteryBox
+
 		-- TWEEN THE Y
 		local RiseValue = Instance.new("NumberValue")
 		RiseValue.Value = 0
@@ -363,9 +366,6 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 			BoxRiseTween = nil
 		end)
 		task.wait(0.1)
-
-		-- UNPARENT CONCRETE FROM MYSTERY BOX MODEL
-		Concrete.Parent = MysteryBox
 
 		-- WIGGLE + RISE APPLIED TOGETHER IN ONE LOOP
 		local StartTime = tick()
@@ -392,7 +392,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		Concrete.Parent = MysteryBoxModel
 		Concrete:PivotTo(Concrete:GetPivot() * CFrame.new(0, 8, 0))
 		-- HIDE MYSTER BOX MODEL
-		MysteryBoxModel:PivotTo(CFrame.new(0, -500, 0))
+		MysteryBoxModel:PivotTo(MysteryBoxModel:GetPivot() * CFrame.new(0, 100, 0))
 
 		-- TELEPORT SFX
 		local ChargeSFXClone = MysteryBoxSFX:WaitForChild("Charge"):Clone()
@@ -519,9 +519,13 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 	local CloseTopCFValue = Instance.new("CFrameValue")
 	CloseTopCFValue.Value = Top:GetPivot()
 	CloseTopCFValue.Changed:Connect(function(NewCF)
+		-- KEEP TOP RELATIVE TO THE BOX WHILE CLOSING
 		Top:PivotTo(NewCF)
 	end)
-	local CloseTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
+
+	-- CLOSE INSTANTLY IF NEEDS TO TP ANYWAYS
+	local TimeToClose = FinalGun == "TeddyBear" and 0 or 0.25
+	local CloseTweenInfo = TweenInfo.new(TimeToClose, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
 	Goal = Top:GetPivot() * CFrame.new(0, -2, 2) * CFrame.Angles(math.rad(-90), 0, 0)
 	local CloseTween = TweenService:Create(CloseTopCFValue, CloseTweenInfo, { Value = Goal })
 	CloseTween.Completed:Connect(function()
@@ -536,8 +540,9 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		MysteryBoxLight.Brightness = OriginalBrightness
 	end
 
+	-- SWAP MYSTERY BOX LOCATION
 	if FinalGun == "TeddyBear" then
-		-- WAIT A LITTLE BEFORE RESPAWNING MYSTERY BOX
+		CloseTween.Completed:Wait()
 		TeleportMysteryBox()
 	end
 
