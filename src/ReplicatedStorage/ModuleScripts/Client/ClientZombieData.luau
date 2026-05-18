@@ -39,6 +39,11 @@ ClientZombieData.DefaultData = {
 				PreviouslyMoved = nil,
 			},
 
+			SFX = {
+				SFXCooldown = nil,
+				IsPlaying = false,
+			},
+
 			Status = {
 				Burn = {
 					BurnTime = 0,

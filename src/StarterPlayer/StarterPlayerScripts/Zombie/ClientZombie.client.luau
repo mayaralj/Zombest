@@ -32,6 +32,7 @@ local ClientZombieEffects = require(script.Parent:WaitForChild("ClientZombieEffe
 -- CLIENT ZOMBIE FOLDERS
 local ClientZombieStorage = ReplicatedStorage:FindFirstChild("ClientZombieStorage")
 local ClientZombies = workspace:FindFirstChild("ClientZombies")
+local ZombieSFX = ReplicatedStorage:WaitForChild("ZombieSFX")
 
 -- SETTINGS
 local VERY_CLOSE = 20
@@ -161,6 +162,15 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 	local Animator = Instance.new("Animator")
 	Animator.Parent = AnimationController
 
+	-- CLONE SOUND EFFECTS FOLDER INTO ZOMBIE
+	local ClonedSFXFolder = ZombieSFX:Clone()
+	ClonedSFXFolder.Parent = ZombieClone
+	-- RANDOMIZE SFX COOLDOWN
+	local SoundData = ClientZombieData:Get(ZombieClone).SFX
+	if SoundData then
+		SoundData.SFXCooldown = tick() + math.random(-25, 15)
+	end
+
 	-- ANIMATION LOADING
 	local WalkAnimation = Instance.new("Animation")
 	WalkAnimation.AnimationId = GetZombieData.Animations.WalkAnimation
@@ -209,6 +219,54 @@ local function DestroyAllAnimations(ZombieClone)
 	AnimationController:Destroy()
 end
 
+-- HELPER TO PLAY ZOMBIE SFX
+local LastPlayedSFX = ""
+local function PlayZombieSFX(ZombieClone, Data, DeathSFX)
+	local SFXFolder = ZombieClone:FindFirstChild("ZombieSFX")
+	if not SFXFolder then
+		return
+	end
+
+	-- GET SOUND DATA AND CHECK FOR CD
+	local SoundData = Data.SFX
+	if not SoundData then
+		return
+	end
+	-- NON DEATH SFX
+	if not DeathSFX then
+		if SoundData.SFXCooldown and tick() - SoundData.SFXCooldown < 15 then
+			return
+		end
+		SoundData.SFXCooldown = tick()
+		if SoundData.IsPlaying then
+			return
+		end
+	end
+	-- DEATH SFX
+	if DeathSFX then
+		-- STOP ALL CURRENT PLAYING SFX
+		for _, Sound in pairs(SFXFolder:GetChildren()) do
+			if Sound:IsA("Sound") and Sound.IsPlaying then
+				Sound:Stop()
+			end
+		end
+	end
+	SoundData.IsPlaying = true
+
+	-- PICK RANDOM SFX
+	local SFXPicked = SFXFolder:GetChildren()[math.random(1, #SFXFolder:GetChildren())]
+	while LastPlayedSFX == SFXPicked.Name do
+		SFXPicked = SFXFolder:GetChildren()[math.random(1, #SFXFolder:GetChildren())]
+		task.wait()
+	end
+	-- PLAY SFX
+	SFXPicked:Play()
+	LastPlayedSFX = SFXPicked.Name
+	SFXPicked.Ended:Once(function()
+		SoundData.IsPlaying = false
+	end)
+end
+
 -- DELETE CLIENT ZOMBIE AND ITS DATA
 function CleanupZombie(ZombieID, AliveZombies)
 	-- ENSURE THIS ZOMBIE HAS SPAWNED
@@ -230,6 +288,9 @@ function CleanupZombie(ZombieID, AliveZombies)
 		CurrentZombie:Destroy()
 		return
 	end
+
+	-- PLAY ZOMBIE SFX
+	PlayZombieSFX(CurrentZombie, CurrentZombieData, true)
 
 	-- SWAP DATA
 	ClientZombieData.ZombieIndex[ZombieID] = nil
@@ -453,6 +514,9 @@ RunService.Heartbeat:Connect(function(DT)
 		local NewCFrame = LerpClientToServer(Data, FrameDT)
 		table.insert(BulkParts, RootPart)
 		table.insert(BulkCFrames, NewCFrame)
+
+		-- PLAY SFX
+		PlayZombieSFX(ZombieClone, Data)
 	end
 
 	-- BULK MOVE TO
