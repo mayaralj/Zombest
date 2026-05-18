@@ -1,6 +1,7 @@
 local ZombieDrops = {}
 
 -- SERVICES
+local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 local TweenService = game:GetService("TweenService")
@@ -56,7 +57,7 @@ local function CreateDropModel(Zombie, DropType)
 	end
 	-- PARENT AND POSITION
 	Model.Parent = workspace:WaitForChild("ZombieDrops")
-	Model:PivotTo(Zombie:GetPivot() + Vector3.new(0, 1.5, 0))
+	Model:PivotTo(CFrame.new(Zombie:GetPivot().X, Zombie:GetPivot().Y + 1.5, Zombie:GetPivot().Z))
 	return Model
 end
 
@@ -109,7 +110,7 @@ local function TweenModelSize(Model)
 	NumValue.Changed:Connect(function()
 		Model:ScaleTo(NumValue.Value)
 	end)
-	local TweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local TweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut)
 	local SizeTween = TweenService:Create(NumValue, TweenInfo, { Value = 0.001 })
 	SizeTween:Play()
 	SizeTween.Completed:Wait()
@@ -143,7 +144,7 @@ function ZombieDrops.BonusPoints(Zombie)
 		Flag = true
 		Model.PrimaryPart:SetAttribute("Touched", true)
 
-		PlayDropSFX:FireAllClients("BonusPoints")
+		PlayDropSFX:FireAllClients("BonusPoints", Character)
 		for _, Player in pairs(Players:GetPlayers()) do
 			local Data = PlayerData:Get(Player)
 			if not Data then
@@ -200,7 +201,7 @@ function ZombieDrops.InstaKill(Zombie)
 		Flag = true
 		Model.PrimaryPart:SetAttribute("Touched", true)
 
-		PlayDropSFX:FireAllClients("InstaKill")
+		PlayDropSFX:FireAllClients("InstaKill", Character)
 		for _, Player in pairs(Players:GetPlayers()) do
 			Player:SetAttribute("InstaKill", CurrentID)
 		end
@@ -246,7 +247,7 @@ function ZombieDrops.DoublePoints(Zombie)
 		Flag = true
 		Model.PrimaryPart:SetAttribute("Touched", true)
 
-		PlayDropSFX:FireAllClients("DoublePoints")
+		PlayDropSFX:FireAllClients("DoublePoints", Character)
 		for _, Player in pairs(Players:GetPlayers()) do
 			Player:SetAttribute("DoublePoints", CurrentID)
 		end
@@ -291,7 +292,7 @@ function ZombieDrops.MaxAmmo(Zombie)
 		Flag = true
 		Model.PrimaryPart:SetAttribute("Touched", true)
 
-		PlayDropSFX:FireAllClients("MaxAmmo")
+		PlayDropSFX:FireAllClients("MaxAmmo", Character)
 		for _, Player in pairs(Players:GetPlayers()) do
 			GunFW.MaxAmmo(Player)
 			Player:SetAttribute("MaxAmmo", CurrentID)
@@ -321,6 +322,7 @@ function ZombieDrops.DropItem(Zombie, WaveCount)
 	-- CHANCE TO DROP, DECREASED THE HIGHER THE WAVE DUE TO MORE ZOMBIES
 	local DropChance = 0.1 - (WaveCount * 0.005)
 	DropChance = math.max(DropChance, 0.02)
+	DropChance = 1
 	if math.random(1, 100) / 100 > DropChance then
 		return
 	end

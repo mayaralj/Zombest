@@ -168,7 +168,7 @@ local function PlayWaveStartSFX()
 		WaveStartSound.Parent = workspace:WaitForChild("ActiveSFX")
 	end
 	ClonedWaveStartSFX:Play()
-	task.delay(7, function()
+	task.delay(8.25, function()
 		local OriginalVolume = ClonedWaveStartSFX.Volume
 		-- TWEEN VOLUME DOWN
 		local SoundTweenInfo = TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
