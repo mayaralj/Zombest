@@ -58,12 +58,12 @@ function ChargeEffectsFW.OverCharge(Player, CurrentGunData, EffectIndex, ChargeA
 		Player:SetAttribute("OverChargeBuffed", true)
 		task.wait(0.25) -- tiny wait to ensure the lightning effect is done
 		GunOverChargeEvent:FireAllClients(Player, EffectData.Duration)
-		PlayerData.Sprint.WalkSpeed += SpeedBuff
-		PlayerData.Sprint.SprintSpeed += SpeedBuff
+		CurrentPlayerData.Sprint.WalkSpeed += SpeedBuff
+		CurrentPlayerData.Sprint.SprintSpeed += SpeedBuff
 		task.delay(EffectData.Duration, function()
 			Player:SetAttribute("OverChargeBuffed", false)
-			PlayerData.Sprint.WalkSpeed -= SpeedBuff
-			PlayerData.Sprint.SprintSpeed -= SpeedBuff
+			CurrentPlayerData.Sprint.WalkSpeed -= SpeedBuff
+			CurrentPlayerData.Sprint.SprintSpeed -= SpeedBuff
 		end)
 	end
 end
