@@ -24,13 +24,10 @@ function PromptFunction.GiveGun(Part, Prompt)
 		local EquippingGun = Player:GetAttribute("IsEquippingGun")
 		if
 			Part.Name == "LightningFist"
-			and Player.Name ~= "Yousif86"
+			and Player.Name ~= "yousif86"
+			and Player.Name ~= "V0TEDS"
 			and (EquippingGun and EquippingGun ~= Part.Name)
 		then
-			local PlayerGui = Player:FindFirstChild("PlayerGui")
-			if not PlayerGui then
-				return
-			end
 			local YousifSpecGui = PlayerGui:FindFirstChild("YousifSpecGuiFolder"):FindFirstChild("YousifSpecGui")
 			if not YousifSpecGui then
 				return
@@ -55,7 +52,6 @@ function PromptFunction.GiveGun(Part, Prompt)
 			end)
 		end
 
-		local CurrentGun = Player:GetAttribute("IsEquippingGun")
 		GiveGunPrompt:FireServer(Part)
 		task.wait(0.05)
 	end)

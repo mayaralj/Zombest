@@ -320,7 +320,7 @@ end
 -- DETERMINE IF SHOULD DROP ITEM
 function ZombieDrops.DropItem(Zombie, WaveCount)
 	-- CHANCE TO DROP, DECREASED THE HIGHER THE WAVE DUE TO MORE ZOMBIES
-	local DropChance = 0.1 - (WaveCount * 0.005)
+	local DropChance = (0.1 - (WaveCount * 0.005)) / 2
 	DropChance = math.max(DropChance, 0.02)
 	if math.random(1, 100) / 100 > DropChance then
 		return

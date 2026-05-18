@@ -20,7 +20,7 @@ local MysteryBoxModel = MysteryBox:WaitForChild("MysteryBoxModel")
 local Top = MysteryBoxModel:WaitForChild("Top")
 local NeonBase = MysteryBoxModel:WaitForChild("NeonBase")
 local MysteryBoxGuns = MysteryBox:WaitForChild("MysteryBoxGuns")
-local MysteryBoxLight = MysteryBoxModel:WaitForChild("Base"):WaitForChild("MysteryBoxLight")
+local MysteryBoxLight = MysteryBoxModel:WaitForChild("LightEmitter"):WaitForChild("MysteryBoxLight")
 local SpawnLocations = MysteryBox:WaitForChild("SpawnLocations")
 local MysteryBoxVFX = ReplicatedStorage:WaitForChild("MysteryBoxVFX")
 local MysteryBoxSFX = ReplicatedStorage:WaitForChild("MysteryBoxSFX")
@@ -553,9 +553,9 @@ end)
 
 -- LOOP THROUGH SPAWN LOCATIONS AND STORE THEIR CF IN A TABLE FOR EASY ACCESS LATER
 for _, Location in pairs(SpawnLocations:GetChildren()) do
-	local Spawn = Location:FindFirstChild("Spawn")
+	local SpawnPart = Location:FindFirstChild("Spawn")
 	LocationsLookup[Location] = {
-		SpawnPivot = Spawn:GetPivot(),
+		SpawnPivot = SpawnPart:GetPivot(),
 		ModelPivot = Location:GetPivot(),
 	}
 end

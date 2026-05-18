@@ -52,7 +52,8 @@ function ZombieAIFW.CreatePath(ZombiePart, Player)
 		AgentRadius = 2,
 		AgentHeight = 5,
 		AgentCanJump = false,
-		AgentJumpHeight = 0,
+		AgentCanClimb = false,
+		--WaypointSpacing = 4,
 		AgentMaxSlope = 45,
 	})
 
@@ -136,7 +137,6 @@ function ZombieAIFW.NoObstacleBetweenTargetAndZombie(Target, Zombie)
 
 	local Direction = TargetRootPart.Position - Zombie.Position
 	local Origin = Zombie.Position
-	local TargetPos = TargetRootPart.Position
 
 	-- FINAL DIRECTION
 	local FinalDirection = Direction.Magnitude > 50 and Direction.Unit * 50 or Direction

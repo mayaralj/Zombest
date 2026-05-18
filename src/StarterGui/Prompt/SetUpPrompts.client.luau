@@ -31,6 +31,19 @@ local Connections = {}
 
 -- UPDATE GUN PROMPT
 local function UpdateGunPrompt(PartContainingPrompt, Prompt)
+	-- CHECK FOR PLAYER STATES
+	local IsRunning = Player:GetAttribute("IsRunning")
+	local IsDashing = Player:GetAttribute("IsDashing")
+	local IsShooting = Player:GetAttribute("IsShooting")
+	local IsReloading = Player:GetAttribute("IsReloading")
+	local IsCharging = Player:GetAttribute("IsCharging")
+	local IsEquipping = Player:GetAttribute("IsEquipping")
+	if IsRunning or IsDashing or IsShooting or IsReloading or IsCharging or IsEquipping then
+		PromptGui.Enabled = false
+		return
+	end
+
+	-- GET COST
 	local Cost = PartContainingPrompt:FindFirstChild("Cost")
 	if not Cost then
 		return

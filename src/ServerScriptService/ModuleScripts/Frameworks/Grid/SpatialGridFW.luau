@@ -340,7 +340,7 @@ end
 -- MOVEMENT WITH COLLISIONS
 function SpatialGridFW.MoveWithCollisions(Part, TargetPos)
 	-- SOME STATS
-	local COLLISION_RADIUS = 3
+	local COLLISION_RADIUS = 2.5
 	local MaxDistance = 15
 
 	-- DIRECTION AND GROUND
@@ -351,29 +351,29 @@ function SpatialGridFW.MoveWithCollisions(Part, TargetPos)
 	end
 	Direction = Vector3.new(Direction.X, 0, Direction.Z).Unit
 
-	local Data = ZombieData:Get(Part)
-	if not Data then
+	local CurrentZombieData = ZombieData:Get(Part)
+	if not CurrentZombieData then
 		return Part.Position, Direction
 	end
 
 	-- UPDATE POSITION ON GRID AND GET NEARBY PARTS
 	SpatialGridFW.UpdatePartPosition(Part)
 	local WallNearby = false
-	Data.Grid.NearbyParts, WallNearby = SpatialGridFW.GetNearbyParts(Part, MaxDistance)
-	if not Data.Grid.NearbyParts then
+	CurrentZombieData.Grid.NearbyParts, WallNearby = SpatialGridFW.GetNearbyParts(Part, MaxDistance)
+	if not CurrentZombieData.Grid.NearbyParts then
 		return Part.Position, Direction
 	end
 
 	-- CHECK FOR NEARBY OBSTACLES
-	Data.Grid.ObstacleNearby = WallNearby
+	CurrentZombieData.Grid.ObstacleNearby = WallNearby
 
 	-- GET THE FINALPOS EARLY INCASE NO COLLISION IS NEEDED
-	local FinalPos = Vector3.new(TargetPos.X, Data.Position.GroundPos, TargetPos.Z)
+	local FinalPos = Vector3.new(TargetPos.X, CurrentZombieData.Position.GroundPos, TargetPos.Z)
 	local IsCollidingWithWall = false
 
 	-- LOOP THROUGH NEARBY PARTS
-	if Data.Grid.ObstacleNearby then
-		for _, Info in Data.Grid.NearbyParts do
+	if CurrentZombieData.Grid.ObstacleNearby then
+		for _, Info in CurrentZombieData.Grid.NearbyParts do
 			local OtherPart = Info.OtherPart
 			local DistanceToPoint = Info.Distance
 			local ClosestPoint = Info.ClosestPoint
@@ -401,7 +401,7 @@ function SpatialGridFW.MoveWithCollisions(Part, TargetPos)
 				--	0,
 				--	(math.random() - 0.5) * 0.2
 				--)
-				FinalPos = Vector3.new(RepelledPos.X, Data.Position.GroundPos, RepelledPos.Z)
+				FinalPos = Vector3.new(RepelledPos.X, CurrentZombieData.Position.GroundPos, RepelledPos.Z)
 				break
 			end
 
@@ -414,16 +414,16 @@ function SpatialGridFW.MoveWithCollisions(Part, TargetPos)
 			end
 
 			local MovementDistance = (RepelledPos - Part.Position).Magnitude
-			FinalPos = Vector3.new(RepelledPos.X, Data.Position.GroundPos, RepelledPos.Z)
+			FinalPos = Vector3.new(RepelledPos.X, CurrentZombieData.Position.GroundPos, RepelledPos.Z)
 		end
 	end
 
 	-- COLLISION STATE
-	Data.Collision.CanCollideOthers = not IsCollidingWithWall
+	CurrentZombieData.Collision.CanCollideOthers = not IsCollidingWithWall
 
 	-- EXTRA CHECK IF ZOMBIE IS MOVING TOO FAR
 	if (PreviousPos - FinalPos).Magnitude > 20 then
-		return Vector3.new(TargetPos.X, Data.Position.GroundPos, TargetPos.Z), Direction
+		return Vector3.new(TargetPos.X, CurrentZombieData.Position.GroundPos, TargetPos.Z), Direction
 	end
 
 	return FinalPos, Direction

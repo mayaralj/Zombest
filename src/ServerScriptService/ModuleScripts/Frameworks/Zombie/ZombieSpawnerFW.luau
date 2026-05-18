@@ -289,7 +289,7 @@ local function GetGroundPosition(ZombiePart)
 
 	local RayParams = RaycastParams.new()
 	RayParams.FilterType = Enum.RaycastFilterType.Include
-	RayParams.FilterDescendantsInstances = { workspace.PhaseParts.TestMap.Base.Base }
+	RayParams.FilterDescendantsInstances = { workspace.NonPhase.Map1.Base }
 
 	local RayResult = workspace:Raycast(RayOrigin, RayDirection, RayParams)
 
@@ -484,7 +484,7 @@ local function ZombieLoop()
 
 			-- CHECK IF PATHFINDING SHOULD BE ALLOWED
 			local ZombieFrame = (i - 1) % PathFindCycle
-			local CanPathFind = ZombieFrame == FrameToPathfind
+			local CanPathFind = (ZombieFrame == FrameToPathfind) or (AliveZombies < 40)
 
 			-- CHECK IF ZOMBIE STILL ALIVE/EXISTS
 			if not (ZombiePart and ZombiePart.Parent and Data.Health.CurrentHealth > 0) then
@@ -745,7 +745,7 @@ local function ZombieLoop()
 			end
 
 			-- DIRECT MOVEMENT (NO OBSTACLES)
-			if (Data.Cooldowns.NoObstacleTimer > 0) or Data.Position.TimeSinceMoved > 1 then
+			if (Data.Cooldowns.NoObstacleTimer > 0.5) or Data.Position.TimeSinceMoved > 1 then
 				local Direction = (TargetRoot.Position - ZombiePart.Position).Unit
 				local Step = Direction * Data.Stats.WalkSpeed * FrameDT
 				local TargetPosition = ZombiePart.Position + Step
@@ -777,7 +777,7 @@ local function ZombieLoop()
 				if
 					Data.Path.PathGenerationCD >= 1
 					or not Data.Path.FirstPathGenerated
-					or (TargetRoot.Position - Data.Target.LastTargetPosition).Magnitude >= 50
+					or (TargetRoot.Position - Data.Target.LastTargetPosition).Magnitude >= 10
 					or not Data.Path.CurrentPath
 				then
 					if CanPathFind and not Data.Path.IsWalkingOnPath then
@@ -802,7 +802,7 @@ local function ZombieLoop()
 				if DisplayWaypoints then
 					for _, Waypoint in ipairs(Waypoints) do
 						local Part = Instance.new("Part")
-						Part.Size = Vector3.new(0.5, 0.5, 0.5)
+						Part.Size = Vector3.new(0.75, 0.75, 0.75)
 						Part.Color = Color3.new(0, 0.431373, 1)
 						Part.Transparency = 0.5
 						Part.Anchored = true
@@ -823,7 +823,9 @@ local function ZombieLoop()
 					local DirectionToWaypoint = (CurrentWaypoint.Position - ZombiePart.Position).Unit
 
 					-- CHECK TO INCREASE WAYPOINT INDEX
-					if WaypointDistance <= 2 then
+					-- local StepSize = Data.Stats.WalkSpeed * FrameDT
+					-- local WaypointThreshold = math.max(StepSize * 2, 1.5)
+					if WaypointDistance <= 3 then
 						Data.Path.CurrentWaypointIndex += 1
 
 						-- CHECK IF NO WAYPOINTS LEFT

@@ -43,7 +43,6 @@ task.spawn(function()
 		end
 	end
 
-	local CFrameOccupied = {}
 	for _, Part in GiveGunParts:GetChildren() do
 		if Part:IsA("BasePart") and Part.Name ~= "LightningFist" then
 			Part.Anchored = true
@@ -63,30 +62,30 @@ task.spawn(function()
 			end
 		end
 	end
-	while true do
-		-- SHUFFLED LIST
-		local ShuffledIndices = {}
-		for i = 1, #AvailableCFrames do
-			table.insert(ShuffledIndices, i)
-		end
+	-- while true do
+	-- 	-- SHUFFLED LIST
+	-- 	local ShuffledIndices = {}
+	-- 	for i = 1, #AvailableCFrames do
+	-- 		table.insert(ShuffledIndices, i)
+	-- 	end
 
-		-- SHUFFLE
-		for i = #ShuffledIndices, 2, -1 do
-			local j = math.random(i)
-			ShuffledIndices[i], ShuffledIndices[j] = ShuffledIndices[j], ShuffledIndices[i]
-		end
+	-- 	-- SHUFFLE
+	-- 	for i = #ShuffledIndices, 2, -1 do
+	-- 		local j = math.random(i)
+	-- 		ShuffledIndices[i], ShuffledIndices[j] = ShuffledIndices[j], ShuffledIndices[i]
+	-- 	end
 
-		-- ASSIGN EACH PART TO A UNIQUE CFRAME
-		local Index = 1
-		for _, Part in GiveGunParts:GetChildren() do
-			if Part:IsA("BasePart") and Part.Name ~= "LightningFist" then
-				Part.CFrame = AvailableCFrames[ShuffledIndices[Index]]
-				Index = Index + 1
-			end
-		end
+	-- 	-- ASSIGN EACH PART TO A UNIQUE CFRAME
+	-- 	local Index = 1
+	-- 	for _, Part in GiveGunParts:GetChildren() do
+	-- 		if Part:IsA("BasePart") and Part.Name ~= "LightningFist" then
+	-- 			Part.CFrame = AvailableCFrames[ShuffledIndices[Index]]
+	-- 			Index = Index + 1
+	-- 		end
+	-- 	end
 
-		task.wait(15)
-	end
+	-- 	task.wait(15)
+	-- end
 end)
 
 -- UPDATE LEADERBOARD EVERY 30 SECONDS

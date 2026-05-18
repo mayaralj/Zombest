@@ -15,17 +15,30 @@ local GiveGunPrompt = PromptEvents:WaitForChild("GiveGunPrompt")
 
 -- ON SERVER EVENT FOR GIVE GUN
 GiveGunPrompt.OnServerEvent:Connect(function(Player, Part)
-	-- CHARACTER AND ROOT
+	-- CHARACTER
 	local Character = Player.Character
 	if not Character then
 		return
 	end
+
+	-- ROOT PART AND HUMANOID
 	local RootPart = Character:WaitForChild("HumanoidRootPart")
 	if not RootPart then
 		return
 	end
 	local Humanoid = Character:WaitForChild("Humanoid")
 	if not Humanoid then
+		return
+	end
+
+	-- CHECK FOR PLAYER STATES
+	local IsRunning = Player:GetAttribute("IsRunning")
+	local IsDashing = Player:GetAttribute("IsDashing")
+	local IsShooting = Player:GetAttribute("IsShooting")
+	local IsReloading = Player:GetAttribute("IsReloading")
+	local IsCharging = Player:GetAttribute("IsCharging")
+	local IsEquipping = Player:GetAttribute("IsEquipping")
+	if IsRunning or IsDashing or IsShooting or IsReloading or IsCharging or IsEquipping then
 		return
 	end
 
