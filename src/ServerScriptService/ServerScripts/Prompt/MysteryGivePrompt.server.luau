@@ -412,7 +412,6 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		GunToGive:PivotTo(OriginalCFrame)
 
 		-- SOME WAITS FOR CLEANUP
-		task.wait(1)
 		task.delay(1, function()
 			DummyPart:Destroy()
 			TPVFXClone:Destroy()
@@ -539,7 +538,6 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 
 	if FinalGun == "TeddyBear" then
 		-- WAIT A LITTLE BEFORE RESPAWNING MYSTERY BOX
-		task.wait(5)
 		TeleportMysteryBox()
 	end
 
