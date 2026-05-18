@@ -230,6 +230,19 @@ local function ProcessBullet(BulletData, DT)
 
 	-- EARLY CHECK FOR NEW BULLETS
 	if not BulletData.IsPhaseBullet and not BulletData.AgeChecked then
+		-- INITIAL CHECK BETWEEN PLAYER ROOT AND THE MUZZLE
+		RayResult =
+			workspace:Raycast(RootPart.Position, (BulletData.StartPos - RootPart.Position), BulletData.RayParams)
+		if RayResult then
+			local ResultData = {
+				Instance = RayResult.Instance,
+				Position = RayResult.Position,
+				Normal = RayResult.Normal,
+			}
+			local ProcessedResult = ProcessBulletRayResult(ResultData, BulletData, false)
+			return ProcessedResult
+		end
+
 		BulletData.AgeChecked = true
 		-- WALL CHECK
 		RayResult = workspace:Raycast(BulletData.HandlePos - IntendedMovement * 4, IntendedMovement * 6, WallParams)
