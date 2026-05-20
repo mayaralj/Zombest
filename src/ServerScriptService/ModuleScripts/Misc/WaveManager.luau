@@ -28,10 +28,10 @@ WaveManager.CurrentWave = 0
 local function ResetPoints(Player)
 	local CurrentPlayerData = PlayerData:Get(Player)
 	if CurrentPlayerData and CurrentPlayerData.Points then
-		if CurrentPlayerData.Points.CurrentPoints == 500000 then
-			CurrentPlayerData.Points.CurrentPoints = 500000.01 -- FORCE UPDATE TO POINTS GUI IF SAME
+		if CurrentPlayerData.Points.CurrentPoints == 500 then
+			CurrentPlayerData.Points.CurrentPoints = 500.01 -- FORCE UPDATE TO POINTS GUI IF SAME
 		else
-			CurrentPlayerData.Points.CurrentPoints = 500000
+			CurrentPlayerData.Points.CurrentPoints = 500
 		end
 		Player:SetAttribute("CurrentPoints", CurrentPlayerData.Points.CurrentPoints)
 	end

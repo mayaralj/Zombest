@@ -19,12 +19,12 @@ local MaxAmmo = Templates:WaitForChild("MaxAmmo")
 
 -- ON PLAYER ATTRIBUTE CHANGED
 LocalPlayer:GetAttributeChangedSignal("InstaKill"):Connect(function()
-	-- CHECK IF ALREADY EXISTS
-	local Existing = MainFrame:FindFirstChild("InstaKill")
-	if Existing then
-		return
-	end
 	if LocalPlayer:GetAttribute("InstaKill") then
+		-- CHECK IF ALREADY EXISTS
+		local Existing = MainFrame:FindFirstChild("InstaKill")
+		if Existing then
+			return
+		end
 		local Clone = InstaKill:Clone()
 		Clone.Name = "InstaKill"
 		Clone.Parent = MainFrame
@@ -38,12 +38,12 @@ LocalPlayer:GetAttributeChangedSignal("InstaKill"):Connect(function()
 end)
 
 LocalPlayer:GetAttributeChangedSignal("DoublePoints"):Connect(function()
-	-- CHECK FOR EXISTING
-	local Existing = MainFrame:FindFirstChild("DoublePoints")
-	if Existing then
-		return
-	end
 	if LocalPlayer:GetAttribute("DoublePoints") then
+		-- CHECK FOR EXISTING
+		local Existing = MainFrame:FindFirstChild("DoublePoints")
+		if Existing then
+			return
+		end
 		local Clone = DoublePoints:Clone()
 		Clone.Name = "DoublePoints"
 		Clone.Parent = MainFrame
@@ -57,12 +57,12 @@ LocalPlayer:GetAttributeChangedSignal("DoublePoints"):Connect(function()
 end)
 
 LocalPlayer:GetAttributeChangedSignal("MaxAmmo"):Connect(function()
-	-- CHECK FOR EXISTING
-	local Existing = MainFrame:FindFirstChild("MaxAmmo")
-	if Existing then
-		return
-	end
 	if LocalPlayer:GetAttribute("MaxAmmo") then
+		-- CHECK FOR EXISTING
+		local Existing = MainFrame:FindFirstChild("MaxAmmo")
+		if Existing then
+			return
+		end
 		local Clone = MaxAmmo:Clone()
 		Clone.Name = "MaxAmmo"
 		Clone.Parent = MainFrame
@@ -76,12 +76,12 @@ LocalPlayer:GetAttributeChangedSignal("MaxAmmo"):Connect(function()
 end)
 
 LocalPlayer:GetAttributeChangedSignal("BonusPoints"):Connect(function()
-	-- CHECK FOR EXISTING
-	local Existing = MainFrame:FindFirstChild("BonusPoints")
-	if Existing then
-		return
-	end
 	if LocalPlayer:GetAttribute("BonusPoints") then
+		-- CHECK FOR EXISTING
+		local Existing = MainFrame:FindFirstChild("BonusPoints")
+		if Existing then
+			return
+		end
 		local Clone = BonusPoints:Clone()
 		Clone.Name = "BonusPoints"
 		Clone.Parent = MainFrame

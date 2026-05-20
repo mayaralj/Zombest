@@ -933,7 +933,7 @@ local function ClosestSpawnPoint()
 		if (not ClosestDistance or Distance < ClosestDistance) and Distance > MinDistanceFromPlayer then
 			-- RANDOM CHANCE TO FAIL (ADDS MORE RANDOMNESS TO SPAWNING AND PREVENTS ALL ZOMBIES SPAWNING AT THE SAME POINT)
 			local Random = math.random()
-			if Random < 0.5 and FailedAttempts < 3 then
+			if Random < 0.5 and FailedAttempts < 2 then
 				FailedAttempts += 1
 				continue
 			end
