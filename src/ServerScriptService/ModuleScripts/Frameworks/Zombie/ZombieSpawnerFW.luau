@@ -304,9 +304,7 @@ end
 local function GetUpdateInterval(Data, TargetData, Distance, IsOnPath)
 	-- UPDATE INTERVAL
 	local UpdateInterval
-	if Distance < VERY_CLOSE then
-		UpdateInterval = 0.05
-	elseif Distance < CLOSE then
+	if Distance < CLOSE then
 		UpdateInterval = 0.05
 	elseif Distance < MEDIUM then
 		UpdateInterval = 0.15
@@ -889,7 +887,61 @@ end
 
 -- FUNCTION TO PICK PLAYER AND PICK CLOSEST SPAWN POINT
 local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
-local LastSpawnPoint = nil
+local SpawnPointCooldowns = {}
+
+-- SPAWN POINT SETTINGS
+local MinDistanceFromPlayer = 75
+local IdealDistance = 125
+local SpawnPointCooldownTime = 3
+local SpawnPointCDPenalty = 100
+
+-- HELPER TO DETERMINE SPAWNPOINT SCORE GIVEN A PLAYER
+local function ScoreSpawnPoint(SpawnPoint, Player, ValidPlayers)
+	-- GET CHARACTER AND ROOTPART
+	local Character = Player.Character
+	if not Character then
+		return nil
+	end
+	local RootPart = Character:FindFirstChild("HumanoidRootPart")
+	if not RootPart then
+		return nil
+	end
+
+	local SpawnPos = SpawnPoint.Position
+	-- LOOP THOUGH AND CHECK IF TOO CLOSE TO ANY PLAYERS
+	for _, OtherPlayer in ipairs(ValidPlayers) do
+		-- CHARACTER AND ROOTPART
+		local OtherCharacter = OtherPlayer.Character
+		if not OtherCharacter then
+			continue
+		end
+		local OtherRootPart = OtherCharacter:FindFirstChild("HumanoidRootPart")
+		if not OtherRootPart then
+			continue
+		end
+
+		-- DISTANCE
+		local Distance = (SpawnPos - RootPart.Position).Magnitude
+
+		-- IF TOO CLOSE TO ANY PLAYER THEN INVALID
+		if Distance < MinDistanceFromPlayer then
+			return nil
+		end
+	end
+
+	-- DISTANCE FROM PLAYER TO SPAWN POINT
+	local Distance = (SpawnPos - RootPart.Position).Magnitude
+	local Score = -math.abs(IdealDistance - Distance)
+
+	-- IF SPAWN POINT ON COOLDOWN THEN PENALIZE IT
+	if SpawnPointCooldowns[SpawnPoint] then
+		Score -= SpawnPointCDPenalty
+	end
+
+	return Score
+end
+
+-- DETERMINE BEST SPAWN POINT BASED ON SCORE
 local function ClosestSpawnPoint()
 	-- LIST OF VALID PLAYERS
 	local ValidPlayers = {}
@@ -899,53 +951,39 @@ local function ClosestSpawnPoint()
 		end
 	end
 
+	-- RETURN A RANDOM SPAWN IF NO PLAYERS
+	if #ValidPlayers == 0 then
+		return SpawnPoints[math.random(1, #SpawnPoints)]
+	end
+
+	-- RANDOM PLAYER
 	local RandomPlayer = ValidPlayers[math.random(1, #ValidPlayers)]
-	-- IF NO PLAYER FOUND
-	if not RandomPlayer then
-		warn("Random PLayer not found")
-		return workspace:WaitForChild("ZombieSpawners").GetChildren()[1]
-	end
 
-	-- SETTINGS
-	local MinDistanceFromPlayer = 75
+	-- DETERMINE BEST SPAWN POINT
+	local BestSpawnPoint = nil
+	local BestScore = -math.huge
 
-	-- LOOP THROUGH SPAWNPOINTS
-	local ClosestDistance
-	local ClosestSpawn = math.huge
-	local FailedAttempts = 0
-	for i, SpawnPoint in ipairs(SpawnPoints) do
-		if LastSpawnPoint and SpawnPoint == LastSpawnPoint then
-			continue
-		end
-		-- CHECK DISTANCE TO PLAYER
-		local Character = RandomPlayer.Character
-		if not Character then
-			continue
-		end
-		local RootPart = Character:FindFirstChild("HumanoidRootPart")
-		if not RootPart then
-			continue
-		end
-
-		-- CHECK DISTANCE
-		local Distance = (SpawnPoint.Position - RootPart.Position).Magnitude
-
-		if (not ClosestDistance or Distance < ClosestDistance) and Distance > MinDistanceFromPlayer then
-			-- RANDOM CHANCE TO FAIL (ADDS MORE RANDOMNESS TO SPAWNING AND PREVENTS ALL ZOMBIES SPAWNING AT THE SAME POINT)
-			local Random = math.random()
-			if Random < 0.5 and FailedAttempts < 2 then
-				FailedAttempts += 1
-				continue
-			end
-			ClosestDistance = Distance
-			ClosestSpawn = SpawnPoint
+	-- LOOP THROUGH SPAWN POINTS
+	for _, SpawnPoint in ipairs(SpawnPoints) do
+		local Score = ScoreSpawnPoint(SpawnPoint, RandomPlayer, ValidPlayers)
+		if Score and BestScore < Score then
+			BestScore = Score
+			BestSpawnPoint = SpawnPoint
 		end
 	end
-	if not ClosestSpawn or ClosestSpawn == math.huge then
-		ClosestSpawn = SpawnPoints[math.random(1, #SpawnPoints)]
+
+	-- IF NO BEST SPAWN POINT THEN PICK RANDOM
+	if not BestSpawnPoint then
+		BestSpawnPoint = SpawnPoints[math.random(1, #SpawnPoints)]
 	end
-	LastSpawnPoint = ClosestSpawn
-	return ClosestSpawn
+
+	-- PUT BEST SPAWN ON COOLDOWN
+	SpawnPointCooldowns[BestSpawnPoint] = true
+	task.delay(SpawnPointCooldownTime, function()
+		SpawnPointCooldowns[BestSpawnPoint] = nil
+	end)
+
+	return BestSpawnPoint
 end
 
 -- FUNCTION TO MASS SPAWN ZOMBIES AT CORRECT LOCATION
@@ -973,7 +1011,7 @@ function ZombieSpawnerFW.SpawnZombies(Count, Wave)
 		ZombiesCurrentSpawning = true
 		while Spawned < Count do
 			if AliveZombies < AllowedZombies then
-				task.wait(0.001)
+				task.wait(0.5)
 				local SpawnPart = ClosestSpawnPoint()
 				ZombieSpawnerFW.SpawnZombie(SpawnPart)
 				Spawned += 1
