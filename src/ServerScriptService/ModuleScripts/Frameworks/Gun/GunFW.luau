@@ -490,6 +490,12 @@ function GunFW.MaxAmmo(Player)
 		end
 		CurrentGunData.Ammo.CurrentAmmo = CurrentGunData.Ammo.MaxAmmo
 		CurrentGunData.Ammo.TotalAmmo = CurrentGunData.Ammo.MaxTotalAmmo
+
+		-- UPDATE ATTRIBUTES IF CURRENT GUN
+		if WeaponName ~= Player:GetAttribute("IsEquippingGun") then
+			continue
+		end
+
 		if CurrentGunData.Ammo.AmmoPerReload then
 			Player:SetAttribute("CurrentAmmo", CurrentGunData.Ammo.CurrentAmmo / CurrentGunData.Ammo.AmmoPerReload)
 			Player:SetAttribute("TotalAmmo", CurrentGunData.Ammo.TotalAmmo / CurrentGunData.Ammo.AmmoPerReload)
