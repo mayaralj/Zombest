@@ -421,7 +421,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		end)
 	else
 		-- INCREASE TEDDY BEAR RATE FOR NEXT ROLL
-		TeddyBearRate += 10
+		TeddyBearRate += 8
 		-- CREATE PROMPT
 		local GiveGunPrompt = Instance.new("ProximityPrompt")
 		GiveGunPrompt.Name = "MysteryGiveGun"
