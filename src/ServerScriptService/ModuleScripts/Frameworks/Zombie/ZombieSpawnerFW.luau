@@ -244,13 +244,13 @@ function ZombieSpawnerFW.SpawnZombie(SpawnPart)
 	end
 
 	-- RANDOMIZE HP
-	local LowerHealth = CurrentZombieData.Health.MaxHealth - 10
-	local UpperHealth = math.min(CurrentZombieData.Health.MaxHealth + (CurrentWave * 2), 300)
+	local LowerHealth = CurrentZombieData.Health.MaxHealth - 10 + (CurrentWave * 2)
+	local UpperHealth = math.min(CurrentZombieData.Health.MaxHealth + (CurrentWave * 5), 300)
 	CurrentZombieData.Health.MaxHealth = math.random(LowerHealth, UpperHealth)
 
 	-- RANDOMIZE SPEED
 	local LowerSpeed = CurrentZombieData.Stats.MaxSpeed - 2.5
-	local UpperSpeed = math.min(CurrentZombieData.Stats.MaxSpeed + 2.5 + (CurrentWave / 100), 20)
+	local UpperSpeed = math.min(CurrentZombieData.Stats.MaxSpeed + 2.5 + (CurrentWave / 20), 20)
 	CurrentZombieData.Stats.MaxSpeed = math.random(LowerSpeed, UpperSpeed)
 	CurrentZombieData.Stats.WalkSpeed = CurrentZombieData.Stats.MaxSpeed
 
