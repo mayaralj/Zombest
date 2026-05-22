@@ -32,12 +32,6 @@ Players.PlayerAdded:Connect(function(Player)
 			continue
 		end
 
-		local ZombieType = ZData.ZombieType
-		local ZombieSubType = ZData.ZombieSubType
-		if not ZombieType or not ZombieSubType then
-			continue
-		end
-
-		ZombieSpawn:FireClient(Player, ZombieID, ZombieType, ZombieSubType, ZombiePart.CFrame)
+		ZombieSpawn:FireClient(Player, ZombieID, ZombiePart.CFrame)
 	end
 end)

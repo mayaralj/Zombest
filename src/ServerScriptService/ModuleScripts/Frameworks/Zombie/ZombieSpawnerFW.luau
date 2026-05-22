@@ -3,30 +3,20 @@ local ZombieSpawnerFW = {}
 -- SERVICES
 local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerStorage = game:GetService("ServerStorage")
 local CollectionService = game:GetService("CollectionService")
 local DebrisService = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local PhysicsService = game:GetService("PhysicsService")
 
 -- FOLDERS
 local ModuleScripts = ServerScriptService:WaitForChild("ModuleScripts")
 local Frameworks = ServerScriptService:WaitForChild("ModuleScripts"):WaitForChild("Frameworks")
-local Misc = ModuleScripts:WaitForChild("Misc")
-local ZombieModels = ReplicatedStorage:WaitForChild("ZombieModels")
 local Events = ReplicatedStorage:WaitForChild("Events")
 local ZombieEvents = Events:WaitForChild("ZombieEvents")
 
 -- MODULES
 local ZombieDrops = require(script.Parent.ZombieDrops)
 local ZombieAIFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieAIFW"))
-local RagdollFW = require(
-	ReplicatedStorage:WaitForChild("ModuleScripts")
-		:WaitForChild("Frameworks")
-		:WaitForChild("Ragdoll")
-		:WaitForChild("RagdollFW")
-)
 local ZombieHealthFW = require(Frameworks:WaitForChild("Zombie"):WaitForChild("ZombieHealthFW"))
 local ZombieData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("ZombieData"))
 local PlayerData = require(ModuleScripts:WaitForChild("Data"):WaitForChild("PlayerData"))
@@ -51,7 +41,6 @@ local ZombieArray = {}
 local CurrentWave = 0
 
 -- SETTINGS
-local VERY_CLOSE = 40
 local CLOSE = 100
 local MEDIUM = 200
 
@@ -143,29 +132,21 @@ local function CreateZombieModel(SpawnPart)
 
 	--ColorFace(Enum.NormalId.Front, Color3.new(0, 0, 0))
 
-	-- CREATE AND GET DATA
-	local ZombieCategory = ZombieData.DefaultData["Regular"]
-	local ZombieTypes = {}
-	for Type, _ in pairs(ZombieCategory) do
-		table.insert(ZombieTypes, Type)
-	end
-
 	-- RANDOMIZE WHICH ZOMBIE DATA TYPE
-	local RandomZombieType = ZombieTypes[math.random(1, #ZombieTypes)]
-	ZombieData:CreateData(ZombiePart, "Regular", RandomZombieType)
+	ZombieData:CreateData(ZombiePart)
 	local ZombieDataGet = ZombieData:Get(ZombiePart)
 	if not ZombieDataGet then
 		return
 	end
 
 	-- FIRE TO CLIENTS TO SPAWN ZOMBIE
-	ZombieSpawn:FireAllClients(ZombieID, "Regular", RandomZombieType, ZombiePart.CFrame)
+	ZombieSpawn:FireAllClients(ZombieID, ZombiePart.CFrame)
 
 	-- CHANGE NAME TO INCLUDE THE TYPE
 	ZombiePart.Name = "ZombiePart" .. ZombieID
 	ZombiePart:SetAttribute("ZombieID", ZombieID)
 
-	-- UPDATE DATA (ID MUST BE ON THE DATA TABLE)
+	-- UPDATE DATA
 	ZombieDataGet.About.ID = ZombieID
 	ZombieDataGet.About.ZombiePart = ZombiePart
 
@@ -174,7 +155,7 @@ local function CreateZombieModel(SpawnPart)
 	ZombieArray[ArrayIndex] = ZombiePart
 	ZombieIndex[ZombieID] = ArrayIndex
 
-	return ZombiePart, "Regular", RandomZombieType
+	return ZombiePart
 end
 
 -- SETUP ZOMBIE DEATH HANDLER
@@ -211,7 +192,7 @@ local function SetupZombieDeathHandler(Zombie)
 	end
 
 	-- CHECK IF THIS ZOMBIE DROPS AN ITEM
-	local DropItem = ZombieDrops.DropItem(Zombie, CurrentWave)
+	ZombieDrops.DropItem(Zombie, CurrentWave)
 
 	-- FIRE TO DELETE CLIENT ZOMBIE
 	ZombieDelete:FireAllClients(CurrentID)
@@ -232,8 +213,8 @@ end
 -- FUNCTiON TO SPAWN A ZOMBIE AND APPLY SETTINGS TO IT
 function ZombieSpawnerFW.SpawnZombie(SpawnPart)
 	-- GET THE PART AND TYPE
-	local ZombiePart, ZombieType, ZombieSubType = CreateZombieModel(SpawnPart)
-	if not ZombiePart or not ZombieType or not ZombieSubType then
+	local ZombiePart = CreateZombieModel(SpawnPart)
+	if not ZombiePart then
 		return
 	end
 
@@ -247,6 +228,7 @@ function ZombieSpawnerFW.SpawnZombie(SpawnPart)
 	local LowerHealth = CurrentZombieData.Health.MaxHealth - 10 + (CurrentWave * 2)
 	local UpperHealth = math.min(CurrentZombieData.Health.MaxHealth + (CurrentWave * 5), 300)
 	CurrentZombieData.Health.MaxHealth = math.random(LowerHealth, UpperHealth)
+	CurrentZombieData.Health.LastHealth = CurrentZombieData.Health.MaxHealth
 
 	-- RANDOMIZE SPEED
 	local LowerSpeed = CurrentZombieData.Stats.MaxSpeed - 2.5

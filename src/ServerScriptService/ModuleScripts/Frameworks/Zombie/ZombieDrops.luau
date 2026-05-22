@@ -206,8 +206,8 @@ function ZombieDrops.InstaKill(Zombie)
 			Player:SetAttribute("InstaKill", CurrentID)
 		end
 
-		-- ATTRIBUTE LASTS 30 SECONDS
-		task.delay(30, function()
+		-- ATTRIBUTE LASTS 60 SECONDS
+		task.delay(60, function()
 			for _, Player in pairs(Players:GetPlayers()) do
 				if Player:GetAttribute("InstaKill") ~= CurrentID then
 					continue
@@ -251,8 +251,8 @@ function ZombieDrops.DoublePoints(Zombie)
 		for _, Player in pairs(Players:GetPlayers()) do
 			Player:SetAttribute("DoublePoints", CurrentID)
 		end
-		-- ATTRIBUTE LASTS 30 SECONDS
-		task.delay(30, function()
+		-- ATTRIBUTE LASTS 60 SECONDS
+		task.delay(60, function()
 			for _, Player in pairs(Players:GetPlayers()) do
 				if Player:GetAttribute("DoublePoints") ~= CurrentID then
 					continue

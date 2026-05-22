@@ -9,7 +9,7 @@ local LocalPlayer = Players.LocalPlayer
 -- FOLDERS
 local Events = ReplicatedStorage:WaitForChild("Events")
 local ZombieEvents = Events:WaitForChild("ZombieEvents")
-local ZombieModel = ReplicatedStorage:WaitForChild("ZombieModels")
+local ZombieModels = ReplicatedStorage:WaitForChild("ZombieModels")
 local ModuleScripts = ReplicatedStorage:WaitForChild("ModuleScripts")
 
 -- EVENTS
@@ -107,14 +107,15 @@ end)
 -- SPAWN ZOMBIE
 local ZombieIDSpawned = {}
 local FullySpawned = {}
-ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, StartCFrame)
+ZombieSpawn.OnClientEvent:Connect(function(ZombieID, StartCFrame)
 	-- DONT REPLICATE TWICE
 	if ZombieIDSpawned[ZombieID] then
 		return
 	end
 
 	-- CLONE
-	local ZombieClone = ZombieModel:WaitForChild(ZombieSubType):Clone()
+	local ZombieClone
+	ZombieClone = ZombieModels:WaitForChild("Normal"):Clone()
 	if not ZombieClone then
 		return
 	end
@@ -122,7 +123,7 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 
 	local ZombieHumanoid = ZombieClone:FindFirstChild("Humanoid")
 	local ZombieRoot = ZombieClone:FindFirstChild("HumanoidRootPart")
-	if not ZombieHumanoid or not ZombieRoot then
+	if not ZombieRoot then
 		return
 	end
 
@@ -130,7 +131,7 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 	ZombieClone.Name = "ClientZombie" .. ZombieID
 
 	-- CREATE AND GET DATA
-	ClientZombieData:CreateData(ZombieClone, ZombieType, ZombieSubType)
+	ClientZombieData:CreateData(ZombieClone)
 	local GetZombieData = ClientZombieData:Get(ZombieClone)
 	if not GetZombieData then
 		return
@@ -141,7 +142,9 @@ ZombieSpawn.OnClientEvent:Connect(function(ZombieID, ZombieType, ZombieSubType, 
 	ZombieClone:PivotTo(StartCFrame)
 
 	-- DESTROY HUMANOID
-	ZombieHumanoid:Destroy()
+	if ZombieHumanoid then
+		ZombieHumanoid:Destroy()
+	end
 	ZombieRoot.Anchored = true
 
 	-- TAG
