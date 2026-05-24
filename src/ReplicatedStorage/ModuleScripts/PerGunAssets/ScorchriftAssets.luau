@@ -1078,6 +1078,7 @@ function ScorchriftAssets.Charge(PlayerViewing, DefaultData, GunEquipped, Player
 
 		-- ARM HIGHLIGHT
 		NewHighlight = Instance.new("Highlight")
+		NewHighlight.Name = "ChargeHighlight"
 		NewHighlight.FillTransparency = 1
 		NewHighlight.OutlineTransparency = 1
 		NewHighlight.Parent = Character:FindFirstChild("Right Arm")
