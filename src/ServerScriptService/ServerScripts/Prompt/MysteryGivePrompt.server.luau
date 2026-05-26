@@ -38,7 +38,7 @@ local TotalRolls = 25
 local TeddyBearRate = 0
 local Rates = {
 	Common = {
-		Rarity = 43,
+		Rarity = 42,
 		Weapons = {
 			"Rifle",
 			"SemiPistol",
@@ -46,7 +46,7 @@ local Rates = {
 		},
 	},
 	Uncommon = {
-		Rarity = 30,
+		Rarity = 29,
 		Weapons = {
 			"AK47",
 			"AR",
@@ -56,7 +56,7 @@ local Rates = {
 		},
 	},
 	Rare = {
-		Rarity = 20,
+		Rarity = 19,
 		Weapons = {
 			"BurstAR",
 			"SuppressedAR",
@@ -64,7 +64,7 @@ local Rates = {
 		},
 	},
 	Epic = {
-		Rarity = 5,
+		Rarity = 8,
 		Weapons = {
 			"AA12",
 			"TacticalShotgun",
@@ -109,6 +109,7 @@ local function GetModelCenter(Model)
 	return CF
 end
 
+-- HELPER TO DISPLAY GUN
 local function DisplayGun(GunModel)
 	local CurrentPivot = GunModel:GetPivot()
 	local BoundingCF = GetModelCenter(GunModel)

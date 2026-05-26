@@ -24,6 +24,7 @@ local BonusPointsSFX = ZombieDropSFX:WaitForChild("BonusPoints")
 local function PlayPickupVFX(Character)
 	-- CREATE PLAYER HIGHLIGHT
 	local Highlight = Instance.new("Highlight")
+	Highlight.Name = "PickupHighlight"
 	Highlight.FillColor = Color3.fromRGB(121, 255, 159)
 	Highlight.FillTransparency = 0.5
 	Highlight.OutlineTransparency = 1

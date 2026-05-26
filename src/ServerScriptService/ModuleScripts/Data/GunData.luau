@@ -319,7 +319,7 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 150,
-			Damage = 85,
+			Damage = 110,
 			FireRate = 1.25,
 			Windup = 0,
 		},

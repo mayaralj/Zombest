@@ -1,13 +1,10 @@
 -- SERVICES
-local StarterGui = game:GetService("StarterGui")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- GUI
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local ZombieDropsGuiFolder = PlayerGui:WaitForChild("ZombieDropsGuiFolder")
-local ZombieDropsGui = ZombieDropsGuiFolder:WaitForChild("ZombieDropsGui")
+local ZombieDropsGui = PlayerGui:WaitForChild("ZombieDropsGui")
 local MainFrame = ZombieDropsGui:WaitForChild("MainFrame")
 
 -- TEMPLATES

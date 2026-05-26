@@ -39,7 +39,7 @@ local Drops = {
 }
 
 -- VARS
-local GlobalID = 0
+local GlobalID = 1
 
 -- HELPER TO CREATE PART
 local function CreateDropModel(Zombie, DropType)
@@ -206,7 +206,7 @@ function ZombieDrops.InstaKill(Zombie)
 			Player:SetAttribute("InstaKill", CurrentID)
 		end
 
-		-- ATTRIBUTE LASTS 60 SECONDS
+		-- ATTRIBUTE LASTS 30 SECONDS
 		task.delay(60, function()
 			for _, Player in pairs(Players:GetPlayers()) do
 				if Player:GetAttribute("InstaKill") ~= CurrentID then
@@ -251,8 +251,8 @@ function ZombieDrops.DoublePoints(Zombie)
 		for _, Player in pairs(Players:GetPlayers()) do
 			Player:SetAttribute("DoublePoints", CurrentID)
 		end
-		-- ATTRIBUTE LASTS 60 SECONDS
-		task.delay(60, function()
+		-- ATTRIBUTE LASTS 45 SECONDS
+		task.delay(45, function()
 			for _, Player in pairs(Players:GetPlayers()) do
 				if Player:GetAttribute("DoublePoints") ~= CurrentID then
 					continue

@@ -114,7 +114,6 @@ function PlayerKnockedFW.KnockedState(Character)
 		end
 
 		-- CHECK IF ABOUT TO BE LAST TO GET KNOCKED
-		print(PlayerKnockedFW.KnockedPlayerCount, RoundStart.InRoundCounter)
 		if
 			Health <= 1
 			and not Player:GetAttribute("IsKnocked")
@@ -161,9 +160,12 @@ function PlayerKnockedFW.RemoveKnockedHealthConns(Character)
 end
 
 -- HELPER TO UPDATE KNOCKED COUNTER AFTER EACH PLAYER REMOVING
-local function CountKnockedPlayers()
+local function CountKnockedPlayers(ExcludePlayer)
 	local Count = 0
 	for _, Player in pairs(Players:GetPlayers()) do
+		if ExcludePlayer and Player == ExcludePlayer then
+			continue
+		end
 		if Player:GetAttribute("IsKnocked") then
 			Count += 1
 		end
@@ -178,7 +180,7 @@ local function HandlePlayerRemoving(Player)
 		KnockedAttributeConns[Player]:Disconnect()
 		KnockedAttributeConns[Player] = nil
 	end
-	CountKnockedPlayers()
+	CountKnockedPlayers(Player)
 	local Character = Player.Character
 	if Character then
 		PlayerKnockedFW.RemoveKnockedHealthConns(Character)
@@ -191,7 +193,7 @@ end)
 -- SET UP ATTRIBUTE CHANGED SIGNAL TO TRACK KNOCKED PLAYER COUNT
 local function HandlePlayerAdded(Player)
 	KnockedAttributeConns[Player] = Player:GetAttributeChangedSignal("IsKnocked"):Connect(function()
-		CountKnockedPlayers()
+		CountKnockedPlayers(nil)
 	end)
 end
 for _, Player in pairs(Players:GetPlayers()) do

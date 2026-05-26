@@ -872,10 +872,10 @@ local SpawnPoints = workspace:WaitForChild("ZombieSpawners"):GetChildren()
 local SpawnPointCooldowns = {}
 
 -- SPAWN POINT SETTINGS
-local MinDistanceFromPlayer = 75
-local IdealDistance = 125
-local SpawnPointCooldownTime = 3
-local SpawnPointCDPenalty = 100
+local MinDistanceFromPlayer = 50
+local IdealDistance = 75
+local SpawnPointCooldownTime = 1.5
+local SpawnPointCDPenalty = 150
 
 -- HELPER TO DETERMINE SPAWNPOINT SCORE GIVEN A PLAYER
 local function ScoreSpawnPoint(SpawnPoint, Player, ValidPlayers)
@@ -968,6 +968,25 @@ local function ClosestSpawnPoint()
 	return BestSpawnPoint
 end
 
+-- GET WAVE SETTINGS HELPER
+local function GetWaveSettings(Wave, Count)
+	local AllowedZombies
+	local SpawnCD
+
+	-- CD
+	local MinCD = 0.5
+	local MaxCD = 1.5
+	SpawnCD = math.max(MinCD, MaxCD - (Wave * 0.05))
+
+	-- ALLOWED ZOMBIES
+	local MinDivisor = 3
+	local MaxDivisor = 5
+	local Divisor = math.max(MaxDivisor, MinDivisor + (Wave * 0.1))
+	AllowedZombies = math.floor(Count / Divisor)
+
+	return AllowedZombies, SpawnCD
+end
+
 -- FUNCTION TO MASS SPAWN ZOMBIES AT CORRECT LOCATION
 local CurrentSpawnTask
 function ZombieSpawnerFW.StopSpawning()
@@ -984,16 +1003,17 @@ function ZombieSpawnerFW.SpawnZombies(Count, Wave)
 		warn(AliveZombies, "Zombies are still currently alive")
 	end
 
-	-- ALLOWED ZOMBIE COUNT
-	local AllowedZombies = math.floor(Count / 5)
-	local Spawned = 0
+	-- CHECK THE WAVE FOR SPAWN CD AND ALLOWED ZOMBIES
+	local AllowedZombies, SpawnCD = GetWaveSettings(Wave, Count)
 
+	-- TRACK CURRENT SPAWNED
+	local Spawned = 0
 	-- START LOOPS
 	CurrentSpawnTask = task.spawn(function()
 		ZombiesCurrentSpawning = true
 		while Spawned < Count do
 			if AliveZombies < AllowedZombies then
-				task.wait(0.5)
+				task.wait(SpawnCD)
 				local SpawnPart = ClosestSpawnPoint()
 				ZombieSpawnerFW.SpawnZombie(SpawnPart)
 				Spawned += 1
