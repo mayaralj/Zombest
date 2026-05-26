@@ -3,8 +3,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- SERVICES
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
 
@@ -251,25 +249,6 @@ local function SetUpRowUpdater(Player)
 			-- BOLD TEXT LABEL
 			TextLabel.FontFace = Font.new(TextLabel.FontFace.Family, Enum.FontWeight.Bold)
 		end
-	end
-
-	-- UPDATE FUNCTION
-	local function UpdateRow()
-		if FreezeStats then
-			return
-		end
-		local Kills = Player:GetAttribute("Kills") or 0
-		local Deaths = Player:GetAttribute("Deaths") or 0
-		local Revives = Player:GetAttribute("Revives") or 0
-		local Knockdowns = Player:GetAttribute("Knockdowns") or 0
-		local CurrentPoints = Player:GetAttribute("CurrentPoints") or 0
-		CurrentPoints = math.round(CurrentPoints)
-
-		PlayerRow.Kills.Text = tostring(Kills)
-		PlayerRow.Deaths.Text = tostring(Deaths)
-		PlayerRow.Revives.Text = tostring(Revives)
-		PlayerRow.Knockdowns.Text = tostring(Knockdowns)
-		PlayerRow.Points.Text = tostring(CurrentPoints)
 	end
 
 	-- INITIAL UPDATE
