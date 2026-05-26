@@ -785,8 +785,8 @@ GunData.DefaultData = {
 		},
 
 		Ammo = {
-			MaxAmmo = 2500,
-			CurrentAmmo = 2500,
+			MaxAmmo = 2000,
+			CurrentAmmo = 2000,
 			TotalAmmo = 0,
 			MaxTotalAmmo = 0,
 			ReloadTime = -1, -- make reload time lower than 0 if no reload
@@ -847,7 +847,7 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 150,
-			Damage = 80,
+			Damage = 60,
 			DamageFalloff = 0.9,
 			FireRate = 1.35,
 			Windup = 0.1,
@@ -1000,7 +1000,7 @@ GunData.DefaultData = {
 			MaxAmmo = 150,
 			CurrentAmmo = 150,
 			TotalAmmo = 900,
-			MaxTotalAmmo = 400,
+			MaxTotalAmmo = 900,
 			ReloadTime = 2.5,
 			AmmoPerReload = 6,
 		},
@@ -1055,7 +1055,7 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 200,
-			Damage = 100,
+			Damage = 300,
 			FireRate = 0.3333,
 			Windup = 3,
 		},
@@ -1118,7 +1118,7 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 175,
-			Damage = 100,
+			Damage = 150,
 			FireRate = 1.3,
 			Windup = 0.45,
 		},
@@ -1263,8 +1263,8 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 100,
-			Damage = 25,
-			FireRate = 25,
+			Damage = 60,
+			FireRate = 15,
 			Windup = 0.2,
 		},
 
@@ -1296,7 +1296,7 @@ GunData.DefaultData = {
 			Burn = {
 				Type = BulletEffects.BurnEffect,
 				Duration = 5.1,
-				Damage = 15,
+				Damage = 25,
 				PerZombieCD = 1,
 				GlobalCD = 0.01,
 				CurrentCD = 0,
@@ -1343,21 +1343,21 @@ GunData.DefaultData = {
 
 		GunStats = {
 			Range = 100,
-			Damage = 12,
-			FireRate = 25,
+			Damage = 45,
+			FireRate = 15,
 			Windup = 0.15,
 		},
 
 		-- CHARGE
 		Charge = {
 			TimeBeforeChargeTimer = 0,
-			TimeBeforeCharge = 1.75,
+			TimeBeforeCharge = 1,
 
 			MaxCharge = 100, -- in percent
 			CurrentCharge = 100,
 			TimeToWait = 2,
 
-			ChargeRegenRate = 16,
+			ChargeRegenRate = 32,
 			ChargeDecreaseRate = 0.3,
 
 			ManualChargeTimer = 100,
@@ -1376,7 +1376,7 @@ GunData.DefaultData = {
 			Chain = {
 				Type = BulletEffects.ChainEffect,
 				MaxChains = 25,
-				Damage = 25,
+				Damage = 50,
 				ChainRadius = 50,
 				StunTime = 2,
 				Cooldown = 1,
