@@ -252,7 +252,7 @@ local function SetUpRowUpdater(Player)
 	end
 
 	-- INITIAL UPDATE
-	UpdateRow()
+	UpdateRow(Player)
 
 	-- UPDATE ON ATTRIBUTE CHANGE
 	if not StoredAttributes[Player] then
