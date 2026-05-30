@@ -164,7 +164,7 @@ RunService.Heartbeat:Connect(function(DT)
 
 		-- APPLY SPEEDS AND STAMINA
 		if WantsToSprint and not Player:GetAttribute("IsKnocked") then
-			if HasStamina and Data.Sprint.WaitToSprint >= 0.25 then
+			if HasStamina and Data.Sprint.WaitToSprint >= 0 then -- wait to sprint is for cd
 				Humanoid.WalkSpeed = Sprint
 				Player:SetAttribute("IsSprinting", true)
 				PlayerStaminaFW.DecreaseStamina(Player, 15 * DT)
@@ -174,6 +174,7 @@ RunService.Heartbeat:Connect(function(DT)
 					Data.Sprint.WaitToSprint = 0
 				end
 				Humanoid.WalkSpeed = Walk
+				Player:SetAttribute("WantsToSprint", false) -- FORCE THEM TO HIT SPRINT KEY AGAIN TO SPRINT
 				Player:SetAttribute("IsSprinting", false)
 				Data.Stamina.TimeSinceSprinted = Data.Stamina.TimeSinceSprinted or tick()
 				PlayerStaminaFW.RegenStamina(Player, 15 * DT)
