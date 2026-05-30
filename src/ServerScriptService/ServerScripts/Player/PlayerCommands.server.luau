@@ -29,12 +29,46 @@ local function ConnectCommand(Player)
 			local GunName = Args[3]
 			if Args[2] == "-a" then
 				for _, PlayerToGive in pairs(Players:GetPlayers()) do
-					GunFW.GiveWeapon(PlayerToGive, GunName, true)
+					if PlayerToGive:GetAttribute("IsKnocked") then
+						continue
+					end
+					task.spawn(function()
+						-- ATTRIBUTE CHECKS
+						while
+							PlayerToGive:GetAttribute("IsShooting")
+							or PlayerToGive:GetAttribute("IsReloading")
+							or PlayerToGive:GetAttribute("IsCharging")
+							or PlayerToGive:GetAttribute("IsEquipping")
+							or PlayerToGive:GetAttribute("IsDashing")
+							or PlayerToGive:GetAttribute("IsReviving")
+							or PlayerToGive:GetAttribute("IsSprinting")
+						do
+							task.wait()
+						end
+						GunFW.GiveWeapon(PlayerToGive, GunName, true)
+					end)
 				end
 			else
 				local PlayerToGive = Players:FindFirstChild(Args[2])
 				if PlayerToGive then
-					GunFW.GiveWeapon(PlayerToGive, GunName, true)
+					if PlayerToGive:GetAttribute("IsKnocked") then
+						return
+					end
+					task.spawn(function()
+						-- ATTRIBUTE CHECKS
+						while
+							PlayerToGive:GetAttribute("IsShooting")
+							or PlayerToGive:GetAttribute("IsReloading")
+							or PlayerToGive:GetAttribute("IsCharging")
+							or PlayerToGive:GetAttribute("IsEquipping")
+							or PlayerToGive:GetAttribute("IsDashing")
+							or PlayerToGive:GetAttribute("IsReviving")
+							or PlayerToGive:GetAttribute("IsSprinting")
+						do
+							task.wait()
+						end
+						GunFW.GiveWeapon(PlayerToGive, GunName, true)
+					end)
 				end
 			end
 		elseif Args[1] == "/GivePoints" then
