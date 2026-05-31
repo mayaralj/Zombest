@@ -1357,7 +1357,7 @@ GunData.DefaultData = {
 			CurrentCharge = 100,
 			TimeToWait = 2,
 
-			ChargeRegenRate = 32,
+			ChargeRegenRate = 15,
 			ChargeDecreaseRate = 0.3,
 
 			ManualChargeTimer = 100,

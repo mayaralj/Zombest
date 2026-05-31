@@ -127,7 +127,8 @@ function RoundStart.TeleportPlayersToMap()
 		if Player.Team ~= Teams:FindFirstChild("Lobby") then
 			continue
 		end
-		local SpawnPart = Spawns[i]
+		local SpawnPart = math.random(1, #Spawns)
+		SpawnPart = Spawns[SpawnPart]
 		local Success = false
 
 		-- SET TP ATTRIBUTE ON PLAYER

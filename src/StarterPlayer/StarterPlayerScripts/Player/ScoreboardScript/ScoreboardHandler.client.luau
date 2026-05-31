@@ -251,18 +251,37 @@ local function SetUpRowUpdater(Player)
 		end
 	end
 
+	local function LocalUpdateRow()
+		if FreezeStats then
+			return
+		end
+		local Kills = Player:GetAttribute("Kills") or 0
+		local Deaths = Player:GetAttribute("Deaths") or 0
+		local Revives = Player:GetAttribute("Revives") or 0
+		local Knockdowns = Player:GetAttribute("Knockdowns") or 0
+		local CurrentPoints = Player:GetAttribute("CurrentPoints") or 0
+		CurrentPoints = math.round(CurrentPoints)
+
+		PlayerRow.Kills.Text = tostring(Kills)
+		PlayerRow.Deaths.Text = tostring(Deaths)
+		PlayerRow.Revives.Text = tostring(Revives)
+		PlayerRow.Knockdowns.Text = tostring(Knockdowns)
+		PlayerRow.Points.Text = tostring(CurrentPoints)
+	end
+
 	-- INITIAL UPDATE
-	UpdateRow(Player)
+	LocalUpdateRow()
 
 	-- UPDATE ON ATTRIBUTE CHANGE
 	if not StoredAttributes[Player] then
 		StoredAttributes[Player] = {}
 	end
-	StoredAttributes[Player]["Kills"] = Player:GetAttributeChangedSignal("Kills"):Connect(UpdateRow)
-	StoredAttributes[Player]["Deaths"] = Player:GetAttributeChangedSignal("Deaths"):Connect(UpdateRow)
-	StoredAttributes[Player]["Revives"] = Player:GetAttributeChangedSignal("Revives"):Connect(UpdateRow)
-	StoredAttributes[Player]["Knockdowns"] = Player:GetAttributeChangedSignal("Knockdowns"):Connect(UpdateRow)
-	StoredAttributes[Player]["CurrentPoints"] = Player:GetAttributeChangedSignal("CurrentPoints"):Connect(UpdateRow)
+	StoredAttributes[Player]["Kills"] = Player:GetAttributeChangedSignal("Kills"):Connect(LocalUpdateRow)
+	StoredAttributes[Player]["Deaths"] = Player:GetAttributeChangedSignal("Deaths"):Connect(LocalUpdateRow)
+	StoredAttributes[Player]["Revives"] = Player:GetAttributeChangedSignal("Revives"):Connect(LocalUpdateRow)
+	StoredAttributes[Player]["Knockdowns"] = Player:GetAttributeChangedSignal("Knockdowns"):Connect(LocalUpdateRow)
+	StoredAttributes[Player]["CurrentPoints"] = Player:GetAttributeChangedSignal("CurrentPoints")
+		:Connect(LocalUpdateRow)
 
 	-- MAKE IT VISIBLE
 	PlayerRow.Visible = true
