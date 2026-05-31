@@ -17,7 +17,7 @@
 
 Zombest is a multiplayer zombie survival game developed independently in Roblox Studio using Luau, rendered from an isometric-style top-down perspective. Players survive escalating waves of zombies, purchase and roll for weapons, and compete on global leaderboards across fully persistent sessions.
 
-The project spans ~35,000 lines of Lua across 120+ scripts and all code, animations, VFX, and GUI designed and built independently. It features a custom zombie AI system, a secure client-server architecture, real-time multiplayer networking, a fully implemented round and wave system, and a suite of custom engine-level systems built to replace Roblox's defaults where they fell short.
+The project spans ~35,000 lines of Luau across 120+ scripts and all code, animations, VFX, and GUI designed and built independently. It features a custom zombie AI system, a secure client-server architecture, real-time multiplayer networking, a fully implemented round and wave system, and a suite of custom engine-level systems built to replace Roblox's defaults where they fell short.
 
 ---
 
@@ -257,7 +257,7 @@ Animations started in Roblox's built-in editor, then moved to Moon Animator for 
 
 **Mayar Al Jawhary**
 📧 [Mayar2006.m6@gmail.com](mailto:Mayar2006.m6@gmail.com)
-💼 [linkedin.com/in/mayar-al-jawhary-9b6497390](https://www.linkedin.com/in/mayaralj)
+💼 [linkedin.com/in/mayar-al-jawhary-9b6497390](https://www.linkedin.com/in/mayar-al-jawhary-9b6497390/)
 🐙 [github.com/mayaralj](https://github.com/mayaralj)
 🎮 [roblox.com/users/1244545245/profile](https://www.roblox.com/users/1244545245/profile)
 ---
