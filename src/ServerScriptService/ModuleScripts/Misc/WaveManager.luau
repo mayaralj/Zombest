@@ -219,7 +219,7 @@ function WaveManager.StartWaves()
 		task.wait(4)
 
 		-- SPAWN DA ZOMBIES
-		local ZombieCount = math.clamp(10 + (WaveManager.CurrentWave - 1) * 5, 400, 400)
+		local ZombieCount = math.clamp(10 + (WaveManager.CurrentWave - 1) * 5, 10, 400)
 		ZombieSpawnerFW.SpawnZombies(ZombieCount, WaveManager.CurrentWave)
 
 		-- WAIT TILL RESULT OF ROUND IS DECIDED
