@@ -138,6 +138,9 @@ Sending raw uncompressed data for 200 zombies per frame used too much bandwidth.
 **Problem 7 — Pathfinding Computation at Scale**
 Pathfinding calls are expensive, and naively running them for 100+ zombies every frame would stall the server. Two optimizations were combined: updates are staggered across multiple frames so only a subset of zombies recalculate per tick, and a raycast check runs before each call to test for a clear line of sight. If the zombie can see its target directly, pathfinding is skipped entirely and it moves straight there, reserving the expensive calls for cases where obstacle avoidance is actually needed.
 
+**Problem 8 — Zombie Spawning Without Disrupting Players**
+Spawning zombies at fixed and random positions caused two problems: zombies spawning directly on top of players, and spawns spawnings too far or too close relative to where players actually were on the map. A score-based spawning algorithm was built to solve this. Each candidate spawn point is evaluated against every player's current position simultaneously, scoring each point based on distance, proximity thresholds, whether it would result in an overlap, and if the spawn location was used very recently. The spawn point with the best overall score across all players is chosen, producing spawns that feel fair and consistent regardless of where players are at any given moment.
+
 **Result**
 The final system runs 500+ simultaneously active, smoothly animated zombies, a scale not achieved in any known Roblox game, through client-side model control, humanoid-free custom controllers, delta-time interpolation, AABB spatial collision, and compressed buffer replication.
 
