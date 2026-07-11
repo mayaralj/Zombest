@@ -17,6 +17,27 @@ local AllowedPlayers = {
 }
 local Connected = {}
 
+-- HELPER TO GET PLAYER BY NAME (allows for lower case and partial matching)
+local function GetPlayerByName(Name)
+	if not Name then
+		return nil
+	end
+	local LowerName = string.lower(Name)
+	local ExactMatch = nil
+	local PartialMatch = nil
+
+	for _, Player in pairs(Players:GetPlayers()) do
+		local LowerPlayerName = string.lower(Player.Name)
+		if LowerPlayerName == LowerName then
+			ExactMatch = Player
+			break
+		elseif string.find(LowerPlayerName, LowerName) then
+			PartialMatch = Player
+		end
+	end
+	return ExactMatch or PartialMatch
+end
+
 -- HELPER TO CONNECT TO COMMAND
 local function ConnectCommand(Player)
 	if Connected[Player] then
@@ -25,7 +46,7 @@ local function ConnectCommand(Player)
 	Connected[Player] = true
 	Player.Chatted:Connect(function(Message)
 		local Args = string.split(Message, " ")
-		if Args[1] == "/GiveGun" then
+		if Args[1] == "/gg" then
 			local GunName = Args[3]
 			if Args[2] == "-a" then
 				for _, PlayerToGive in pairs(Players:GetPlayers()) do
@@ -49,7 +70,7 @@ local function ConnectCommand(Player)
 					end)
 				end
 			else
-				local PlayerToGive = Players:FindFirstChild(Args[2])
+				local PlayerToGive = GetPlayerByName(Args[2])
 				if PlayerToGive then
 					if PlayerToGive:GetAttribute("IsKnocked") then
 						return
@@ -71,7 +92,7 @@ local function ConnectCommand(Player)
 					end)
 				end
 			end
-		elseif Args[1] == "/GivePoints" then
+		elseif Args[1] == "/gp" then
 			local Amount = tonumber(Args[3])
 			if not Amount then
 				return
@@ -86,7 +107,7 @@ local function ConnectCommand(Player)
 					PlayerToGive:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 				end
 			else
-				local PlayerToGive = Players:FindFirstChild(Args[2])
+				local PlayerToGive = GetPlayerByName(Args[2])
 				if PlayerToGive then
 					local CurrentPlayerData = PlayerData:Get(PlayerToGive)
 					if not CurrentPlayerData then
@@ -96,13 +117,13 @@ local function ConnectCommand(Player)
 					PlayerToGive:SetAttribute("CurrentPoints", math.round(CurrentPlayerData.Points.CurrentPoints))
 				end
 			end
-		elseif Args[1] == "/Kill" then
+		elseif Args[1] == "/k" then
 			if Args[2] == "-a" then
 				for _, PlayerToKill in pairs(Players:GetPlayers()) do
 					PlayerHealthFW.ForceKill(PlayerToKill)
 				end
 			else
-				local PlayerToKill = Players:FindFirstChild(Args[2])
+				local PlayerToKill = GetPlayerByName(Args[2])
 				if PlayerToKill then
 					PlayerHealthFW.ForceKill(PlayerToKill)
 				end

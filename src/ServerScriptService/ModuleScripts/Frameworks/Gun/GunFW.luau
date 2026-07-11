@@ -506,9 +506,28 @@ function GunFW.MaxAmmo(Player)
 	end
 end
 
+-- HELPER TO FIND GUN NAME EVEN IF UNMATCHED CASE OR PARTIAL MATCH
+local function GetGunName(GunName)
+	local LowerGunName = string.lower(GunName)
+	local ExactMatch = nil
+	local PartialMatch = nil
+	for _, Weapon in pairs(GunData.DefaultData) do
+		local LowerWeaponName = string.lower(Weapon.About.Name)
+		if LowerWeaponName == LowerGunName then
+			ExactMatch = Weapon.About.Name
+			break
+		elseif string.find(LowerWeaponName, LowerGunName) then
+			PartialMatch = Weapon.About.Name
+		end
+	end
+	return ExactMatch or PartialMatch
+end
+
 -- GIVE PLAYER A WEAPON WITH CORRECT MODIFICATIONS AND STATS
 local PreviousAmmo = {}
 function GunFW.GiveWeapon(Player, WeaponName, CreateData)
+	-- GET GUN NAME (allow for case insensitive and partial matching)
+	WeaponName = GetGunName(WeaponName)
 	-- DONT ALLOW IF DEAD
 	local Character = Player.Character
 	if not Character then
