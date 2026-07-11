@@ -38,7 +38,7 @@ local TotalRolls = 25
 local TeddyBearRate = 0
 local Rates = {
 	Common = {
-		Rarity = 42,
+		Rarity = 41,
 		Weapons = {
 			"Rifle",
 			"SemiPistol",
@@ -64,7 +64,7 @@ local Rates = {
 		},
 	},
 	Epic = {
-		Rarity = 8,
+		Rarity = 9,
 		Weapons = {
 			"AA12",
 			"TacticalShotgun",
@@ -422,7 +422,7 @@ MysteryPrompt.OnServerEvent:Connect(function(Player, Prompt)
 		end)
 	else
 		-- INCREASE TEDDY BEAR RATE FOR NEXT ROLL
-		TeddyBearRate += 8
+		TeddyBearRate += 7
 		-- CREATE PROMPT
 		local GiveGunPrompt = Instance.new("ProximityPrompt")
 		GiveGunPrompt.Name = "MysteryGiveGun"
