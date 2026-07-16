@@ -508,6 +508,9 @@ end
 
 -- HELPER TO FIND GUN NAME EVEN IF UNMATCHED CASE OR PARTIAL MATCH
 local function GetGunName(GunName)
+	if not GunName then
+		return "Pistol"
+	end
 	local LowerGunName = string.lower(GunName)
 	local ExactMatch = nil
 	local PartialMatch = nil

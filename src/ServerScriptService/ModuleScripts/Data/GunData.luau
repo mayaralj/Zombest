@@ -950,7 +950,7 @@ GunData.DefaultData = {
 
 	AA12 = {
 		About = {
-			Name = "AA-12",
+			Name = "AA12",
 			BulletType = "Regular",
 			Model = "AA-12",
 			EquipTime = 1,
