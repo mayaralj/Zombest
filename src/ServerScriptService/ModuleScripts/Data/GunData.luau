@@ -474,7 +474,7 @@ GunData.DefaultData = {
 
 	AK47 = {
 		About = {
-			Name = "AK-47",
+			Name = "AK47",
 			BulletType = "Regular",
 			Model = "AK-47",
 			EquipTime = 1,
