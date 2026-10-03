@@ -242,9 +242,11 @@ Animations started in Roblox's built-in editor, then moved to Moon Animator for 
 
 ---
 
-## 🧰 Working With the Project
+## 🧰 Source Code
 
-The repository includes both the existing Roblox place and the Luau source used by Rojo:
+This repository showcases the Luau source code behind Zombest for portfolio review. Some assets require permissions associated with the my account, so the source is provided for reviewing the game's implementation and architecture rather than as a standalone runnable project.
+
+[Play Zombest on Roblox](https://www.roblox.com/games/126463617374732/Zombest).
 
 | Path | Contents |
 |---|---|
@@ -254,14 +256,6 @@ The repository includes both the existing Roblox place and the Luau source used 
 | `src/StarterPlayer` | Camera, movement input, combat input, and player/zombie presentation |
 | `src/StarterGui` | GUI models and their client scripts |
 
-Open `zombestPlace.rbxl` in Roblox Studio to explore the complete place. For source editing, install the tools pinned in `rokit.toml` with Rokit, then run from the repository root:
-
-```sh
-rokit install
-rojo serve default.project.json
-```
-
-Connect the Rojo Studio plugin to the server. The project maps selected source containers; it relies on additional world objects, events, models, and assets in the existing place. A standalone `rojo build` of this source mapping is not the complete playable world.
 
 ### Desktop Controls
 
@@ -308,7 +302,5 @@ I kept a daily development log documenting the work throughout development. **Th
 🐙 [github.com/mayaralj](https://github.com/mayaralj)
 🎮 [roblox.com/users/1244545245/profile](https://www.roblox.com/users/1244545245/profile)
 ---
-Licensed under the [MIT License](LICENSE).
 
-
-
+Copyright © 2026 Mayar Al Jawhary. All rights reserved.
