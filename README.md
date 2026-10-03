@@ -44,7 +44,7 @@ The project contains roughly 36,000 lines of Luau across 131 scripts. All code, 
 
 ![Thor](gifs/ZombestGif5Finished.gif)
 
-*Lightning Charge*
+*Lightning Fist — Spec Weapon*
 
 </div>
 
