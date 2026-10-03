@@ -259,7 +259,7 @@ Animations started in Roblox's built-in editor, then moved to Moon Animator for 
 ## 📬 Contact
 
 **Mayar Al Jawhary**
-📧 [Mayar2006.m6@gmail.com](mailto:Mayar2006.m6@gmail.com)
+📧 [mayar.aljwh@gmail.com](mailto:mayar.aljwh@gmail.com)
 💼 [linkedin.com/in/mayar-al-jawhary-9b6497390](https://www.linkedin.com/in/mayar-al-jawhary-9b6497390/)
 🐙 [github.com/mayaralj](https://github.com/mayaralj)
 🎮 [roblox.com/users/1244545245/profile](https://www.roblox.com/users/1244545245/profile)
